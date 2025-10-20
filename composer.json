@@ -31,6 +31,7 @@
         "test": "vendor/bin/phpunit --no-coverage",
         "format": "vendor/bin/pint",
         "analyse": "vendor/bin/phpstan analyse",
+        "test-integration": "php run-integration-tests.php",
         "check": [
             "@format",
             "@analyse",

@@ -33,3 +33,6 @@ psalm.xml
 testbench.yaml
 /docs
 /coverage
+
+# Environment files with actual credentials
+.env

@@ -202,6 +202,8 @@ The SDK uses type-safe DTOs for all data exchange:
 
 ## Testing
 
+### Unit Tests
+
 ```bash
 # Run all tests
 composer test
@@ -216,7 +218,59 @@ composer analyse
 composer check
 ```
 
-### Code Quality
+### Integration Testing with Real Credentials
+
+To test the SDK with your actual Emarsys API credentials:
+
+#### Setup Credentials
+
+Option 1: Environment Variables
+
+```bash
+export EMARSYS_CLIENT_ID='your-client-id'
+export EMARSYS_CLIENT_SECRET='your-client-secret'
+```
+
+Option 2: .env File (Recommended)
+
+```bash
+# Copy the template and edit with your credentials
+cp .env.example .env
+# Edit .env file with your actual credentials
+```
+
+#### Quick Test (Read-only, Safe)
+
+```bash
+# Run quick connection test
+composer test-integration quick
+# OR
+php tests/Integration/QuickConnectionTest.php
+```
+
+#### Full Integration Test
+
+```bash
+# Run comprehensive test (creates and deletes a test contact list)
+composer test-integration contact-lists
+# OR
+php tests/Integration/ContactListsIntegrationTest.php
+
+# Run all integration tests
+composer test-integration
+```
+
+The integration test performs these operations:
+
+1. ✅ **Authentication** - Tests OAuth 2.0 login
+2. ✅ **List Contact Lists** - Retrieves existing lists (read-only)
+3. ✅ **Create Contact List** - Creates a test list
+4. ✅ **Get Contact List** - Retrieves the created list by ID
+5. ✅ **Delete Contact List** - Cleans up the test list
+
+**Note**: The integration test creates and deletes a test contact list but doesn't affect your existing data.
+
+See `tests/Integration/README.md` for more details.### Code Quality
 
 The project uses several tools to ensure code quality:
 
