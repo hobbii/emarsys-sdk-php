@@ -8,11 +8,12 @@
     "homepage": "https://github.com/hobbii/emarsys-sdk-php",
     "license": "MIT",
     "require": {
-        "php": "^8.3"
+        "php": "^8.3",
+        "guzzlehttp/guzzle": "^7.0"
     },
     "require-dev": {
         "phpunit/phpunit": "12.4.1",
-        "laravel/pint": "^1.0",
+        "laravel/pint": "1.25.1",
         "spatie/ray": "^1.28"
     },
     "autoload": {
@@ -27,7 +28,7 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit",
-            "test-coverage": "vendor/bin/phpunit --coverage",
+        "test-coverage": "vendor/bin/phpunit --coverage",
         "format": "vendor/bin/pint"
     },
     "config": {
