@@ -15,6 +15,7 @@ A PHP SDK for the [Emarsys API v3](https://dev.emarsys.com/docs/core-api-referen
 - PSR-12 compliant code style
 - Framework-agnostic with optional Laravel support
 - Automatic token refresh and management
+- PHPStan level 8 static analysis
 - 100% unit test coverage
 
 ## Requirements
@@ -207,7 +208,22 @@ composer test
 
 # Run code formatting
 composer format
+
+# Run static analysis with PHPStan
+composer analyse
+
+# Run everything (format, analyse, test)
+composer check
 ```
+
+### Code Quality
+
+The project uses several tools to ensure code quality:
+
+- **PHPUnit**: Unit testing with high coverage
+- **PHPStan**: Static analysis at level 8 (strictest)
+- **Laravel Pint**: PSR-12 code formatting
+- **Type Safety**: Full PHP 8.3 type hints with strict typing
 
 ## Changelog
 
