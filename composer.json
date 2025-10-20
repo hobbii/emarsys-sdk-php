@@ -1,45 +1,39 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "hobbii/emarsys-sdk-php",
+    "description": "Emarsys SDK",
     "keywords": [
-        ":vendor_name",
-        ":package_slug"
+        "hobbii",
+        "emarsys-sdk-php"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/hobbii/emarsys-sdk-php",
     "license": "MIT",
-    "authors": [
-        {
-            "name": ":author_name",
-            "email": "author@domain.com",
-            "role": "Developer"
-        }
-    ],
     "require": {
-        "php": "^8.4"
+        "php": "^8.3"
     },
     "require-dev": {
-        :require_dev_testing,
-        :require_dev_codestyle,
+        "phpunit/phpunit": "12.4.1",
+        "laravel/pint": "^1.0",
         "spatie/ray": "^1.28"
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src"
+            "Hobbii\\Emarsys\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests"
+            "Hobbii\\Emarsys\\Tests\\": "tests"
         }
     },
     "scripts": {
-        :scripts_testing,
-        :scripts_codestyle
+        "test": "vendor/bin/phpunit",
+            "test-coverage": "vendor/bin/phpunit --coverage",
+        "format": "vendor/bin/pint"
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            :plugins_testing,
+
             "phpstan/extension-installer": true
         }
     },

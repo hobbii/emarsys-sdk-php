@@ -1,6 +1,6 @@
 <?php
 
-namespace VendorName\Skeleton\Tests;
+namespace Hobbii\Emarsys\Tests;
 
 use PHPUnit\Framework\TestCase;
 
