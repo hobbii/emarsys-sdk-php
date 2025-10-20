@@ -202,7 +202,11 @@ The SDK uses type-safe DTOs for all data exchange:
 ## Testing
 
 ```bash
+# Run all tests
 composer test
+
+# Run code formatting
+composer format
 ```
 
 ## Changelog
