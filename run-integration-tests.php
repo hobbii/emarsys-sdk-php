@@ -18,6 +18,11 @@ declare(strict_types=1);
 
 require_once __DIR__.'/vendor/autoload.php';
 
+use Hobbii\Emarsys\Domain\Exceptions\ApiException;
+use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
+use Hobbii\Emarsys\Tests\Integration\ContactListsIntegrationTest;
+use Hobbii\Emarsys\Tests\Integration\QuickConnectionTest;
+
 // Load .env file if it exists
 if (file_exists(__DIR__.'/.env')) {
     $envLines = file(__DIR__.'/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -48,43 +53,66 @@ if (! $clientId || ! $clientSecret) {
     exit(1);
 }
 
-$testName = $argv[1] ?? 'all';
-$testDir = __DIR__.'/tests/Integration';
+$testName = $argv[1] ?? null;
 
-echo "🧪 Emarsys SDK Integration Test Runner\n";
-echo "=====================================\n\n";
-
-switch ($testName) {
-    case 'quick':
-        echo "Running Quick Connection Test...\n\n";
-        require $testDir.'/QuickConnectionTest.php';
-        break;
-
-    case 'contact-lists':
-        echo "Running Contact Lists Integration Test...\n\n";
-        require $testDir.'/ContactListsIntegrationTest.php';
-        break;
-
-    case 'all':
-        echo "Running All Integration Tests...\n\n";
-
-        echo "1. Quick Connection Test\n";
-        echo "========================\n";
-        require $testDir.'/QuickConnectionTest.php';
-
-        echo "\n\n2. Contact Lists Integration Test\n";
-        echo "==================================\n";
-        require $testDir.'/ContactListsIntegrationTest.php';
-        break;
-
-    default:
-        echo "❌ Unknown test: {$testName}\n\n";
-        echo "Available tests:\n";
-        echo "  - quick       : Quick connection test (read-only)\n";
-        echo "  - contact-lists : Full contact lists CRUD test\n";
-        echo "  - all         : Run all integration tests (default)\n\n";
-        echo "Usage: php run-integration-tests.php [test-name]\n";
-        exit(1);
+if ($testName === null) {
+    echoUsageInfo();
+    exit(0);
 }
 
-echo "\n🏁 Integration tests completed.\n";
+$availableTests = [
+    'quick' => QuickConnectionTest::class,
+    'contact-lists' => ContactListsIntegrationTest::class,
+];
+
+try {
+    echo "🧪 Emarsys SDK Integration Test Runner\n";
+    echo "=====================================\n\n";
+
+    $tests = getTests($testName);
+
+    foreach ($tests as $test) {
+        echo "Running Test: " . get_class($test) . "...\n\n";
+        $test->run();
+        echo "\nDone.\n";
+    }
+} catch (AuthenticationException $e) {
+    echo "❌ Authentication failed: {$e->getMessage()}\n";
+    echo "💡 Please check your client_id and client_secret.\n";
+} catch (ApiException $e) {
+    echo "❌ API error: {$e->getMessage()}\n";
+    echo "HTTP Status: {$e->getHttpStatusCode()}\n";
+    echo "Response Body:\n" . $e->getResponseBody() . "\n";
+    echo "Stack Trace:\n" . $e->getTraceAsString();
+} catch (Throwable $e) {
+    echo "❌ Unexpected error: {$e->getMessage()}\n";
+    echo $e->getTraceAsString();
+}
+
+function getTests(string $testName): array {
+    global $availableTests;
+
+    if ($testName === 'all') {
+        $test = array_values($availableTests);
+    } else {
+        $availableTestNames = array_keys($availableTests);
+
+        if (! in_array($testName, $availableTestNames)) {
+            echo "❌ Unknown test: {$testName}\n\n";
+            echoUsageInfo();
+            exit(0);
+        }
+
+        $test = $availableTests[$testName];
+    }
+
+    return is_array($test) ? array_map(fn($t) => new $t(), $test) : [new $test()];
+}
+
+function echoUsageInfo(): void {
+    echo "Available tests:\n";
+    echo "  - quick         : Quick connection test (read-only)\n";
+    echo "  - contact-lists : Full contact lists CRUD test\n";
+    echo "  - all           : Run all integration tests (default)\n\n";
+    echo "Usage: php run-integration-tests.php [test-name]\n\n";
+}
