@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
-use JsonException;
+use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -119,7 +119,7 @@ class HttpClient
      * @throws ApiException
      * @throws AuthenticationException
      */
-    private function request(string $method, string $endpoint, array $options = []): array
+    private function request(string $method, string $endpoint, array $options = []): Response
     {
         // Ensure we have a valid access token
         $this->ensureValidAccessToken();
@@ -131,17 +131,13 @@ class HttpClient
         try {
             $response = $this->client->request($method, $endpoint, $options);
 
-            return $this->parseResponse($response);
+            return Response::fromPsrResponse($response);
         } catch (ClientException $e) {
             $this->handleClientException($e);
         } catch (ServerException $e) {
-            $this->handleServerException($e);
+            throw ApiException::fromRequestException($e)->withMessage('Server error occurred');
         } catch (RequestException $e) {
-            throw new ApiException(
-                message: 'Request failed: '.$e->getMessage(),
-                code: $e->getCode(),
-                previous: $e
-            );
+            throw ApiException::fromRequestException($e)->withMessage('Request failed: '.$e->getMessage());
         }
     }
 
@@ -186,32 +182,22 @@ class HttpClient
                 ],
             ]);
 
-            $data = $this->parseResponse($response);
+            $emarsysResponse = Response::fromPsrResponse($response);
 
-            if (! isset($data['access_token'])) {
+            if (! isset($emarsysResponse->data['access_token'])) {
                 throw new AuthenticationException('Invalid OAuth response: missing access_token');
             }
 
-            $this->accessToken = $data['access_token'];
-            $expiresIn = $data['expires_in'] ?? 3600; // Default to 1 hour
+            $this->accessToken = $emarsysResponse->data['access_token'];
+            $expiresIn = $emarsysResponse->data['expires_in'] ?? 3600; // Default to 1 hour
             $this->tokenExpiresAt = time() + $expiresIn - 60; // Refresh 1 minute early
 
         } catch (ClientException $e) {
-            $response = $e->getResponse();
-            $statusCode = $response->getStatusCode();
-            $body = $this->parseResponse($response);
-
-            throw new AuthenticationException(
-                message: 'OAuth authentication failed',
-                httpStatusCode: $statusCode,
-                responseBody: $body,
-                previous: $e
-            );
+            throw AuthenticationException::fromRequestException($e)
+                ->withMessage('OAuth authentication failed');
         } catch (RequestException $e) {
-            throw new AuthenticationException(
-                message: 'OAuth request failed: '.$e->getMessage(),
-                previous: $e
-            );
+            throw AuthenticationException::fromRequestException($e)
+                ->withMessage('OAuth request failed: '.$e->getMessage());
         }
     }
 
@@ -230,30 +216,11 @@ class HttpClient
     /**
      * Parse the response body.
      *
-     * @return array<string, mixed>
-     *
      * @throws ApiException
      */
-    private function parseResponse(ResponseInterface $response): array
+    private function parseResponse(ResponseInterface $response): Response
     {
-        $body = $response->getBody()->getContents();
-
-        try {
-            $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-
-            if (! is_array($data)) {
-                throw new JsonException('Expected an array. Got: ' . gettype($data));
-            }
-        } catch (JsonException $e) {
-            throw new ApiException(
-                'Invalid JSON response',
-                httpStatusCode: $response->getStatusCode(),
-                responseBody: $body,
-                previous: $e
-            );
-        }
-
-        return $data ?? [];
+        return Response::fromPsrResponse($response);
     }
 
     /**
@@ -269,49 +236,15 @@ class HttpClient
         $body = $response->getBody()->getContents();
 
         if ($statusCode === 401) {
-            throw new AuthenticationException(
-                message: 'Authentication failed',
-                httpStatusCode: $statusCode,
-                responseBody: $body,
-                previous: $e
-            );
+            throw AuthenticationException::fromRequestException($e)->withMessage('Authentication failed');
         }
 
         if ($statusCode === 403) {
-            throw new ApiException(
-                message: 'Access forbidden - insufficient permissions for this endpoint',
-                code: $body['replyCode'] ?? 0,
-                httpStatusCode: $statusCode,
-                responseBody: $body,
-                previous: $e
-            );
+            throw ApiException::fromRequestException($e)->withMessage('Access forbidden - insufficient permissions for this endpoint');
         }
 
-        throw new ApiException(
-            message: $body['replyText'] ?? 'Client error occurred',
-            code: $body['replyCode'] ?? 0,
-            httpStatusCode: $statusCode,
-            responseBody: $body,
-            previous: $e
-        );
-    }
-
-    /**
-     * Handle server exceptions (5xx errors).
-     *
-     * @throws ApiException
-     */
-    private function handleServerException(ServerException $e): never
-    {
-        $response = $e->getResponse();
-        $statusCode = $response->getStatusCode();
-        $body = $this->parseResponse($response);
-
-        throw new ApiException(
-            message: 'Server error occurred',
-            httpStatusCode: $statusCode,
-            responseBody: $body,
-            previous: $e
+        throw ApiException::fromRequestException($e)->withMessage(
+            $body['replyText'] ?? 'Client error occurred'
         );
     }
 }
