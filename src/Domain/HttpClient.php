@@ -17,7 +17,15 @@ use Psr\Http\Message\ResponseInterface;
  */
 class HttpClient
 {
-    private const BASE_URL = 'https://api.emarsys.net/api/v3';
+    /**
+     * Base Emarsys API v3 endpoint.
+     *
+     * Important:
+     * Guzzle follows RFC 3986 URI resolution rules - if the base_uri does not end with /, it’s considered a file.
+     */
+    private const BASE_URL = 'https://api.emarsys.net/api/v3/';
+
+    private const OAUTH2_TOKEN_URL = 'https://auth.emarsys.net/oauth2/token';
 
     private readonly GuzzleClient $client;
 
@@ -166,14 +174,14 @@ class HttpClient
     private function refreshAccessToken(): void
     {
         try {
-            $response = $this->client->request('POST', '/oauth2/token', [
+            $response = $this->client->request('POST', self::OAUTH2_TOKEN_URL, [
+                'auth' => [$this->clientId, $this->clientSecret],
                 'form_params' => [
                     'grant_type' => 'client_credentials',
-                    'client_id' => $this->clientId,
-                    'client_secret' => $this->clientSecret,
                 ],
                 'headers' => [
                     'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Accept' => 'application/json',
                 ],
             ]);
 
@@ -255,6 +263,16 @@ class HttpClient
         if ($statusCode === 401) {
             throw new AuthenticationException(
                 message: 'Authentication failed',
+                httpStatusCode: $statusCode,
+                responseBody: $body,
+                previous: $e
+            );
+        }
+
+        if ($statusCode === 403) {
+            throw new ApiException(
+                message: 'Access forbidden - insufficient permissions for this endpoint',
+                code: $body['replyCode'] ?? 0,
                 httpStatusCode: $statusCode,
                 responseBody: $body,
                 previous: $e

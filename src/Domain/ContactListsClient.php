@@ -15,6 +15,8 @@ use Hobbii\Emarsys\DTO\CreateContactListRequest;
  */
 class ContactListsClient
 {
+    private const ENDPOINT = 'contactlist';
+
     public function __construct(
         private readonly HttpClient $httpClient
     ) {}
@@ -27,7 +29,7 @@ class ContactListsClient
      */
     public function create(CreateContactListRequest $request): ContactList
     {
-        $response = $this->httpClient->post('/contactlist', $request->toArray());
+        $response = $this->httpClient->post(self::ENDPOINT, $request->toArray());
 
         if (! isset($response['data'])) {
             throw new ApiException('Invalid response format: missing data field');
@@ -46,7 +48,7 @@ class ContactListsClient
      */
     public function list(array $filters = []): ContactListCollection
     {
-        $response = $this->httpClient->get('/contactlist', $filters);
+        $response = $this->httpClient->get(self::ENDPOINT, $filters);
 
         return ContactListCollection::fromArray($response);
     }
@@ -59,7 +61,7 @@ class ContactListsClient
      */
     public function get(int $contactListId): ContactList
     {
-        $response = $this->httpClient->get("/contactlist/{$contactListId}");
+        $response = $this->httpClient->get(self::ENDPOINT . '/' . $contactListId);
 
         if (! isset($response['data'])) {
             throw new ApiException('Invalid response format: missing data field');
@@ -76,7 +78,7 @@ class ContactListsClient
      */
     public function delete(int $contactListId): bool
     {
-        $this->httpClient->delete("/contactlist/{$contactListId}");
+        $this->httpClient->delete(self::ENDPOINT . '/' . $contactListId);
 
         return true;
     }
