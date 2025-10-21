@@ -67,13 +67,12 @@ try {
 } catch (AuthenticationException $e) {
     echo "❌ Authentication failed: {$e->getMessage()}\n";
     echo "💡 Please check your client_id and client_secret.\n";
-
 } catch (ApiException $e) {
     echo "❌ API error: {$e->getMessage()}\n";
     echo "HTTP Status: {$e->getHttpStatusCode()}\n";
-
-} catch (Exception $e) {
+} catch (Throwable $e) {
     echo "❌ Unexpected error: {$e->getMessage()}\n";
+    echo $e->getTraceAsString();
 }
 
 echo "\nDone.\n";
