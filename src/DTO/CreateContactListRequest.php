@@ -26,11 +26,11 @@ readonly class CreateContactListRequest
      */
     public function toArray(): array
     {
-        return array_filter([
+        return [
             'name' => $this->name,
             'description' => $this->description,
             'key_id' => $this->keyId,
             'external_ids' => $this->externalIds,
-        ], fn ($value) => $value !== null);
+        ];
     }
 }

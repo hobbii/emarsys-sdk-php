@@ -7,9 +7,9 @@ namespace Hobbii\Emarsys\Tests\Unit\Domain;
 use Hobbii\Emarsys\Domain\ContactListsClient;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\HttpClient;
-use Hobbii\Emarsys\DTO\ContactList;
 use Hobbii\Emarsys\DTO\ContactListCollection;
 use Hobbii\Emarsys\DTO\CreateContactListRequest;
+use Hobbii\Emarsys\DTO\CreateContactListResponse;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -43,18 +43,21 @@ class ContactListsClientTest extends TestCase
         $this->httpClient
             ->expects($this->once())
             ->method('post')
-            ->with('/contactlist', $request->toArray())
+            ->with('contactlist', $request->toArray())
             ->willReturn($responseData);
 
         $result = $this->client->create($request);
 
-        $this->assertInstanceOf(ContactList::class, $result);
+        $this->assertInstanceOf(CreateContactListResponse::class, $result);
         $this->assertSame(1, $result->id);
     }
 
     public function test_create_contact_list_throws_exception_on_invalid_response(): void
     {
-        $request = new CreateContactListRequest('Test List');
+        $request = new CreateContactListRequest(
+            name: 'Test List',
+            description: 'A test list'
+        );
         $responseData = ['invalid' => 'response'];
 
         $this->httpClient
@@ -81,7 +84,7 @@ class ContactListsClientTest extends TestCase
         $this->httpClient
             ->expects($this->once())
             ->method('get')
-            ->with('/contactlist', [])
+            ->with('contactlist', [])
             ->willReturn($responseData);
 
         $result = $this->client->list();
@@ -98,15 +101,13 @@ class ContactListsClientTest extends TestCase
 
     public function test_list_contact_lists_with_filters(): void
     {
-        $filters = ['limit' => 10, 'offset' => 0];
-
         $this->httpClient
             ->expects($this->once())
             ->method('get')
-            ->with('/contactlist', $filters)
+            ->with('contactlist')
             ->willReturn(['data' => []]);
 
-        $result = $this->client->list($filters);
+        $result = $this->client->list();
 
         $this->assertInstanceOf(ContactListCollection::class, $result);
         $this->assertTrue($result->isEmpty());
@@ -117,7 +118,7 @@ class ContactListsClientTest extends TestCase
         $this->httpClient
             ->expects($this->once())
             ->method('delete')
-            ->with('/contactlist/1')
+            ->with('contactlist/1/deletelist')
             ->willReturn([]);
 
         $result = $this->client->delete(1);

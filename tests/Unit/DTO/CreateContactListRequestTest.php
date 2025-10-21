@@ -9,13 +9,17 @@ use PHPUnit\Framework\TestCase;
 
 class CreateContactListRequestTest extends TestCase
 {
-    public function test_can_be_created_with_only_name(): void
+    public function test_can_be_created_with_required_fields(): void
     {
-        $request = new CreateContactListRequest('Test List');
+        $request = new CreateContactListRequest(
+            name: 'Test List',
+            description: 'A test contact list',
+        );
 
         $this->assertSame('Test List', $request->name);
-        $this->assertNull($request->description);
-        $this->assertNull($request->type);
+        $this->assertSame('A test contact list', $request->description);
+        $this->assertSame('email', $request->keyId);
+        $this->assertEmpty($request->externalIds);
     }
 
     public function test_can_be_created_with_all_fields(): void
@@ -23,12 +27,14 @@ class CreateContactListRequestTest extends TestCase
         $request = new CreateContactListRequest(
             name: 'Test List',
             description: 'A test contact list',
-            type: 'static'
+            keyId: '3',
+            externalIds: [1, 2]
         );
 
         $this->assertSame('Test List', $request->name);
         $this->assertSame('A test contact list', $request->description);
-        $this->assertSame('static', $request->type);
+        $this->assertSame('3', $request->keyId);
+        $this->assertSame([1, 2], $request->externalIds);
     }
 
     public function test_can_be_converted_to_array(): void
@@ -36,7 +42,6 @@ class CreateContactListRequestTest extends TestCase
         $request = new CreateContactListRequest(
             name: 'Test List',
             description: 'A test contact list',
-            type: 'static'
         );
 
         $array = $request->toArray();
@@ -44,20 +49,8 @@ class CreateContactListRequestTest extends TestCase
         $expected = [
             'name' => 'Test List',
             'description' => 'A test contact list',
-            'type' => 'static',
-        ];
-
-        $this->assertEquals($expected, $array);
-    }
-
-    public function test_to_array_filters_null_values(): void
-    {
-        $request = new CreateContactListRequest('Test List');
-
-        $array = $request->toArray();
-
-        $expected = [
-            'name' => 'Test List',
+            'key_id' => 'email',
+            'external_ids' => [],
         ];
 
         $this->assertEquals($expected, $array);
