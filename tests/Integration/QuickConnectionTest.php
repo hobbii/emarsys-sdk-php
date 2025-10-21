@@ -26,8 +26,7 @@ class QuickConnectionTest
         if (! $lists->isEmpty()) {
             echo "📝 Your contact lists:\n";
             foreach ($lists->getContactLists() as $list) {
-                $count = $list->count ? " ({$list->count} contacts)" : '';
-                echo "   - {$list->name} (ID: {$list->id}){$count}\n";
+                echo "   - {$list->name} (ID: {$list->id})\n";
             }
         }
     }

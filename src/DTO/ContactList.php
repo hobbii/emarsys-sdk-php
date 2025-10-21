@@ -8,6 +8,8 @@ use RuntimeException;
 
 /**
  * Represents a Contact List in the Emarsys system.
+ *
+ * @see https://dev.emarsys.com/docs/core-api-reference/axpotjvepqdla-list-contact-lists#response-body
  */
 readonly class ContactList
 {
@@ -16,7 +18,6 @@ readonly class ContactList
         public string $name,
         public ?string $description = null,
         public ?string $created = null,
-        public ?int $count = null
     ) {}
 
     /**
@@ -29,11 +30,10 @@ readonly class ContactList
     public static function fromArray(array $data): self
     {
         return new self(
-            id: (int) $data['id'] ?? throw new RuntimeException('Missing id field'),
-            name: $data['name'] ?? throw new RuntimeException('Missing name field'),
+            id: (int) $data['id'] ?? throw new RuntimeException('Missing "id" field'),
+            name: $data['name'] ?? throw new RuntimeException('Missing "name" field'),
             description: $data['description'] ?? null,
             created: $data['created'] ?? null,
-            count: isset($data['count']) ? (int) $data['count'] : null
         );
     }
 
@@ -49,7 +49,6 @@ readonly class ContactList
             'name' => $this->name,
             'description' => $this->description,
             'created' => $this->created,
-            'count' => $this->count,
         ], fn ($value) => $value !== null);
     }
 }

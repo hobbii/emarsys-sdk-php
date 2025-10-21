@@ -24,8 +24,7 @@ class ContactListsIntegrationTest
         if (! $existingLists->isEmpty()) {
             echo "   📝 Existing lists:\n";
             foreach ($existingLists->getContactLists() as $list) {
-                $count = $list->count ? " ({$list->count} contacts)" : '';
-                echo "      - ID: {$list->id}, Name: \"{$list->name}\"{$count}\n";
+                echo "      - ID: {$list->id}, Name: \"{$list->name}\"\n";
             }
         }
         echo "\n";

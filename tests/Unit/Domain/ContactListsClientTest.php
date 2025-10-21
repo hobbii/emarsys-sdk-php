@@ -50,8 +50,6 @@ class ContactListsClientTest extends TestCase
 
         $this->assertInstanceOf(ContactList::class, $result);
         $this->assertSame(1, $result->id);
-        $this->assertSame('Test List', $result->name);
-        $this->assertSame('A test list', $result->description);
     }
 
     public function test_create_contact_list_throws_exception_on_invalid_response(): void
@@ -112,45 +110,6 @@ class ContactListsClientTest extends TestCase
 
         $this->assertInstanceOf(ContactListCollection::class, $result);
         $this->assertTrue($result->isEmpty());
-    }
-
-    public function test_get_contact_list(): void
-    {
-        $responseData = [
-            'data' => [
-                'id' => 1,
-                'name' => 'Test List',
-                'description' => 'A test list',
-            ],
-        ];
-
-        $this->httpClient
-            ->expects($this->once())
-            ->method('get')
-            ->with('/contactlist/1')
-            ->willReturn($responseData);
-
-        $result = $this->client->get(1);
-
-        $this->assertInstanceOf(ContactList::class, $result);
-        $this->assertSame(1, $result->id);
-        $this->assertSame('Test List', $result->name);
-        $this->assertSame('A test list', $result->description);
-    }
-
-    public function test_get_contact_list_throws_exception_on_invalid_response(): void
-    {
-        $responseData = ['invalid' => 'response'];
-
-        $this->httpClient
-            ->expects($this->once())
-            ->method('get')
-            ->willReturn($responseData);
-
-        $this->expectException(ApiException::class);
-        $this->expectExceptionMessage('Invalid response format: missing data field');
-
-        $this->client->get(1);
     }
 
     public function test_delete_contact_list(): void

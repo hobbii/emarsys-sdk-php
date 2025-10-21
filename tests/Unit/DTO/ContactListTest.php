@@ -20,8 +20,6 @@ class ContactListTest extends TestCase
         $this->assertSame('Test List', $contactList->name);
         $this->assertNull($contactList->description);
         $this->assertNull($contactList->created);
-        $this->assertNull($contactList->type);
-        $this->assertNull($contactList->count);
     }
 
     public function test_can_be_created_with_all_data(): void
@@ -31,16 +29,12 @@ class ContactListTest extends TestCase
             name: 'Test List',
             description: 'A test contact list',
             created: '2023-01-01T00:00:00Z',
-            type: 'static',
-            count: 100
         );
 
         $this->assertSame(1, $contactList->id);
         $this->assertSame('Test List', $contactList->name);
         $this->assertSame('A test contact list', $contactList->description);
         $this->assertSame('2023-01-01T00:00:00Z', $contactList->created);
-        $this->assertSame('static', $contactList->type);
-        $this->assertSame(100, $contactList->count);
     }
 
     public function test_can_be_created_from_array(): void
@@ -50,8 +44,6 @@ class ContactListTest extends TestCase
             'name' => 'Test List',
             'description' => 'A test contact list',
             'created' => '2023-01-01T00:00:00Z',
-            'type' => 'static',
-            'count' => 100,
         ];
 
         $contactList = ContactList::fromArray($data);
@@ -60,8 +52,6 @@ class ContactListTest extends TestCase
         $this->assertSame('Test List', $contactList->name);
         $this->assertSame('A test contact list', $contactList->description);
         $this->assertSame('2023-01-01T00:00:00Z', $contactList->created);
-        $this->assertSame('static', $contactList->type);
-        $this->assertSame(100, $contactList->count);
     }
 
     public function test_can_be_created_from_array_with_missing_optional_fields(): void
@@ -85,8 +75,6 @@ class ContactListTest extends TestCase
             name: 'Test List',
             description: 'A test contact list',
             created: '2023-01-01T00:00:00Z',
-            type: 'static',
-            count: 100
         );
 
         $array = $contactList->toArray();
@@ -96,8 +84,6 @@ class ContactListTest extends TestCase
             'name' => 'Test List',
             'description' => 'A test contact list',
             'created' => '2023-01-01T00:00:00Z',
-            'type' => 'static',
-            'count' => 100,
         ];
 
         $this->assertEquals($expected, $array);
