@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
+use JsonException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -236,12 +237,19 @@ class HttpClient
     private function parseResponse(ResponseInterface $response): array
     {
         $body = $response->getBody()->getContents();
-        $data = json_decode($body, true);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        try {
+            $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+
+            if (! is_array($data)) {
+                throw new JsonException('Expected an array. Got: ' . gettype($data));
+            }
+        } catch (JsonException $e) {
             throw new ApiException(
-                'Invalid JSON response: '.json_last_error_msg().
-                '. Response body: '.substr($body, 0, 500)
+                'Invalid JSON response',
+                httpStatusCode: $response->getStatusCode(),
+                responseBody: $body,
+                previous: $e
             );
         }
 
@@ -258,7 +266,7 @@ class HttpClient
     {
         $response = $e->getResponse();
         $statusCode = $response->getStatusCode();
-        $body = $this->parseResponse($response);
+        $body = $response->getBody()->getContents();
 
         if ($statusCode === 401) {
             throw new AuthenticationException(

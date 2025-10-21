@@ -13,7 +13,7 @@ class ApiException extends EmarsysException
         string $message = '',
         int $code = 0,
         private readonly ?int $httpStatusCode = null,
-        private readonly ?array $responseBody = null,
+        private readonly string|array|null $responseBody = null,
         ?\Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
@@ -24,7 +24,7 @@ class ApiException extends EmarsysException
         return $this->httpStatusCode;
     }
 
-    public function getResponseBody(): ?array
+    public function getResponseBody(): string|array|null
     {
         return $this->responseBody;
     }
