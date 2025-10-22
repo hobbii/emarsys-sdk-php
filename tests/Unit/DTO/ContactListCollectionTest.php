@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Tests\Unit\DTO;
 
-use Hobbii\Emarsys\DTO\ContactList;
-use Hobbii\Emarsys\DTO\ContactListCollection;
+use Hobbii\Emarsys\Domain\DTOs\ContactList;
+use Hobbii\Emarsys\Domain\DTOs\ContactListCollection;
 use PHPUnit\Framework\TestCase;
 
 class ContactListCollectionTest extends TestCase

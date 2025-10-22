@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\DTO;
+namespace Hobbii\Emarsys\Domain\DTOs;
 
 use RuntimeException;
 

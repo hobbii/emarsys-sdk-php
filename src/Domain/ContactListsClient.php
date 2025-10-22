@@ -6,9 +6,9 @@ namespace Hobbii\Emarsys\Domain;
 
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
-use Hobbii\Emarsys\DTO\ContactListCollection;
-use Hobbii\Emarsys\DTO\CreateContactListRequest;
-use Hobbii\Emarsys\DTO\CreateContactListResponse;
+use Hobbii\Emarsys\Domain\DTOs\ContactListCollection;
+use Hobbii\Emarsys\Domain\DTOs\CreateContactListRequest;
+use Hobbii\Emarsys\Domain\DTOs\CreateContactListResponse;
 
 /**
  * Client for managing Emarsys Contact Lists.

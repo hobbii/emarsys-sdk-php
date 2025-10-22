@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Tests\Integration;
 
 use Hobbii\Emarsys\Client;
-use Hobbii\Emarsys\DTO\CreateContactListRequest;
+use Hobbii\Emarsys\Domain\DTOs\CreateContactListRequest;
 
 class ContactListsIntegrationTest
 {
