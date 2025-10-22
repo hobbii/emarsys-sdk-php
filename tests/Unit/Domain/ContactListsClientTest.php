@@ -7,6 +7,7 @@ namespace Hobbii\Emarsys\Tests\Unit\Domain;
 use Hobbii\Emarsys\Domain\ContactListsClient;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\HttpClient;
+use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use Hobbii\Emarsys\DTO\ContactListCollection;
 use Hobbii\Emarsys\DTO\CreateContactListRequest;
 use Hobbii\Emarsys\DTO\CreateContactListResponse;
@@ -33,18 +34,23 @@ class ContactListsClientTest extends TestCase
         );
 
         $responseData = [
-            'data' => [
-                'id' => 1,
-                'name' => 'Test List',
-                'description' => 'A test list',
-            ],
+            'id' => 1,
+            'name' => 'Test List',
+            'description' => 'A test list',
         ];
+
+        $response = new Response(
+            replyCode: 0,
+            replyText: 'OK',
+            data: $responseData,
+            errors: []
+        );
 
         $this->httpClient
             ->expects($this->once())
             ->method('post')
             ->with('contactlist', $request->toArray())
-            ->willReturn($responseData);
+            ->willReturn($response);
 
         $result = $this->client->create($request);
 
@@ -58,12 +64,18 @@ class ContactListsClientTest extends TestCase
             name: 'Test List',
             description: 'A test list'
         );
-        $responseData = ['invalid' => 'response'];
+
+        $response = new Response(
+            replyCode: 0,
+            replyText: 'OK',
+            data: null,
+            errors: []
+        );
 
         $this->httpClient
             ->expects($this->once())
             ->method('post')
-            ->willReturn($responseData);
+            ->willReturn($response);
 
         $this->expectException(ApiException::class);
         $this->expectExceptionMessage('Invalid response format: missing data field');
@@ -74,18 +86,22 @@ class ContactListsClientTest extends TestCase
     public function test_list_contact_lists(): void
     {
         $responseData = [
-            'data' => [
-                ['id' => 1, 'name' => 'List 1'],
-                ['id' => 2, 'name' => 'List 2'],
-            ],
-            'meta' => ['total' => 2],
+            ['id' => 1, 'name' => 'List 1'],
+            ['id' => 2, 'name' => 'List 2'],
         ];
+
+        $response = new Response(
+            replyCode: 0,
+            replyText: 'OK',
+            data: $responseData,
+            errors: []
+        );
 
         $this->httpClient
             ->expects($this->once())
             ->method('get')
             ->with('contactlist', [])
-            ->willReturn($responseData);
+            ->willReturn($response);
 
         $result = $this->client->list();
 
@@ -101,11 +117,18 @@ class ContactListsClientTest extends TestCase
 
     public function test_list_contact_lists_with_filters(): void
     {
+        $response = new Response(
+            replyCode: 0,
+            replyText: 'OK',
+            data: [],
+            errors: []
+        );
+
         $this->httpClient
             ->expects($this->once())
             ->method('get')
             ->with('contactlist')
-            ->willReturn(['data' => []]);
+            ->willReturn($response);
 
         $result = $this->client->list();
 
@@ -115,11 +138,18 @@ class ContactListsClientTest extends TestCase
 
     public function test_delete_contact_list(): void
     {
+        $response = new Response(
+            replyCode: 0,
+            replyText: 'OK',
+            data: null,
+            errors: []
+        );
+
         $this->httpClient
             ->expects($this->once())
             ->method('delete')
             ->with('contactlist/1/deletelist')
-            ->willReturn([]);
+            ->willReturn($response);
 
         $result = $this->client->delete(1);
 

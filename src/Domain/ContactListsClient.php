@@ -33,11 +33,11 @@ class ContactListsClient
     {
         $response = $this->httpClient->post(self::ENDPOINT, $request->toArray());
 
-        if (! isset($response['data'])) {
+        if ($response->data === null) {
             throw new ApiException('Invalid response format: missing data field');
         }
 
-        return CreateContactListResponse::fromArray($response['data']);
+        return CreateContactListResponse::fromArray($response->data);
     }
 
     /**
@@ -52,7 +52,11 @@ class ContactListsClient
     {
         $response = $this->httpClient->get(self::ENDPOINT);
 
-        return ContactListCollection::fromArray($response);
+        return ContactListCollection::fromArray([
+            'data' => $response->data,
+            'replyCode' => $response->replyCode,
+            'replyText' => $response->replyText,
+        ]);
     }
 
     /**

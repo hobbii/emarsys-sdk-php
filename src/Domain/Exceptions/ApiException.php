@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\Exceptions;
 
+use Exception;
 use GuzzleHttp\Exception\RequestException;
 
 /**
@@ -39,23 +40,39 @@ class ApiException extends EmarsysException
 
     public function withMessage(string $message): self
     {
-        $clone = clone $this;
-        $clone->message = $message;
-        return $clone;
+        return new self(
+            message: $message,
+            code: $this->code,
+            uri: $this->uri,
+            httpStatusCode: $this->httpStatusCode,
+            responseBody: $this->responseBody,
+            previous: $this->getPrevious()
+        );
     }
 
-    public static function fromRequestException(RequestException $exception): self
+    public static function fromException(Exception $exception): self
     {
-        $response = $exception->getResponse();
-        $uri = (string) $exception->getRequest()->getUri();
-        $statusCode = $response ? $response->getStatusCode() : null;
-        $body = $response?->getBody()->getContents();
+        if ($exception instanceof RequestException) {
+            $response = $exception->getResponse();
+            $uri = (string) $exception->getRequest()->getUri();
+            $statusCode = $response ? $response->getStatusCode() : null;
+            $body = $response?->getBody()->getContents();
+
+            return new self(
+                message: $exception->getMessage(),
+                uri: $uri,
+                httpStatusCode: $statusCode,
+                responseBody: $body,
+                previous: $exception
+            );
+        }
+
+        if ($exception instanceof self) {
+            return $exception;
+        }
 
         return new self(
             message: $exception->getMessage(),
-            uri: $uri,
-            httpStatusCode: $statusCode,
-            responseBody: $body,
             previous: $exception
         );
     }

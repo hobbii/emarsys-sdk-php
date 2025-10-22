@@ -11,7 +11,6 @@ use GuzzleHttp\Exception\ServerException;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Base HTTP client for Emarsys API communication.
@@ -26,7 +25,7 @@ class HttpClient
      */
     private const BASE_URL = 'https://api.emarsys.net/api/v3/';
 
-    private const OAUTH2_TOKEN_URL = 'https://auth.emarsys.net/oauth2/token';
+    private const OAUTH2_TOKEN_URL = 'https://auth.emarsys.net/oauth2/token/';
 
     private readonly GuzzleClient $client;
 
@@ -37,9 +36,10 @@ class HttpClient
     public function __construct(
         private readonly string $clientId,
         private readonly string $clientSecret,
-        ?string $baseUrl = null
+        ?string $baseUrl = null,
+        ?GuzzleClient $client = null
     ) {
-        $this->client = new GuzzleClient([
+        $this->client = $client ?? new GuzzleClient([
             'base_uri' => $baseUrl ?? self::BASE_URL,
             'timeout' => 30,
             'headers' => [
@@ -53,12 +53,11 @@ class HttpClient
      * Make a GET request to the API.
      *
      * @param  array<string, mixed>  $query
-     * @return array<string, mixed>
      *
      * @throws ApiException
      * @throws AuthenticationException
      */
-    public function get(string $endpoint, array $query = []): array
+    public function get(string $endpoint, array $query = []): Response
     {
         return $this->request('GET', $endpoint, [
             'query' => $query,
@@ -69,12 +68,11 @@ class HttpClient
      * Make a POST request to the API.
      *
      * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
      *
      * @throws ApiException
      * @throws AuthenticationException
      */
-    public function post(string $endpoint, array $data = []): array
+    public function post(string $endpoint, array $data = []): Response
     {
         return $this->request('POST', $endpoint, [
             'json' => $data,
@@ -85,12 +83,11 @@ class HttpClient
      * Make a PUT request to the API.
      *
      * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
      *
      * @throws ApiException
      * @throws AuthenticationException
      */
-    public function put(string $endpoint, array $data = []): array
+    public function put(string $endpoint, array $data = []): Response
     {
         return $this->request('PUT', $endpoint, [
             'json' => $data,
@@ -100,26 +97,36 @@ class HttpClient
     /**
      * Make a DELETE request to the API.
      *
-     * @return array<string, mixed>
-     *
      * @throws ApiException
      * @throws AuthenticationException
      */
-    public function delete(string $endpoint): array
+    public function delete(string $endpoint): Response
     {
         return $this->request('DELETE', $endpoint);
     }
 
-    /**
-     * Make an authenticated request to the API.
+        /**
+     * Make a request to the API with OAuth token refresh handling.
      *
      * @param  array<string, mixed>  $options
-     * @return array<string, mixed>
      *
      * @throws ApiException
      * @throws AuthenticationException
      */
     private function request(string $method, string $endpoint, array $options = []): Response
+    {
+        return $this->makeRequest($method, $endpoint, $options);
+    }
+
+    /**
+     * Make an authenticated request to the API with retry logic.
+     *
+     * @param  array<string, mixed>  $options
+     *
+     * @throws ApiException
+     * @throws AuthenticationException
+     */
+    private function makeRequest(string $method, string $endpoint, array $options = [], bool $isRetry = false): Response
     {
         // Ensure we have a valid access token
         $this->ensureValidAccessToken();
@@ -133,11 +140,21 @@ class HttpClient
 
             return Response::fromPsrResponse($response);
         } catch (ClientException $e) {
+            // Handle 401 Unauthorized - token might have expired
+            if ($e->getResponse()->getStatusCode() === 401 && !$isRetry) {
+                // Clear the current token and refresh
+                $this->accessToken = null;
+                $this->tokenExpiresAt = null;
+
+                // Retry the request once with a fresh token
+                return $this->makeRequest($method, $endpoint, $options, true);
+            }
+
             $this->handleClientException($e);
         } catch (ServerException $e) {
-            throw ApiException::fromRequestException($e)->withMessage('Server error occurred');
+            throw ApiException::fromException($e)->withMessage('Server error occurred');
         } catch (RequestException $e) {
-            throw ApiException::fromRequestException($e)->withMessage('Request failed: '.$e->getMessage());
+            throw ApiException::fromException($e)->withMessage('Request failed: '.$e->getMessage());
         }
     }
 
@@ -165,7 +182,6 @@ class HttpClient
     /**
      * Refresh the access token using OAuth 2.0 client credentials flow.
      *
-     * @throws ApiException
      * @throws AuthenticationException
      */
     private function refreshAccessToken(): void
@@ -183,21 +199,25 @@ class HttpClient
             ]);
 
             $emarsysResponse = Response::fromPsrResponse($response);
+            $oauthData = $emarsysResponse->data;
 
-            if (! isset($emarsysResponse->data['access_token'])) {
+            if (! isset($oauthData['access_token'])) {
                 throw new AuthenticationException('Invalid OAuth response: missing access_token');
             }
 
-            $this->accessToken = $emarsysResponse->data['access_token'];
-            $expiresIn = $emarsysResponse->data['expires_in'] ?? 3600; // Default to 1 hour
+            $this->accessToken = $oauthData['access_token'];
+            $expiresIn = $oauthData['expires_in'] ?? 3600; // Default to 1 hour
             $this->tokenExpiresAt = time() + $expiresIn - 60; // Refresh 1 minute early
 
         } catch (ClientException $e) {
-            throw AuthenticationException::fromRequestException($e)
+            throw AuthenticationException::fromException($e)
                 ->withMessage('OAuth authentication failed');
         } catch (RequestException $e) {
-            throw AuthenticationException::fromRequestException($e)
+            throw AuthenticationException::fromException($e)
                 ->withMessage('OAuth request failed: '.$e->getMessage());
+        } catch (ApiException $e) {
+            throw AuthenticationException::fromException($e)
+                ->withMessage('Invalid OAuth response format: '.$e->getMessage());
         }
     }
 
@@ -214,16 +234,6 @@ class HttpClient
     }
 
     /**
-     * Parse the response body.
-     *
-     * @throws ApiException
-     */
-    private function parseResponse(ResponseInterface $response): Response
-    {
-        return Response::fromPsrResponse($response);
-    }
-
-    /**
      * Handle client exceptions (4xx errors).
      *
      * @throws ApiException
@@ -233,18 +243,15 @@ class HttpClient
     {
         $response = $e->getResponse();
         $statusCode = $response->getStatusCode();
-        $body = $response->getBody()->getContents();
 
         if ($statusCode === 401) {
-            throw AuthenticationException::fromRequestException($e)->withMessage('Authentication failed');
+            throw AuthenticationException::fromException($e)->withMessage('Authentication failed');
         }
 
         if ($statusCode === 403) {
-            throw ApiException::fromRequestException($e)->withMessage('Access forbidden - insufficient permissions for this endpoint');
+            throw ApiException::fromException($e)->withMessage('Access forbidden - insufficient permissions for this endpoint');
         }
 
-        throw ApiException::fromRequestException($e)->withMessage(
-            $body['replyText'] ?? 'Client error occurred'
-        );
+        throw ApiException::fromException($e)->withMessage('Client error occurred');
     }
 }
