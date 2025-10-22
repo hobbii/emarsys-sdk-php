@@ -69,16 +69,16 @@ The SDK uses OAuth 2.0 Client Credentials flow for authentication. The access to
 #### Create a Contact List
 
 ```php
-use Hobbii\Emarsys\DTO\CreateContactListRequest;
+use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 
-$request = new CreateContactListRequest(
+$createData = new CreateContactList(
     name: 'Newsletter Subscribers',
     description: 'List of users subscribed to our newsletter',
     type: 'static'
 );
 
 try {
-    $contactList = $client->contactLists()->create($request);
+    $contactList = $client->contactLists()->create($createData);
 
     echo "Created contact list: {$contactList->name} (ID: {$contactList->id})";
 } catch (\Hobbii\Emarsys\Domain\Exceptions\AuthenticationException $e) {
