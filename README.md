@@ -74,7 +74,6 @@ use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 $createData = new CreateContactList(
     name: 'Newsletter Subscribers',
     description: 'List of users subscribed to our newsletter',
-    type: 'static'
 );
 
 try {
@@ -94,7 +93,7 @@ try {
 try {
     $collection = $client->contactLists()->list();
 
-    foreach ($collection->getContactLists() as $contactList) {
+    foreach ($collection->items as $contactList) {
         echo "ID: {$contactList->id}, Name: {$contactList->name}\n";
     }
 
@@ -162,15 +161,12 @@ use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 use Hobbii\Emarsys\Domain\Exceptions\EmarsysException;
 
 try {
-    $contactList = $client->contactLists()->get(123);
+    $contactLists = $client->contactLists()->list();
 } catch (AuthenticationException $e) {
     echo "OAuth authentication failed: {$e->getMessage()}";
-    echo "HTTP Status: {$e->getHttpStatusCode()}";
     echo "Please check your client_id and client_secret.";
 } catch (ApiException $e) {
     echo "API error: {$e->getMessage()}";
-    echo "HTTP Status: {$e->getHttpStatusCode()}";
-    print_r($e->getResponseBody());
 } catch (EmarsysException $e) {
     echo "General Emarsys error: {$e->getMessage()}";
 }
@@ -179,26 +175,6 @@ try {
 ## Data Transfer Objects (DTOs)
 
 The SDK uses type-safe DTOs for all data exchange:
-
-### ContactList
-
-- `id` (int) - Contact list ID
-- `name` (string) - Contact list name
-- `description` (?string) - Optional description
-- `created` (?string) - Creation timestamp
-- `type` (?string) - List type (e.g., 'static', 'dynamic')
-- `count` (?int) - Number of contacts in the list
-
-### CreateContactListRequest
-
-- `name` (string) - Contact list name
-- `description` (?string) - Optional description
-- `type` (?string) - Optional list type
-
-### ContactListCollection
-
-- `contactLists` (ContactList[]) - Array of contact lists
-- `meta` (?array) - Optional metadata from API response
 
 ## Testing
 
@@ -270,7 +246,9 @@ The integration test performs these operations:
 
 **Note**: The integration test creates and deletes a test contact list but doesn't affect your existing data.
 
-See `tests/Integration/README.md` for more details.### Code Quality
+See `tests/Integration/README.md` for more details.
+
+### Code Quality
 
 The project uses several tools to ensure code quality:
 
