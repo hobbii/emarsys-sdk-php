@@ -77,18 +77,14 @@ try {
         echo "\nDone.\n";
     }
 } catch (AuthenticationException $e) {
-    echo "❌ Authentication failed: {$e->getMessage()}\n";
+    echo "❌ Authentication failed\n";
     echo "💡 Please check your client_id and client_secret.\n";
-    echo "Stack Trace:\n" . $e->getTraceAsString();
+    echoExceptionDetails($e);
 } catch (ApiException $e) {
-    echo "❌ API error: {$e->getMessage()}\n";
-    echo "Request URI: {$e->getUri()}\n";
-    echo "HTTP Status: {$e->getHttpStatusCode()}\n";
-    echo "Response Body:\n" . $e->getResponseBody() . "\n";
-    echo "Stack Trace:\n" . $e->getTraceAsString();
+    echo "❌ API error\n";
+    echoExceptionDetails($e);
 } catch (Throwable $e) {
-    echo "❌ Unexpected error: {$e->getMessage()}\n";
-    echo "Stack Trace:\n" . $e->getTraceAsString();
+    echoExceptionDetails($e);
 }
 
 function getTests(string $testName): array {
@@ -117,4 +113,16 @@ function echoUsageInfo(): void {
     echo "  - contact-lists : Full contact lists CRUD test\n";
     echo "  - all           : Run all integration tests (default)\n\n";
     echo "Usage: php run-integration-tests.php [test-name]\n\n";
+}
+
+function echoExceptionDetails(Throwable $e): void {
+    echo "❌ Error: {$e->getMessage()}\n";
+
+    if ($e instanceof ApiException) {
+        echo "Request URI: {$e->getUri()}\n";
+        echo "HTTP Status: {$e->getHttpStatusCode()}\n";
+        echo "Response Body:\n" . $e->getResponseBody() . "\n";
+    }
+
+    echo "Stack Trace:\n" . $e->getTraceAsString();
 }
