@@ -51,15 +51,10 @@ readonly class Response
             $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
             if (! is_array($data)) {
-                throw new JsonException('Expected an array. Got: ' . gettype($data));
+                throw new JsonException('Expected an array. Got: '.gettype($data));
             }
         } catch (JsonException $e) {
-            throw new ApiException(
-                'Invalid JSON response',
-                httpStatusCode: $response->getStatusCode(),
-                responseBody: $body,
-                previous: $e
-            );
+            throw new ApiException('Invalid JSON response', previous: $e);
         }
 
         return self::fromArray($data);

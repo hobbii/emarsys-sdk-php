@@ -9,7 +9,8 @@ use Hobbii\Emarsys\Domain\DTOs\CreateContactListRequest;
 
 class ContactListsIntegrationTest
 {
-    public function run() {
+    public function run()
+    {
         global $clientId, $clientSecret, $baseUrl;
 
         echo "1️⃣  Initializing Emarsys client...\n";
@@ -39,7 +40,7 @@ class ContactListsIntegrationTest
         $createdListResponse = $client->contactLists()->create($createRequest);
         echo "   ✅ Successfully created contact list\n";
         echo "   📝 ID: {$createdListResponse->id}\n";
-        echo "   📝 Errors: ".(empty($createdListResponse->errors) ? 'None' : implode(', ', $createdListResponse->errors))."\n\n";
+        echo '   📝 Errors: '.(empty($createdListResponse->errors) ? 'None' : implode(', ', $createdListResponse->errors))."\n\n";
 
         echo "4️⃣  Testing: Verify new list appears in list...\n";
         $updatedLists = $client->contactLists()->list();

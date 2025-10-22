@@ -32,7 +32,7 @@ class HttpClientTest extends TestCase
         // Use empty base_uri to ensure absolute URLs work
         $guzzleClient = new GuzzleClient([
             'handler' => $handlerStack,
-            'base_uri' => ''
+            'base_uri' => '',
         ]);
 
         return new HttpClient('test-client-id', 'test-client-secret', null, $guzzleClient);
@@ -45,15 +45,15 @@ class HttpClientTest extends TestCase
             new GuzzleResponse(200, [], json_encode([
                 'access_token' => 'test-token',
                 'token_type' => 'Bearer',
-                'expires_in' => 3600
+                'expires_in' => 3600,
             ])),
             // API request succeeds
             new GuzzleResponse(200, [], json_encode([
                 'replyCode' => 0,
                 'replyText' => 'OK',
                 'data' => ['test' => 'data'],
-                'errors' => []
-            ]))
+                'errors' => [],
+            ])),
         ];
 
         $client = $this->createHttpClientWithMockHandler($responses);
@@ -78,9 +78,9 @@ class HttpClientTest extends TestCase
                 new Request('POST', 'https://auth.emarsys.net/oauth2/token/'),
                 new GuzzleResponse(401, [], json_encode([
                     'error' => 'invalid_client',
-                    'error_description' => 'Client authentication failed'
+                    'error_description' => 'Client authentication failed',
                 ]))
-            )
+            ),
         ];
 
         $client = $this->createHttpClientWithMockHandler($responses);
@@ -98,15 +98,15 @@ class HttpClientTest extends TestCase
             new GuzzleResponse(200, [], json_encode([
                 'access_token' => 'fresh-token',
                 'token_type' => 'Bearer',
-                'expires_in' => 3600
+                'expires_in' => 3600,
             ])),
             // API request succeeds
             new GuzzleResponse(200, [], json_encode([
                 'replyCode' => 0,
                 'replyText' => 'OK',
                 'data' => ['success' => true],
-                'errors' => []
-            ]))
+                'errors' => [],
+            ])),
         ];
 
         $client = $this->createHttpClientWithMockHandler($responses);

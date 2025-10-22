@@ -33,7 +33,7 @@ if (file_exists(__DIR__.'/.env')) {
         [$key, $value] = explode('=', $line, 2);
         $key = trim($key);
         $value = trim($value, " \t\n\r\0\x0B\"'"); // Remove quotes and whitespace
-        if (!empty($key) && !isset($_ENV[$key])) {
+        if (! empty($key) && ! isset($_ENV[$key])) {
             $_ENV[$key] = $value;
             putenv("$key=$value");
         }
@@ -72,7 +72,7 @@ try {
     $tests = getTests($testName);
 
     foreach ($tests as $test) {
-        echo "Running Test: " . get_class($test) . "...\n\n";
+        echo 'Running Test: '.get_class($test)."...\n\n";
         $test->run();
         echo "\nDone.\n";
     }
@@ -87,7 +87,8 @@ try {
     echoExceptionDetails($e);
 }
 
-function getTests(string $testName): array {
+function getTests(string $testName): array
+{
     global $availableTests;
 
     if ($testName === 'all') {
@@ -104,10 +105,11 @@ function getTests(string $testName): array {
         $test = $availableTests[$testName];
     }
 
-    return is_array($test) ? array_map(fn($t) => new $t(), $test) : [new $test()];
+    return is_array($test) ? array_map(fn ($t) => new $t, $test) : [new $test];
 }
 
-function echoUsageInfo(): void {
+function echoUsageInfo(): void
+{
     echo "Available tests:\n";
     echo "  - quick         : Quick connection test (read-only)\n";
     echo "  - contact-lists : Full contact lists CRUD test\n";
@@ -115,9 +117,10 @@ function echoUsageInfo(): void {
     echo "Usage: php run-integration-tests.php [test-name]\n\n";
 }
 
-function echoExceptionDetails(Throwable $e): void {
+function echoExceptionDetails(Throwable $e): void
+{
     echo "❌ Error: {$e->getMessage()}\n";
-    echo "Stack Trace:\n" . $e->getTraceAsString();
+    echo "Stack Trace:\n".$e->getTraceAsString();
     echo "\n";
 
     if ($e->getPrevious() !== null) {

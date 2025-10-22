@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain;
 
-use Hobbii\Emarsys\Domain\Exceptions\ApiException;
-use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 use Hobbii\Emarsys\Domain\DTOs\ContactListCollection;
 use Hobbii\Emarsys\Domain\DTOs\CreateContactListRequest;
 use Hobbii\Emarsys\Domain\DTOs\CreateContactListResponse;
+use Hobbii\Emarsys\Domain\Exceptions\ApiException;
+use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 
 /**
  * Client for managing Emarsys Contact Lists.

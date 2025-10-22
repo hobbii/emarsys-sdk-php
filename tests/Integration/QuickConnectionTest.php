@@ -8,7 +8,8 @@ use Hobbii\Emarsys\Client;
 
 class QuickConnectionTest
 {
-    public function run(): void {
+    public function run(): void
+    {
         global $clientId, $clientSecret;
 
         echo "Testing Emarsys SDK...\n\n";

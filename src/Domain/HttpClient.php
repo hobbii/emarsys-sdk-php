@@ -10,8 +10,8 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
-use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use Hobbii\Emarsys\Domain\ValueObjects\OauthData;
+use Hobbii\Emarsys\Domain\ValueObjects\Response;
 
 /**
  * Base HTTP client for Emarsys API communication.
@@ -109,7 +109,7 @@ class HttpClient
         return $this->request('DELETE', $endpoint);
     }
 
-        /**
+    /**
      * Make a request to the API with OAuth token refresh handling.
      *
      * @param  array<string, mixed>  $options
@@ -144,7 +144,7 @@ class HttpClient
             return Response::fromPsrResponse($response);
         } catch (ClientException $e) {
             // Handle 401 Unauthorized - token might have expired
-            if ($e->getResponse()->getStatusCode() === 401 && !$isRetry) {
+            if ($e->getResponse()->getStatusCode() === 401 && ! $isRetry) {
                 $this->resetOauthData();
 
                 return $this->makeRequest($method, $endpoint, $options, true);

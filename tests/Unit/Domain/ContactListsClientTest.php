@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Tests\Unit\Domain;
 
 use Hobbii\Emarsys\Domain\ContactListsClient;
-use Hobbii\Emarsys\Domain\Exceptions\ApiException;
-use Hobbii\Emarsys\Domain\HttpClient;
-use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use Hobbii\Emarsys\Domain\DTOs\ContactListCollection;
 use Hobbii\Emarsys\Domain\DTOs\CreateContactListRequest;
 use Hobbii\Emarsys\Domain\DTOs\CreateContactListResponse;
+use Hobbii\Emarsys\Domain\Exceptions\ApiException;
+use Hobbii\Emarsys\Domain\HttpClient;
+use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
