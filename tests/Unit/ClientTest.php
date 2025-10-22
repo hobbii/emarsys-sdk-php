@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Tests\Unit;
 
 use Hobbii\Emarsys\Client;
-use Hobbii\Emarsys\Domain\ContactListsClient;
+use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
 use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase

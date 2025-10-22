@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Tests\Integration;
 
 use Hobbii\Emarsys\Client;
-use Hobbii\Emarsys\Domain\DTOs\CreateContactListRequest;
+use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 
 class ContactListsIntegrationTest
 {
@@ -32,12 +32,12 @@ class ContactListsIntegrationTest
 
         echo "3️⃣  Testing: Create a test contact list...\n";
         $testListName = 'SDK Test List '.date('Y-m-d H:i:s');
-        $createRequest = new CreateContactListRequest(
+        $createData = new CreateContactList(
             name: $testListName,
             description: 'Test contact list created by Emarsys SDK integration test',
         );
 
-        $createdListResponse = $client->contactLists()->create($createRequest);
+        $createdListResponse = $client->contactLists()->create($createData);
         echo "   ✅ Successfully created contact list\n";
         echo "   📝 ID: {$createdListResponse->id}\n";
         echo '   📝 Errors: '.(empty($createdListResponse->errors) ? 'None' : implode(', ', $createdListResponse->errors))."\n\n";

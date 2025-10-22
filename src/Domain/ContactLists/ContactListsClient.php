@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Domain;
+namespace Hobbii\Emarsys\Domain\ContactLists;
 
-use Hobbii\Emarsys\Domain\DTOs\ContactListCollection;
-use Hobbii\Emarsys\Domain\DTOs\CreateContactListRequest;
-use Hobbii\Emarsys\Domain\DTOs\CreateContactListResponse;
+use Hobbii\Emarsys\Domain\ContactLists\DTOs\ContactListCollection;
+use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
+use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactListResponse;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
+use Hobbii\Emarsys\Domain\HttpClient;
 
 /**
- * Client for managing Emarsys Contact Lists.
+ * Service for managing Emarsys Contact Lists.
  */
 class ContactListsClient
 {
@@ -29,9 +30,9 @@ class ContactListsClient
      *
      * @see https://dev.emarsys.com/docs/core-api-reference/enmevkj1fi016-create-a-contact-list
      */
-    public function create(CreateContactListRequest $request): CreateContactListResponse
+    public function create(CreateContactList $data): CreateContactListResponse
     {
-        $response = $this->httpClient->post(self::ENDPOINT, $request->toArray());
+        $response = $this->httpClient->post(self::ENDPOINT, $data->toArray());
 
         if ($response->data === null) {
             throw new ApiException('Invalid response format: missing data field');

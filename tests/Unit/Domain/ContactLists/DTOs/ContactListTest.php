@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Tests\Unit\DTO;
+namespace Hobbii\Emarsys\Tests\Unit\Domain\ContactLists\DTOs;
 
-use Hobbii\Emarsys\Domain\DTOs\ContactList;
+use Hobbii\Emarsys\Domain\ContactLists\DTOs\ContactList;
 use PHPUnit\Framework\TestCase;
 
 class ContactListTest extends TestCase

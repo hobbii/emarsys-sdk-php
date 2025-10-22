@@ -2,49 +2,49 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Tests\Unit\DTO;
+namespace Hobbii\Emarsys\Tests\Unit\Domain\ContactLists\DTOs;
 
-use Hobbii\Emarsys\Domain\DTOs\CreateContactListRequest;
+use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 use PHPUnit\Framework\TestCase;
 
-class CreateContactListRequestTest extends TestCase
+class CreateContactListTest extends TestCase
 {
     public function test_can_be_created_with_required_fields(): void
     {
-        $request = new CreateContactListRequest(
+        $createData = new CreateContactList(
             name: 'Test List',
             description: 'A test contact list',
         );
 
-        $this->assertSame('Test List', $request->name);
-        $this->assertSame('A test contact list', $request->description);
-        $this->assertSame('email', $request->keyId);
-        $this->assertEmpty($request->externalIds);
+        $this->assertSame('Test List', $createData->name);
+        $this->assertSame('A test contact list', $createData->description);
+        $this->assertSame('email', $createData->keyId);
+        $this->assertEmpty($createData->externalIds);
     }
 
     public function test_can_be_created_with_all_fields(): void
     {
-        $request = new CreateContactListRequest(
+        $createData = new CreateContactList(
             name: 'Test List',
             description: 'A test contact list',
             keyId: '3',
             externalIds: [1, 2]
         );
 
-        $this->assertSame('Test List', $request->name);
-        $this->assertSame('A test contact list', $request->description);
-        $this->assertSame('3', $request->keyId);
-        $this->assertSame([1, 2], $request->externalIds);
+        $this->assertSame('Test List', $createData->name);
+        $this->assertSame('A test contact list', $createData->description);
+        $this->assertSame('3', $createData->keyId);
+        $this->assertSame([1, 2], $createData->externalIds);
     }
 
     public function test_can_be_converted_to_array(): void
     {
-        $request = new CreateContactListRequest(
+        $createData = new CreateContactList(
             name: 'Test List',
             description: 'A test contact list',
         );
 
-        $array = $request->toArray();
+        $array = $createData->toArray();
 
         $expected = [
             'name' => 'Test List',

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Tests\Unit\Domain;
+namespace Hobbii\Emarsys\Tests\Unit\Domain\ContactLists;
 
-use Hobbii\Emarsys\Domain\ContactListsClient;
-use Hobbii\Emarsys\Domain\DTOs\ContactListCollection;
-use Hobbii\Emarsys\Domain\DTOs\CreateContactListRequest;
-use Hobbii\Emarsys\Domain\DTOs\CreateContactListResponse;
+use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
+use Hobbii\Emarsys\Domain\ContactLists\DTOs\ContactListCollection;
+use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
+use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactListResponse;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\HttpClient;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
@@ -28,7 +28,7 @@ class ContactListsClientTest extends TestCase
 
     public function test_create_contact_list(): void
     {
-        $request = new CreateContactListRequest(
+        $request = new CreateContactList(
             name: 'Test List',
             description: 'A test list'
         );
@@ -60,7 +60,7 @@ class ContactListsClientTest extends TestCase
 
     public function test_create_contact_list_throws_exception_on_invalid_response(): void
     {
-        $request = new CreateContactListRequest(
+        $request = new CreateContactList(
             name: 'Test List',
             description: 'A test list'
         );

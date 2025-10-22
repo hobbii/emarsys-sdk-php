@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Domain\DTOs;
+namespace Hobbii\Emarsys\Domain\ContactLists\DTOs;
 
 /**
  * Request DTO for creating a contact list.
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/enmevkj1fi016-create-a-contact-list
  */
-readonly class CreateContactListRequest
+readonly class CreateContactList
 {
     public function __construct(
         public string $name,

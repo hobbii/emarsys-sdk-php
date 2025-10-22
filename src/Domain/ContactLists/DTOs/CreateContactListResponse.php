@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Domain\DTOs;
+namespace Hobbii\Emarsys\Domain\ContactLists\DTOs;
 
 readonly class CreateContactListResponse
 {
