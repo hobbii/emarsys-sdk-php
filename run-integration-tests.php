@@ -79,14 +79,16 @@ try {
 } catch (AuthenticationException $e) {
     echo "❌ Authentication failed: {$e->getMessage()}\n";
     echo "💡 Please check your client_id and client_secret.\n";
+    echo "Stack Trace:\n" . $e->getTraceAsString();
 } catch (ApiException $e) {
     echo "❌ API error: {$e->getMessage()}\n";
+    echo "Request URI: {$e->getUri()}\n";
     echo "HTTP Status: {$e->getHttpStatusCode()}\n";
     echo "Response Body:\n" . $e->getResponseBody() . "\n";
     echo "Stack Trace:\n" . $e->getTraceAsString();
 } catch (Throwable $e) {
     echo "❌ Unexpected error: {$e->getMessage()}\n";
-    echo $e->getTraceAsString();
+    echo "Stack Trace:\n" . $e->getTraceAsString();
 }
 
 function getTests(string $testName): array {
