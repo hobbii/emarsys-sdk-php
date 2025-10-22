@@ -37,6 +37,13 @@
             "@format",
             "@analyse",
             "@test"
+        ],
+        "setup-git-hooks": [
+            "git config core.hooksPath .githooks",
+            "find .githooks -type f -exec chmod +x {} \\;"
+        ],
+        "post-install-cmd": [
+            "@setup-git-hooks"
         ]
     },
     "config": {

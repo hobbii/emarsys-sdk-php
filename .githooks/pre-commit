@@ -1,0 +1,10 @@
+#!/bin/sh
+# Run code formatter before commit
+
+echo "Running code formatter (composer format)..."
+composer format
+
+# Add any new formatting changes to the commit automatically
+git add -u
+
+echo "✅ Code formatted and staged."
