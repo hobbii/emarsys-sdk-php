@@ -125,4 +125,10 @@ function echoExceptionDetails(Throwable $e): void {
     }
 
     echo "Stack Trace:\n" . $e->getTraceAsString();
+    echo "\n";
+
+    if ($e->getPrevious() !== null) {
+        echo "\nCaused by:\n";
+        echoExceptionDetails($e->getPrevious());
+    }
 }
