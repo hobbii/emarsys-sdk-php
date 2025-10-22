@@ -11,6 +11,7 @@ use GuzzleHttp\Exception\ServerException;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
+use Hobbii\Emarsys\Domain\ValueObjects\OauthData;
 
 /**
  * Base HTTP client for Emarsys API communication.
@@ -25,13 +26,16 @@ class HttpClient
      */
     private const BASE_URL = 'https://api.emarsys.net/api/v3/';
 
-    private const OAUTH2_TOKEN_URL = 'https://auth.emarsys.net/oauth2/token/';
+    /**
+     * Oauth2 token endpoint
+     *
+     * Important: it must not end with `/` at the end
+     */
+    private const OAUTH2_TOKEN_URL = 'https://auth.emarsys.net/oauth2/token';
 
     private readonly GuzzleClient $client;
 
-    private ?string $accessToken = null;
-
-    private ?int $tokenExpiresAt = null;
+    private ?OauthData $oauthData = null;
 
     public function __construct(
         private readonly string $clientId,
@@ -128,7 +132,7 @@ class HttpClient
      */
     private function makeRequest(string $method, string $endpoint, array $options = [], bool $isRetry = false): Response
     {
-        $this->ensureValidAccessToken();
+        $this->ensureValidOauthData();
 
         $options = array_merge_recursive($options, [
             'headers' => $this->getAuthHeaders(),
@@ -141,39 +145,34 @@ class HttpClient
         } catch (ClientException $e) {
             // Handle 401 Unauthorized - token might have expired
             if ($e->getResponse()->getStatusCode() === 401 && !$isRetry) {
-                $this->accessToken = null;
-                $this->tokenExpiresAt = null;
+                $this->resetOauthData();
 
                 return $this->makeRequest($method, $endpoint, $options, true);
             }
 
             $this->handleClientException($e);
         } catch (ServerException $e) {
-            throw ApiException::fromException($e)->withMessage('Server error occurred');
+            throw new ApiException('Server error occurred', previous: $e);
         } catch (RequestException $e) {
-            throw ApiException::fromException($e)->withMessage('Request failed: '.$e->getMessage());
+            throw new ApiException('Request failed: '.$e->getMessage(), previous: $e);
         }
     }
 
     /**
-     * Ensure we have a valid access token, refresh if necessary.
+     * Ensure we have a valid oauth data, refresh if necessary.
      *
-     * @throws ApiException
      * @throws AuthenticationException
      */
-    private function ensureValidAccessToken(): void
+    private function ensureValidOauthData(): void
     {
-        if ($this->accessToken === null || $this->isTokenExpired()) {
-            $this->refreshAccessToken();
+        if ($this->oauthData === null || $this->oauthData->isExpired()) {
+            $this->oauthData = $this->refreshOauthData();
         }
     }
 
-    /**
-     * Check if the current token is expired.
-     */
-    private function isTokenExpired(): bool
+    private function resetOauthData(): void
     {
-        return $this->tokenExpiresAt === null || time() >= $this->tokenExpiresAt;
+        $this->oauthData = null;
     }
 
     /**
@@ -181,7 +180,7 @@ class HttpClient
      *
      * @throws AuthenticationException
      */
-    private function refreshAccessToken(): void
+    private function refreshOauthData(): OauthData
     {
         try {
             $response = $this->client->request('POST', self::OAUTH2_TOKEN_URL, [
@@ -195,26 +194,14 @@ class HttpClient
                 ],
             ]);
 
-            $emarsysResponse = Response::fromPsrResponse($response);
-            $oauthData = $emarsysResponse->data;
+            $body = $response->getBody()->getContents();
+            $data = (array) json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
-            if (! isset($oauthData['access_token'])) {
-                throw new AuthenticationException('Invalid OAuth response: missing access_token');
-            }
-
-            $this->accessToken = $oauthData['access_token'];
-            $expiresIn = $oauthData['expires_in'] ?? 3600; // Default to 1 hour
-            $this->tokenExpiresAt = time() + $expiresIn - 60; // Refresh 1 minute early
-
+            return OauthData::fromArray($data);
         } catch (ClientException $e) {
-            throw AuthenticationException::fromException($e)
-                ->withMessage('OAuth authentication failed');
+            throw new AuthenticationException('OAuth authentication failed', previous: $e);
         } catch (RequestException $e) {
-            throw AuthenticationException::fromException($e)
-                ->withMessage('OAuth request failed: '.$e->getMessage());
-        } catch (ApiException $e) {
-            throw AuthenticationException::fromException($e)
-                ->withMessage('Invalid OAuth response format: '.$e->getMessage());
+            throw new AuthenticationException('OAuth request failed', previous: $e);
         }
     }
 
@@ -226,7 +213,7 @@ class HttpClient
     private function getAuthHeaders(): array
     {
         return [
-            'Authorization' => 'Bearer '.$this->accessToken,
+            'Authorization' => 'Bearer '.$this->oauthData?->accessToken,
         ];
     }
 
@@ -242,13 +229,13 @@ class HttpClient
         $statusCode = $response->getStatusCode();
 
         if ($statusCode === 401) {
-            throw AuthenticationException::fromException($e)->withMessage('Authentication failed');
+            throw new AuthenticationException('Authentication failed', previous: $e);
         }
 
         if ($statusCode === 403) {
-            throw ApiException::fromException($e)->withMessage('Access forbidden - insufficient permissions for this endpoint');
+            throw new ApiException('Access forbidden - insufficient permissions for this endpoint', previous: $e);
         }
 
-        throw ApiException::fromException($e)->withMessage('Client error occurred');
+        throw new ApiException('Client error occurred', previous: $e);
     }
 }

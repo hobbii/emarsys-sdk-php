@@ -117,13 +117,6 @@ function echoUsageInfo(): void {
 
 function echoExceptionDetails(Throwable $e): void {
     echo "❌ Error: {$e->getMessage()}\n";
-
-    if ($e instanceof ApiException) {
-        echo "Request URI: {$e->getUri()}\n";
-        echo "HTTP Status: {$e->getHttpStatusCode()}\n";
-        echo "Response Body:\n" . $e->getResponseBody() . "\n";
-    }
-
     echo "Stack Trace:\n" . $e->getTraceAsString();
     echo "\n";
 
