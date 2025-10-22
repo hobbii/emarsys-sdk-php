@@ -128,7 +128,6 @@ class HttpClient
      */
     private function makeRequest(string $method, string $endpoint, array $options = [], bool $isRetry = false): Response
     {
-        // Ensure we have a valid access token
         $this->ensureValidAccessToken();
 
         $options = array_merge_recursive($options, [
@@ -142,11 +141,9 @@ class HttpClient
         } catch (ClientException $e) {
             // Handle 401 Unauthorized - token might have expired
             if ($e->getResponse()->getStatusCode() === 401 && !$isRetry) {
-                // Clear the current token and refresh
                 $this->accessToken = null;
                 $this->tokenExpiresAt = null;
 
-                // Retry the request once with a fresh token
                 return $this->makeRequest($method, $endpoint, $options, true);
             }
 
