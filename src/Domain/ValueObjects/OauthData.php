@@ -32,7 +32,7 @@ readonly class OauthData
 
     public function isExpired(): bool
     {
-        return $this->expiresAt === null || time() >= $this->expiresAt;
+        return time() >= $this->expiresAt;
     }
 
     /**

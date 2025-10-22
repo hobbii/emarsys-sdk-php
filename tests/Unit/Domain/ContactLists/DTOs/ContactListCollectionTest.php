@@ -70,6 +70,7 @@ class ContactListCollectionTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('All items must be instances of ContactList');
 
+        // @phpstan-ignore-next-line
         new ContactListCollection([new ContactList(1, 'List 1'), new \stdClass]);
     }
 }

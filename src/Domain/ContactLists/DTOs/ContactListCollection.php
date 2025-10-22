@@ -33,7 +33,7 @@ readonly class ContactListCollection
     /**
      * Create a ContactListCollection from API response data.
      *
-     * @param  array<string, mixed>  $data
+     * @param  array<int,array<string, mixed>>  $data
      */
     public static function fromArray(array $data): self
     {

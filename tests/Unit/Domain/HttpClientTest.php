@@ -23,6 +23,7 @@ class HttpClientTest extends TestCase
     private function createHttpClientWithMockHandler(array $responses): HttpClient
     {
         $this->requestHistory = [];
+        // @phpstan-ignore-next-line
         $history = Middleware::history($this->requestHistory);
 
         $mock = new MockHandler($responses);
@@ -42,13 +43,13 @@ class HttpClientTest extends TestCase
     {
         $responses = [
             // OAuth token request succeeds
-            new GuzzleResponse(200, [], json_encode([
+            new GuzzleResponse(200, [], (string) json_encode([
                 'access_token' => 'test-token',
                 'token_type' => 'Bearer',
                 'expires_in' => 3600,
             ])),
             // API request succeeds
-            new GuzzleResponse(200, [], json_encode([
+            new GuzzleResponse(200, [], (string) json_encode([
                 'replyCode' => 0,
                 'replyText' => 'OK',
                 'data' => ['test' => 'data'],
@@ -76,7 +77,7 @@ class HttpClientTest extends TestCase
             new ClientException(
                 'Unauthorized',
                 new Request('POST', 'https://auth.emarsys.net/oauth2/token/'),
-                new GuzzleResponse(401, [], json_encode([
+                new GuzzleResponse(401, [], (string) json_encode([
                     'error' => 'invalid_client',
                     'error_description' => 'Client authentication failed',
                 ]))
@@ -95,13 +96,13 @@ class HttpClientTest extends TestCase
     {
         $responses = [
             // OAuth token request
-            new GuzzleResponse(200, [], json_encode([
+            new GuzzleResponse(200, [], (string) json_encode([
                 'access_token' => 'fresh-token',
                 'token_type' => 'Bearer',
                 'expires_in' => 3600,
             ])),
             // API request succeeds
-            new GuzzleResponse(200, [], json_encode([
+            new GuzzleResponse(200, [], (string) json_encode([
                 'replyCode' => 0,
                 'replyText' => 'OK',
                 'data' => ['success' => true],
