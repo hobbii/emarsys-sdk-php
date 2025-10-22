@@ -24,7 +24,7 @@ class ContactListsIntegrationTest
 
         if (! $existingLists->isEmpty()) {
             echo "   📝 Existing lists:\n";
-            foreach ($existingLists->getContactLists() as $list) {
+            foreach ($existingLists->items as $list) {
                 echo "      - ID: {$list->id}, Name: \"{$list->name}\"\n";
             }
         }
@@ -45,7 +45,7 @@ class ContactListsIntegrationTest
         echo "4️⃣  Testing: Verify new list appears in list...\n";
         $updatedLists = $client->contactLists()->list();
         $foundNewList = false;
-        foreach ($updatedLists->getContactLists() as $list) {
+        foreach ($updatedLists->items as $list) {
             if ($list->id === $createdListResponse->id) {
                 $foundNewList = true;
                 break;
@@ -70,7 +70,7 @@ class ContactListsIntegrationTest
         echo "6️⃣  Final verification: Confirm deletion...\n";
         $finalLists = $client->contactLists()->list();
         $deletedListFound = false;
-        foreach ($finalLists->getContactLists() as $list) {
+        foreach ($finalLists->items as $list) {
             if ($list->id === $createdListResponse->id) {
                 $deletedListFound = true;
                 break;

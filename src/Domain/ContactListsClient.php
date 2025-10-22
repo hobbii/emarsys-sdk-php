@@ -52,11 +52,7 @@ class ContactListsClient
     {
         $response = $this->httpClient->get(self::ENDPOINT);
 
-        return ContactListCollection::fromArray([
-            'data' => $response->data,
-            'replyCode' => $response->replyCode,
-            'replyText' => $response->replyText,
-        ]);
+        return ContactListCollection::fromArray($response->data);
     }
 
     /**

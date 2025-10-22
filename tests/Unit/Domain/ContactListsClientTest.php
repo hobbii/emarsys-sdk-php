@@ -108,7 +108,7 @@ class ContactListsClientTest extends TestCase
         $this->assertInstanceOf(ContactListCollection::class, $result);
         $this->assertSame(2, $result->count());
 
-        $contactLists = $result->getContactLists();
+        $contactLists = $result->items;
         $this->assertSame(1, $contactLists[0]->id);
         $this->assertSame('List 1', $contactLists[0]->name);
         $this->assertSame(2, $contactLists[1]->id);
