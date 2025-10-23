@@ -25,12 +25,14 @@ class ContactListsClient
     /**
      * Create a new contact list.
      *
+     * @return int The ID of the created contact list.
+     *
      * @throws ApiException
      * @throws AuthenticationException
      *
      * @see https://dev.emarsys.com/docs/core-api-reference/enmevkj1fi016-create-a-contact-list
      */
-    public function create(CreateContactList $data): CreateContactListResponse
+    public function create(CreateContactList $data): int
     {
         $response = $this->client->post(self::ENDPOINT, $data->toArray());
 
@@ -38,7 +40,9 @@ class ContactListsClient
             throw new ApiException('Invalid response format: missing data field');
         }
 
-        return CreateContactListResponse::from($response->data);
+        $responseObject = CreateContactListResponse::from($response->data);
+
+        return $responseObject->id;
     }
 
     /**

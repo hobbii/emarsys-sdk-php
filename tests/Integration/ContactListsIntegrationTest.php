@@ -37,16 +37,15 @@ class ContactListsIntegrationTest
             description: 'Test contact list created by Emarsys SDK integration test',
         );
 
-        $createdListResponse = $client->contactLists()->create($createData);
+        $contactListId = $client->contactLists()->create($createData);
         echo "   ✅ Successfully created contact list\n";
-        echo "   📝 ID: {$createdListResponse->id}\n";
-        echo '   📝 Errors: '.(empty($createdListResponse->errors) ? 'None' : implode(', ', $createdListResponse->errors))."\n\n";
+        echo "   📝 ID: {$contactListId}\n";
 
         echo "4️⃣  Testing: Verify new list appears in list...\n";
         $updatedLists = $client->contactLists()->list();
         $foundNewList = false;
         foreach ($updatedLists->items as $list) {
-            if ($list->id === $createdListResponse->id) {
+            if ($list->id === $contactListId) {
                 $foundNewList = true;
                 break;
             }
@@ -64,7 +63,7 @@ class ContactListsIntegrationTest
         echo "Warning: For some reason Emarsys API returns 403 Forbidden on delete in sandbox accounts.\n";
         echo "         If you see this message, please verify deletion manually in Emarsys UI.\n";
         echo "\n\n ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ \n\n\n\n ";
-        // $deleteSuccess = $client->contactLists()->delete($createdListResponse->id);
+        // $deleteSuccess = $client->contactLists()->delete($contactListId);
 
         // if ($deleteSuccess) {
         //     echo "   ✅ Successfully deleted test contact list\n";
@@ -75,7 +74,7 @@ class ContactListsIntegrationTest
         $finalLists = $client->contactLists()->list();
         $deletedListFound = false;
         foreach ($finalLists->items as $list) {
-            if ($list->id === $createdListResponse->id) {
+            if ($list->id === $contactListId) {
                 $deletedListFound = true;
                 break;
             }

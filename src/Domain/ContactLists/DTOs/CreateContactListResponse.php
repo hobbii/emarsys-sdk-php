@@ -6,6 +6,9 @@ namespace Hobbii\Emarsys\Domain\ContactLists\DTOs;
 
 class CreateContactListResponse
 {
+    /**
+     * @param  array<int,string>|null  $errors  The details of any contacts not added to the list, expressed as an array that contains the error code and reason
+     */
     public function __construct(
         public int $id,
         public ?array $errors,

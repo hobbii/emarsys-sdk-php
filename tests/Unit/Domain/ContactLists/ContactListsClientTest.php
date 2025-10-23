@@ -8,7 +8,6 @@ use Hobbii\Emarsys\Domain\Client as EmarsysClient;
 use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\ContactListCollection;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
-use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactListResponse;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -52,10 +51,9 @@ class ContactListsClientTest extends TestCase
             ->with('contactlist', $request->toArray())
             ->willReturn($response);
 
-        $result = $this->client->create($request);
+        $contactListId = $this->client->create($request);
 
-        $this->assertInstanceOf(CreateContactListResponse::class, $result);
-        $this->assertSame(1, $result->id);
+        $this->assertSame(1, $contactListId);
     }
 
     public function test_create_contact_list_throws_exception_on_invalid_response(): void
