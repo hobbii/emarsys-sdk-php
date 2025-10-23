@@ -27,4 +27,3 @@ class RateLimitException extends ApiException
         parent::__construct($message, previous: $previous);
     }
 }
-
