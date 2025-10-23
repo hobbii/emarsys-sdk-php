@@ -13,6 +13,9 @@
 - Coverage: **high**
 - Mocks: **use Mockery or PHPUnit built-in mocks**
 - Generate **unit and integration tests** for all classes
+- Use `composer test` to run tests
+- Use `composer analyze` for static analysis (PHPStan)
+- Use `composer format` for code formatting (PHP CS Fixer or Laravel Pint)
 
 ## Documentation
 - Use **PHPDoc for all classes and methods**, but not for trivial getters/setters
