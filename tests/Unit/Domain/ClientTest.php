@@ -11,16 +11,16 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use Hobbii\Emarsys\Domain\Client;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
-use Hobbii\Emarsys\Domain\HttpClient;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use PHPUnit\Framework\TestCase;
 
-class HttpClientTest extends TestCase
+class ClientTest extends TestCase
 {
     private array $requestHistory = [];
 
-    private function createHttpClientWithMockHandler(array $responses): HttpClient
+    private function createClientWithMockHandler(array $responses): Client
     {
         $this->requestHistory = [];
         // @phpstan-ignore-next-line
@@ -36,7 +36,7 @@ class HttpClientTest extends TestCase
             'base_uri' => '',
         ]);
 
-        return new HttpClient('test-client-id', 'test-client-secret', null, $guzzleClient);
+        return new Client('test-client-id', 'test-client-secret', null, $guzzleClient);
     }
 
     public function test_oauth_token_refresh_on_successful_auth(): void
@@ -57,7 +57,7 @@ class HttpClientTest extends TestCase
             ])),
         ];
 
-        $client = $this->createHttpClientWithMockHandler($responses);
+        $client = $this->createClientWithMockHandler($responses);
 
         $response = $client->get('test-endpoint');
 
@@ -84,7 +84,7 @@ class HttpClientTest extends TestCase
             ),
         ];
 
-        $client = $this->createHttpClientWithMockHandler($responses);
+        $client = $this->createClientWithMockHandler($responses);
 
         $this->expectException(AuthenticationException::class);
         $this->expectExceptionMessage('OAuth authentication failed');
@@ -110,7 +110,7 @@ class HttpClientTest extends TestCase
             ])),
         ];
 
-        $client = $this->createHttpClientWithMockHandler($responses);
+        $client = $this->createClientWithMockHandler($responses);
 
         $response = $client->post('test-endpoint', ['test' => 'data']);
 

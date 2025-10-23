@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\ContactLists;
 
+use Hobbii\Emarsys\Domain\Client;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\ContactListCollection;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactListResponse;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
-use Hobbii\Emarsys\Domain\HttpClient;
 
 /**
  * Service for managing Emarsys Contact Lists.
@@ -19,7 +19,7 @@ class ContactListsClient
     private const ENDPOINT = 'contactlist';
 
     public function __construct(
-        private readonly HttpClient $httpClient
+        private readonly Client $client
     ) {}
 
     /**
@@ -32,7 +32,7 @@ class ContactListsClient
      */
     public function create(CreateContactList $data): CreateContactListResponse
     {
-        $response = $this->httpClient->post(self::ENDPOINT, $data->toArray());
+        $response = $this->client->post(self::ENDPOINT, $data->toArray());
 
         if ($response->data === null) {
             throw new ApiException('Invalid response format: missing data field');
@@ -51,7 +51,7 @@ class ContactListsClient
      */
     public function list(): ContactListCollection
     {
-        $response = $this->httpClient->get(self::ENDPOINT);
+        $response = $this->client->get(self::ENDPOINT);
 
         return ContactListCollection::fromArray($response->data);
     }
@@ -66,7 +66,7 @@ class ContactListsClient
      */
     public function delete(int $contactListId): bool
     {
-        $this->httpClient->delete(sprintf('%s/%d/deletelist', self::ENDPOINT, $contactListId));
+        $this->client->delete(sprintf('%s/%d/deletelist', self::ENDPOINT, $contactListId));
 
         return true;
     }

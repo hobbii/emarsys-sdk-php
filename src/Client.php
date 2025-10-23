@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys;
 
+use Hobbii\Emarsys\Domain\Client as EmarsysClient;
 use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
-use Hobbii\Emarsys\Domain\HttpClient;
 
 /**
  * Main Emarsys API client.
@@ -15,7 +15,7 @@ use Hobbii\Emarsys\Domain\HttpClient;
  */
 class Client
 {
-    private readonly HttpClient $httpClient;
+    private readonly EmarsysClient $client;
 
     private ?ContactListsClient $contactLists = null;
 
@@ -24,7 +24,7 @@ class Client
         string $clientSecret,
         ?string $baseUrl = null
     ) {
-        $this->httpClient = new HttpClient($clientId, $clientSecret, $baseUrl);
+        $this->client = new EmarsysClient($clientId, $clientSecret, $baseUrl);
     }
 
     /**
@@ -32,6 +32,6 @@ class Client
      */
     public function contactLists(): ContactListsClient
     {
-        return $this->contactLists ??= new ContactListsClient($this->httpClient);
+        return $this->contactLists ??= new ContactListsClient($this->client);
     }
 }

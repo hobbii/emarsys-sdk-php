@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Tests\Unit\Domain\ContactLists;
 
+use Hobbii\Emarsys\Domain\Client as EmarsysClient;
 use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\ContactListCollection;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactListResponse;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
-use Hobbii\Emarsys\Domain\HttpClient;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -18,12 +18,12 @@ class ContactListsClientTest extends TestCase
 {
     private ContactListsClient $client;
 
-    private HttpClient&MockObject $httpClient;
+    private EmarsysClient&MockObject $emarsysClient;
 
     protected function setUp(): void
     {
-        $this->httpClient = $this->createMock(HttpClient::class);
-        $this->client = new ContactListsClient($this->httpClient);
+        $this->emarsysClient = $this->createMock(EmarsysClient::class);
+        $this->client = new ContactListsClient($this->emarsysClient);
     }
 
     public function test_create_contact_list(): void
@@ -46,7 +46,7 @@ class ContactListsClientTest extends TestCase
             errors: []
         );
 
-        $this->httpClient
+        $this->emarsysClient
             ->expects($this->once())
             ->method('post')
             ->with('contactlist', $request->toArray())
@@ -72,7 +72,7 @@ class ContactListsClientTest extends TestCase
             errors: []
         );
 
-        $this->httpClient
+        $this->emarsysClient
             ->expects($this->once())
             ->method('post')
             ->willReturn($response);
@@ -97,7 +97,7 @@ class ContactListsClientTest extends TestCase
             errors: []
         );
 
-        $this->httpClient
+        $this->emarsysClient
             ->expects($this->once())
             ->method('get')
             ->with('contactlist', [])
@@ -124,7 +124,7 @@ class ContactListsClientTest extends TestCase
             errors: []
         );
 
-        $this->httpClient
+        $this->emarsysClient
             ->expects($this->once())
             ->method('get')
             ->with('contactlist')
@@ -145,7 +145,7 @@ class ContactListsClientTest extends TestCase
             errors: []
         );
 
-        $this->httpClient
+        $this->emarsysClient
             ->expects($this->once())
             ->method('delete')
             ->with('contactlist/1/deletelist')
