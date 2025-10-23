@@ -13,7 +13,7 @@ readonly class Response
     public function __construct(
         public int $replyCode,
         public string $replyText,
-        public mixed $data,
+        public int|string|array|null $data,
         /** @var ErrorObject[] Errors returned by the Emarsys API. */
         public array $errors,
     ) {}
@@ -21,6 +21,42 @@ readonly class Response
     public function hasErrors(): bool
     {
         return ! empty($this->errors);
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function dataAsInt(): int
+    {
+        if (is_int($this->data)) {
+            return $this->data;
+        }
+
+        throw new ApiException('Response data is not an integer');
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function dataAsString(): string
+    {
+        if (is_string($this->data)) {
+            return $this->data;
+        }
+
+        throw new ApiException('Response data is not a string');
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function dataAsArray(): array
+    {
+        if (is_array($this->data)) {
+            return $this->data;
+        }
+
+        throw new ApiException('Response data is not an array');
     }
 
     public static function fromArray(array $arr): self
