@@ -44,5 +44,5 @@ jobs:
       - name: List Installed Dependencies
         run: composer show -D
 
-      - name: Execute tests
-        run: vendor/bin/phpunit
+      - name: Execute check (test, analyze, format)
+        run: composer check
