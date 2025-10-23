@@ -128,6 +128,8 @@ class ClientTest extends TestCase
 
     public function test_rate_limit_exception_thrown_on_429_response(): void
     {
+        $resetTimestamp = time() + 120; // 2 minutes from now
+
         $responses = [
             // OAuth token request
             new GuzzleResponse(200, [], (string) json_encode([
@@ -141,6 +143,7 @@ class ClientTest extends TestCase
                 new Request('GET', 'test-endpoint'),
                 new GuzzleResponse(429, [
                     'Retry-After' => '120',
+                    'X-RateLimit-Reset' => (string) $resetTimestamp,
                     'X-RateLimit-Limit' => '1000',
                     'X-RateLimit-Remaining' => '0',
                 ], (string) json_encode([
@@ -160,6 +163,7 @@ class ClientTest extends TestCase
         } catch (RateLimitException $e) {
             // Verify exception properties
             $this->assertSame(120, $e->retryAfterSeconds);
+            $this->assertSame($resetTimestamp, $e->resetTimestamp);
             $this->assertSame(0, $e->limitRemaining);
             $this->assertSame(1000, $e->limitTotal);
 
@@ -242,6 +246,7 @@ class ClientTest extends TestCase
             // Verify the retry-after is approximately 180 seconds
             $this->assertGreaterThanOrEqual(175, $e->retryAfterSeconds);
             $this->assertLessThanOrEqual(185, $e->retryAfterSeconds);
+            $this->assertSame($resetTimestamp, $e->resetTimestamp);
             $this->assertSame(500, $e->limitTotal);
             $this->assertNull($e->limitRemaining);
 
@@ -278,6 +283,7 @@ class ClientTest extends TestCase
         } catch (RateLimitException $e) {
             // Verify default retry-after is 60 seconds
             $this->assertSame(60, $e->retryAfterSeconds);
+            $this->assertNull($e->resetTimestamp);
             $this->assertNull($e->limitRemaining);
             $this->assertNull($e->limitTotal);
 

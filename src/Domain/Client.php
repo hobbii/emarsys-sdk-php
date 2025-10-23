@@ -172,12 +172,14 @@ class Client
 
             if ($statusCode === 429) {
                 $retryAfter = $this->extractRetryAfter($e->getResponse());
+                $resetTimestamp = $this->extractRateLimitHeader($e->getResponse(), 'X-RateLimit-Reset');
                 $limitRemaining = $this->extractRateLimitHeader($e->getResponse(), 'X-RateLimit-Remaining');
                 $limitTotal = $this->extractRateLimitHeader($e->getResponse(), 'X-RateLimit-Limit');
 
                 throw new RateLimitException(
                     message: 'Rate limit exceeded. Please retry after '.$retryAfter.' seconds',
                     retryAfterSeconds: $retryAfter,
+                    resetTimestamp: $resetTimestamp,
                     limitRemaining: $limitRemaining,
                     limitTotal: $limitTotal,
                     previous: $e

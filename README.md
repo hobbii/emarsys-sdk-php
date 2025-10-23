@@ -147,7 +147,12 @@ try {
 
 The Emarsys API enforces rate limits to ensure fair usage and maintain system stability. When the rate limit is exceeded, the API returns a 429 (Too Many Requests) response, and the SDK throws a `RateLimitException`.
 
-The exception includes helpful information about when you can retry:
+**Emarsys Rate Limit Headers:**
+- `X-RateLimit-Limit`: Request limit per minute
+- `X-Ratelimit-Remaining`: The number of requests left for the time window
+- `X-RateLimit-Reset`: The time when the rate limit window resets (Unix timestamp)
+
+The exception includes all rate limit information:
 
 ```php
 use Hobbii\Emarsys\Domain\Exceptions\RateLimitException;
@@ -159,12 +164,17 @@ try {
     echo "Rate limit exceeded!\n";
     echo "Retry after: {$e->retryAfterSeconds} seconds\n";
     
+    if ($e->resetTimestamp !== null) {
+        $resetTime = date('Y-m-d H:i:s', $e->resetTimestamp);
+        echo "Rate limit resets at: {$resetTime}\n";
+    }
+    
     if ($e->limitRemaining !== null) {
         echo "Requests remaining: {$e->limitRemaining}\n";
     }
     
     if ($e->limitTotal !== null) {
-        echo "Total limit: {$e->limitTotal}\n";
+        echo "Total limit: {$e->limitTotal} per minute\n";
     }
     
     // Wait and retry
