@@ -464,12 +464,24 @@ docker-compose exec php composer dump-autoload
 - Excluding heavy directories from sync
 - Running tests in Docker but developing locally
 
+## Context7 MCP - Emarsys API Documentation
+
+This project is configured with Context7 MCP server for instant access to Emarsys API documentation.
+
+**How to use:**
+- Ask questions about Emarsys API: "What endpoints are available for contact lists?"
+- Reference documentation: "According to the Emarsys API docs, what's the rate limit?"
+- Get accurate implementation guidance based on official docs
+
+The AI can now fetch real-time information from the official Emarsys API reference to help you code correctly.
+
 ## Resources
 
 - [PSR-12 Coding Style](https://www.php-fig.org/psr/psr-12/)
 - [PHPStan Documentation](https://phpstan.org/user-guide/getting-started)
 - [PHPUnit Documentation](https://phpunit.de/documentation.html)
 - [Emarsys API Documentation](https://dev.emarsys.com/docs/emarsys-core-api-guides/)
+- [Emarsys Core API Reference](https://dev.emarsys.com/docs/core-api-reference/) (via Context7 MCP)
 - [Guzzle Documentation](https://docs.guzzlephp.org/)
 
 ## Questions or Issues?
@@ -477,3 +489,4 @@ docker-compose exec php composer dump-autoload
 - Check `RATE_LIMITING_SPEC.md` for future feature plans
 - Review `tests/Integration/README.md` for integration testing details
 - See `README.md` for usage examples and API documentation
+- See `.cursor/README.md` for Cursor IDE configuration and MCP server setup
