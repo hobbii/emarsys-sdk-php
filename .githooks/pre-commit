@@ -4,7 +4,7 @@
 echo "Running code formatter (composer format)..."
 composer format
 
-# Add any new formatting changes to the commit automatically
-git add -u
+# Stage any changes made by the formatter
+git update-index --again
 
 echo "✅ Code formatted and staged."
