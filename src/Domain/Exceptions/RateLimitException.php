@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\Exceptions;
 
+use Psr\Http\Message\ResponseInterface;
+
 /**
  * Exception thrown when API rate limit is exceeded.
  *
@@ -32,5 +34,81 @@ class RateLimitException extends ApiException
         ?\Throwable $previous = null
     ) {
         parent::__construct($message, previous: $previous);
+    }
+
+    /**
+     * Create a RateLimitException from a PSR-7 response.
+     *
+     * Extracts rate limit information from response headers and creates
+     * an exception with all relevant metadata.
+     */
+    public static function fromPsrResponse(ResponseInterface $response, ?\Throwable $previous = null): self
+    {
+        $retryAfter = self::extractRetryAfter($response);
+        $resetTimestamp = self::extractRateLimitHeader($response, 'X-RateLimit-Reset');
+        $limitRemaining = self::extractRateLimitHeader($response, 'X-RateLimit-Remaining');
+        $limitTotal = self::extractRateLimitHeader($response, 'X-RateLimit-Limit');
+
+        return new self(
+            message: 'Rate limit exceeded. Please retry after '.$retryAfter.' seconds',
+            retryAfterSeconds: $retryAfter,
+            resetTimestamp: $resetTimestamp,
+            limitRemaining: $limitRemaining,
+            limitTotal: $limitTotal,
+            previous: $previous
+        );
+    }
+
+    /**
+     * Extract retry-after value from rate limit response.
+     *
+     * Checks both Retry-After header (standard) and X-RateLimit-Reset header (common in APIs).
+     * The Retry-After header can contain either:
+     * - An integer representing seconds to wait
+     * - An HTTP date string representing when to retry
+     *
+     * @return int Number of seconds to wait before retrying (defaults to 60 if not found)
+     */
+    private static function extractRetryAfter(ResponseInterface $response): int
+    {
+        // Check standard Retry-After header
+        if ($response->hasHeader('Retry-After')) {
+            $retryAfter = $response->getHeader('Retry-After')[0];
+
+            // Can be seconds (integer) or HTTP date
+            if (is_numeric($retryAfter)) {
+                return (int) $retryAfter;
+            }
+
+            // Parse HTTP date and calculate seconds
+            $timestamp = strtotime($retryAfter);
+            if ($timestamp !== false) {
+                return max(0, $timestamp - time());
+            }
+        }
+
+        // Check X-RateLimit-Reset header (common in APIs)
+        if ($response->hasHeader('X-RateLimit-Reset')) {
+            $resetTimestamp = (int) $response->getHeader('X-RateLimit-Reset')[0];
+
+            return max(0, $resetTimestamp - time());
+        }
+
+        // Default fallback: wait 60 seconds
+        return 60;
+    }
+
+    /**
+     * Extract a specific rate limit header value from the response.
+     *
+     * @return int|null The header value as an integer, or null if not present
+     */
+    private static function extractRateLimitHeader(ResponseInterface $response, string $headerName): ?int
+    {
+        if ($response->hasHeader($headerName)) {
+            return (int) $response->getHeader($headerName)[0];
+        }
+
+        return null;
     }
 }
