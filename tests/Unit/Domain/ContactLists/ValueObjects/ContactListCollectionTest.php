@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Tests\Unit\Domain\ContactLists\DTOs;
+namespace Hobbii\Emarsys\Tests\Unit\Domain\ContactLists\ValueObjects;
 
-use Hobbii\Emarsys\Domain\ContactLists\DTOs\ContactList;
-use Hobbii\Emarsys\Domain\ContactLists\DTOs\ContactListCollection;
+use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\ContactList;
+use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\ContactListCollection;
 use PHPUnit\Framework\TestCase;
 
 class ContactListCollectionTest extends TestCase

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Domain\ContactLists\DTOs;
+namespace Hobbii\Emarsys\Domain\ContactLists\ValueObjects;
 
 use InvalidArgumentException;
 
 /**
- * Represents a Contact List in the Emarsys system.
+ * Represents a Contact List value object in the Emarsys system.
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/axpotjvepqdla-list-contact-lists#response-body
  */
-class ContactList
+readonly class ContactList
 {
     public function __construct(
         public int $id,

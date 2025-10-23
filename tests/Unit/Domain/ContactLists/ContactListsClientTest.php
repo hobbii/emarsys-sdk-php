@@ -6,8 +6,8 @@ namespace Hobbii\Emarsys\Tests\Unit\Domain\ContactLists;
 
 use Hobbii\Emarsys\Domain\Client as EmarsysClient;
 use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
-use Hobbii\Emarsys\Domain\ContactLists\DTOs\ContactListCollection;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
+use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\ContactListCollection;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use PHPUnit\Framework\MockObject\MockObject;

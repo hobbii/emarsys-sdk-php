@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Domain\ContactLists\DTOs;
+namespace Hobbii\Emarsys\Domain\ContactLists\ValueObjects;
 
 use InvalidArgumentException;
 
 /**
  * ContactList collection
  */
-class ContactListCollection
+readonly class ContactListCollection
 {
     /**
      * @param  ContactList[]  $items
