@@ -124,6 +124,7 @@ The SDK provides comprehensive error handling with custom exception classes:
 - `EmarsysException` - Base exception for all SDK errors
 - `ApiException` - General API errors with HTTP status codes and response details
 - `AuthenticationException` - Authentication failures
+- `RateLimitException` - Rate limit exceeded (429 responses)
 
 ```php
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
@@ -141,6 +142,38 @@ try {
     echo "General Emarsys error: {$e->getMessage()}";
 }
 ```
+
+### Rate Limiting
+
+The Emarsys API enforces rate limits to ensure fair usage and maintain system stability. When the rate limit is exceeded, the API returns a 429 (Too Many Requests) response, and the SDK throws a `RateLimitException`.
+
+The exception includes helpful information about when you can retry:
+
+```php
+use Hobbii\Emarsys\Domain\Exceptions\RateLimitException;
+
+try {
+    $contactLists = $client->contactLists()->list();
+} catch (RateLimitException $e) {
+    // Get information about the rate limit
+    echo "Rate limit exceeded!\n";
+    echo "Retry after: {$e->retryAfterSeconds} seconds\n";
+    
+    if ($e->limitRemaining !== null) {
+        echo "Requests remaining: {$e->limitRemaining}\n";
+    }
+    
+    if ($e->limitTotal !== null) {
+        echo "Total limit: {$e->limitTotal}\n";
+    }
+    
+    // Wait and retry
+    sleep($e->retryAfterSeconds);
+    $contactLists = $client->contactLists()->list();
+}
+```
+
+**Note:** In the current version (v1.0.0-RC1), rate limit handling is manual - you need to catch the exception and implement retry logic yourself. Automatic retry with exponential backoff is planned for a future release. See `RATE_LIMITING_SPEC.md` for details.
 
 ## Data Transfer Objects (DTOs)
 

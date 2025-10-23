@@ -10,8 +10,10 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
+use Hobbii\Emarsys\Domain\Exceptions\RateLimitException;
 use Hobbii\Emarsys\Domain\ValueObjects\OauthData;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Base HTTP client for Emarsys API communication.
@@ -168,6 +170,20 @@ class Client
                 throw new ApiException('Access forbidden - insufficient permissions for this endpoint', previous: $e);
             }
 
+            if ($statusCode === 429) {
+                $retryAfter = $this->extractRetryAfter($e->getResponse());
+                $limitRemaining = $this->extractRateLimitHeader($e->getResponse(), 'X-RateLimit-Remaining');
+                $limitTotal = $this->extractRateLimitHeader($e->getResponse(), 'X-RateLimit-Limit');
+
+                throw new RateLimitException(
+                    message: 'Rate limit exceeded. Please retry after '.$retryAfter.' seconds',
+                    retryAfterSeconds: $retryAfter,
+                    limitRemaining: $limitRemaining,
+                    limitTotal: $limitTotal,
+                    previous: $e
+                );
+            }
+
             throw new ApiException('Client error occurred', previous: $e);
         } catch (ServerException $e) {
             throw new ApiException('Server error occurred', previous: $e);
@@ -236,5 +252,58 @@ class Client
         return [
             'Authorization' => 'Bearer '.$this->oauthData?->accessToken,
         ];
+    }
+
+    /**
+     * Extract retry-after value from rate limit response.
+     *
+     * Checks both Retry-After header (standard) and X-RateLimit-Reset header (common in APIs).
+     * The Retry-After header can contain either:
+     * - An integer representing seconds to wait
+     * - An HTTP date string representing when to retry
+     *
+     * @return int Number of seconds to wait before retrying (defaults to 60 if not found)
+     */
+    private function extractRetryAfter(ResponseInterface $response): int
+    {
+        // Check standard Retry-After header
+        if ($response->hasHeader('Retry-After')) {
+            $retryAfter = $response->getHeader('Retry-After')[0];
+
+            // Can be seconds (integer) or HTTP date
+            if (is_numeric($retryAfter)) {
+                return (int) $retryAfter;
+            }
+
+            // Parse HTTP date and calculate seconds
+            $timestamp = strtotime($retryAfter);
+            if ($timestamp !== false) {
+                return max(0, $timestamp - time());
+            }
+        }
+
+        // Check X-RateLimit-Reset header (common in APIs)
+        if ($response->hasHeader('X-RateLimit-Reset')) {
+            $resetTimestamp = (int) $response->getHeader('X-RateLimit-Reset')[0];
+
+            return max(0, $resetTimestamp - time());
+        }
+
+        // Default fallback: wait 60 seconds
+        return 60;
+    }
+
+    /**
+     * Extract a specific rate limit header value from the response.
+     *
+     * @return int|null The header value as an integer, or null if not present
+     */
+    private function extractRateLimitHeader(ResponseInterface $response, string $headerName): ?int
+    {
+        if ($response->hasHeader($headerName)) {
+            return (int) $response->getHeader($headerName)[0];
+        }
+
+        return null;
     }
 }
