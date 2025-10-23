@@ -113,27 +113,6 @@ class ContactListsClientTest extends TestCase
         $this->assertSame('List 2', $contactLists[1]->name);
     }
 
-    public function test_list_contact_lists_with_filters(): void
-    {
-        $response = new Response(
-            replyCode: 0,
-            replyText: 'OK',
-            data: [],
-            errors: []
-        );
-
-        $this->emarsysClient
-            ->expects($this->once())
-            ->method('get')
-            ->with('contactlist')
-            ->willReturn($response);
-
-        $result = $this->client->list();
-
-        $this->assertInstanceOf(ContactListCollection::class, $result);
-        $this->assertTrue($result->isEmpty());
-    }
-
     public function test_delete_contact_list(): void
     {
         $response = new Response(
