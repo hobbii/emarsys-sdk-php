@@ -7,7 +7,7 @@ namespace Hobbii\Emarsys\Domain\ContactLists;
 use Hobbii\Emarsys\Domain\Client;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\ContactListCollection;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
-use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactListResponse;
+use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\CreateContactListResponse;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 

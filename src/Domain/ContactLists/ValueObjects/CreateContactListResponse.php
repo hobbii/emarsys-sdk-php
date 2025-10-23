@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Domain\ContactLists\DTOs;
+namespace Hobbii\Emarsys\Domain\ContactLists\ValueObjects;
 
 /**
- * Response object of the "Create a Contact List" API endpoint
+ * Response value object of the "Create a Contact List" API endpoint
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/enmevkj1fi016-create-a-contact-list
  */
-class CreateContactListResponse
+readonly class CreateContactListResponse
 {
     /**
      * @param  array<int,string>|null  $errors  The details of any contacts not added to the list, expressed as an array that contains the error code and reason
