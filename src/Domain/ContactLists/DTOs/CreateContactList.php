@@ -9,7 +9,7 @@ namespace Hobbii\Emarsys\Domain\ContactLists\DTOs;
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/enmevkj1fi016-create-a-contact-list
  */
-readonly class CreateContactList
+class CreateContactList
 {
     public function __construct(
         public string $name,

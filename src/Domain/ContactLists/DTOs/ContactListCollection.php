@@ -7,9 +7,9 @@ namespace Hobbii\Emarsys\Domain\ContactLists\DTOs;
 use InvalidArgumentException;
 
 /**
- * Response DTO containing a list of contact lists.
+ * ContactList collection
  */
-readonly class ContactListCollection
+class ContactListCollection
 {
     /**
      * @param  ContactList[]  $items
@@ -31,17 +31,13 @@ readonly class ContactListCollection
     }
 
     /**
-     * Create a ContactListCollection from API response data.
+     * Create a collection from data.
      *
-     * @param  array<int,array<string, mixed>>  $data
+     * @param  array<int,array<string,mixed>|ContactList>  $data
      */
-    public static function fromArray(array $data): self
+    public static function from(array $data): self
     {
-        $contactLists = [];
-
-        foreach ($data as $item) {
-            $contactLists[] = ContactList::fromArray($item);
-        }
+        $contactLists = array_map(fn ($item) => $item instanceof ContactList ? $item : ContactList::from($item), $data);
 
         return new self($contactLists);
     }

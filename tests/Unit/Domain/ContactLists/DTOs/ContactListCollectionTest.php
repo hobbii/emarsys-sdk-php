@@ -44,7 +44,7 @@ class ContactListCollectionTest extends TestCase
             ],
         ];
 
-        $collection = ContactListCollection::fromArray($data);
+        $collection = ContactListCollection::from($data);
 
         $this->assertCount(2, $collection->items);
         $this->assertSame(2, $collection->count());
@@ -59,7 +59,7 @@ class ContactListCollectionTest extends TestCase
 
     public function test_can_be_created_from_empty_array(): void
     {
-        $collection = ContactListCollection::fromArray([]);
+        $collection = ContactListCollection::from([]);
 
         $this->assertEmpty($collection->items);
         $this->assertTrue($collection->isEmpty());

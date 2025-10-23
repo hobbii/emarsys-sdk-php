@@ -38,7 +38,7 @@ class ContactListsClient
             throw new ApiException('Invalid response format: missing data field');
         }
 
-        return CreateContactListResponse::fromArray($response->data);
+        return CreateContactListResponse::from($response->data);
     }
 
     /**
@@ -53,7 +53,7 @@ class ContactListsClient
     {
         $response = $this->client->get(self::ENDPOINT);
 
-        return ContactListCollection::fromArray($response->data);
+        return ContactListCollection::from($response->data);
     }
 
     /**

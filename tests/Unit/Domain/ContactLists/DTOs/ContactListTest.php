@@ -46,7 +46,7 @@ class ContactListTest extends TestCase
             'created' => '2023-01-01T00:00:00Z',
         ];
 
-        $contactList = ContactList::fromArray($data);
+        $contactList = ContactList::from($data);
 
         $this->assertSame(1, $contactList->id);
         $this->assertSame('Test List', $contactList->name);
@@ -61,7 +61,7 @@ class ContactListTest extends TestCase
             'name' => 'Test List',
         ];
 
-        $contactList = ContactList::fromArray($data);
+        $contactList = ContactList::from($data);
 
         $this->assertSame(1, $contactList->id);
         $this->assertSame('Test List', $contactList->name);

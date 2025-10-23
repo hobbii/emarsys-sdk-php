@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\ContactLists\DTOs;
 
-readonly class CreateContactListResponse
+class CreateContactListResponse
 {
     public function __construct(
         public int $id,
         public ?array $errors,
     ) {}
 
-    public static function fromArray(array $data): self
+    /**
+     * Create a CreateContactListResponse instance from data.
+     *
+     * @param  array<string,mixed>  $data
+     */
+    public static function from(array $data): self
     {
         return new self(
             id: (int) $data['id'],

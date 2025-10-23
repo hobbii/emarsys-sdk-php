@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\ContactLists\DTOs;
 
-use RuntimeException;
+use InvalidArgumentException;
 
 /**
  * Represents a Contact List in the Emarsys system.
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/axpotjvepqdla-list-contact-lists#response-body
  */
-readonly class ContactList
+class ContactList
 {
     public function __construct(
         public int $id,
@@ -21,17 +21,17 @@ readonly class ContactList
     ) {}
 
     /**
-     * Create a ContactList instance from API response data.
+     * Create a ContactList instance from data.
      *
-     * @param  array<string, mixed>  $data
+     * @param  array<string,mixed>  $data
      *
-     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
-    public static function fromArray(array $data): self
+    public static function from(array $data): self
     {
         return new self(
-            id: (int) ($data['id'] ?? throw new RuntimeException('Missing "id" field')),
-            name: $data['name'] ?? throw new RuntimeException('Missing "name" field'),
+            id: (int) ($data['id'] ?? throw new InvalidArgumentException('Missing "id" field')),
+            name: $data['name'] ?? throw new InvalidArgumentException('Missing "name" field'),
             description: $data['description'] ?? null,
             created: $data['created'] ?? null,
         );
@@ -40,7 +40,7 @@ readonly class ContactList
     /**
      * Convert the ContactList to an array.
      *
-     * @return array<string, mixed>
+     * @return array<string,mixed>
      */
     public function toArray(): array
     {
