@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\ContactLists\DTOs;
 
+/**
+ * Response object of the "Create a Contact List" API endpoint
+ *
+ * @see https://dev.emarsys.com/docs/core-api-reference/enmevkj1fi016-create-a-contact-list
+ */
 class CreateContactListResponse
 {
     /**
