@@ -69,7 +69,7 @@ try {
     echo "🧪 Emarsys SDK Integration Test Runner\n";
     echo "=====================================\n\n";
 
-    $tests = getTests($testName);
+    $tests = getTests($testName, $availableTests);
 
     foreach ($tests as $test) {
         echo 'Running Test: '.get_class($test)."...\n\n";
@@ -87,10 +87,8 @@ try {
     echoExceptionDetails($e);
 }
 
-function getTests(string $testName): array
+function getTests(string $testName, array $availableTests): array
 {
-    global $availableTests;
-
     if ($testName === 'all') {
         $test = array_values($availableTests);
     } else {

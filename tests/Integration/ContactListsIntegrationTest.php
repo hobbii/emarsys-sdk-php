@@ -9,7 +9,7 @@ use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 
 class ContactListsIntegrationTest
 {
-    public function run()
+    public function run(): void
     {
         global $clientId, $clientSecret, $baseUrl;
 
