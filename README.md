@@ -71,15 +71,15 @@ The SDK uses OAuth 2.0 Client Credentials flow for authentication. The access to
 ```php
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 
-$createData = new CreateContactList(
+$contactList = new CreateContactList(
     name: 'Newsletter Subscribers',
     description: 'List of users subscribed to our newsletter',
 );
 
 try {
-    $contactList = $client->contactLists()->create($createData);
+    $contactListId = $client->contactLists()->create($contactList);
 
-    echo "Created contact list: {$contactList->name} (ID: {$contactList->id})";
+    echo "Created contact list ID: {$contactListId})";
 } catch (\Hobbii\Emarsys\Domain\Exceptions\AuthenticationException $e) {
     echo "OAuth authentication failed: {$e->getMessage()}";
 } catch (\Hobbii\Emarsys\Domain\Exceptions\ApiException $e) {
@@ -98,36 +98,6 @@ try {
     }
 
     echo "Total contact lists: {$collection->count()}";
-} catch (\Hobbii\Emarsys\Domain\Exceptions\ApiException $e) {
-    echo "Error: {$e->getMessage()}";
-}
-```
-
-#### List Contact Lists with Filters
-
-```php
-try {
-    $collection = $client->contactLists()->list([
-        'limit' => 10,
-        'offset' => 0
-    ]);
-
-    // Process the results...
-} catch (\Hobbii\Emarsys\Domain\Exceptions\ApiException $e) {
-    echo "Error: {$e->getMessage()}";
-}
-```
-
-#### Get a Specific Contact List
-
-```php
-try {
-    $contactList = $client->contactLists()->get(123);
-
-    echo "Name: {$contactList->name}\n";
-    echo "Description: {$contactList->description}\n";
-    echo "Type: {$contactList->type}\n";
-    echo "Count: {$contactList->count}\n";
 } catch (\Hobbii\Emarsys\Domain\Exceptions\ApiException $e) {
     echo "Error: {$e->getMessage()}";
 }
