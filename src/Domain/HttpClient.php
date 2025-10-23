@@ -56,7 +56,7 @@ class HttpClient
     /**
      * Make a GET request to the API.
      *
-     * @param  array<string, mixed>  $query
+     * @param  array<string,mixed>  $query  URL query parameters
      *
      * @throws ApiException
      * @throws AuthenticationException
@@ -71,7 +71,7 @@ class HttpClient
     /**
      * Make a POST request to the API.
      *
-     * @param  array<string, mixed>  $data
+     * @param  array<string,mixed>  $data
      *
      * @throws ApiException
      * @throws AuthenticationException
@@ -86,7 +86,7 @@ class HttpClient
     /**
      * Make a PUT request to the API.
      *
-     * @param  array<string, mixed>  $data
+     * @param  array<string,mixed>  $data
      *
      * @throws ApiException
      * @throws AuthenticationException
@@ -112,7 +112,7 @@ class HttpClient
     /**
      * Make a request to the API with OAuth token refresh handling.
      *
-     * @param  array<string, mixed>  $options
+     * @param  array<string,mixed>  $options  Client options
      *
      * @throws ApiException
      * @throws AuthenticationException
@@ -125,7 +125,7 @@ class HttpClient
     /**
      * Make an authenticated request to the API with retry logic.
      *
-     * @param  array<string, mixed>  $options
+     * @param  array<string,mixed>  $options  Client options
      *
      * @throws ApiException
      * @throws AuthenticationException
@@ -219,7 +219,7 @@ class HttpClient
     /**
      * Generate authentication headers for the request.
      *
-     * @return array<string, string>
+     * @return array<string,string>
      */
     private function getAuthHeaders(): array
     {
