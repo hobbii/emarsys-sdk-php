@@ -143,14 +143,24 @@ class HttpClient
 
             return Response::fromPsrResponse($response);
         } catch (ClientException $e) {
-            // Handle 401 Unauthorized - token might have expired
-            if ($e->getResponse()->getStatusCode() === 401 && ! $isRetry) {
-                $this->resetOauthData();
+            $statusCode = $e->getResponse()->getStatusCode();
 
-                return $this->makeRequest($method, $endpoint, $options, true);
+            if ($statusCode === 401) {
+                // Handle 401 Unauthorized - token might have expired
+                if (! $isRetry) {
+                    $this->resetOauthData();
+
+                    return $this->makeRequest($method, $endpoint, $options, true);
+                }
+
+                throw new AuthenticationException('Authentication failed', previous: $e);
             }
 
-            $this->handleClientException($e);
+            if ($statusCode === 403) {
+                throw new ApiException('Access forbidden - insufficient permissions for this endpoint', previous: $e);
+            }
+
+            throw new ApiException('Client error occurred', previous: $e);
         } catch (ServerException $e) {
             throw new ApiException('Server error occurred', previous: $e);
         } catch (RequestException $e) {
@@ -215,27 +225,5 @@ class HttpClient
         return [
             'Authorization' => 'Bearer '.$this->oauthData?->accessToken,
         ];
-    }
-
-    /**
-     * Handle client exceptions (4xx errors).
-     *
-     * @throws ApiException
-     * @throws AuthenticationException
-     */
-    private function handleClientException(ClientException $e): never
-    {
-        $response = $e->getResponse();
-        $statusCode = $response->getStatusCode();
-
-        if ($statusCode === 401) {
-            throw new AuthenticationException('Authentication failed', previous: $e);
-        }
-
-        if ($statusCode === 403) {
-            throw new ApiException('Access forbidden - insufficient permissions for this endpoint', previous: $e);
-        }
-
-        throw new ApiException('Client error occurred', previous: $e);
     }
 }
