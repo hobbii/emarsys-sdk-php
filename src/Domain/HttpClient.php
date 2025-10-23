@@ -146,7 +146,17 @@ class HttpClient
             $statusCode = $e->getResponse()->getStatusCode();
 
             if ($statusCode === 401) {
-                // Handle 401 Unauthorized - token might have expired
+                /**
+                 * Handle 401 Unauthorized - OAuth token has likely expired.
+                 *
+                 * This implements automatic token refresh with a single retry:
+                 * 1. Check if this is already a retry attempt to prevent infinite loops
+                 * 2. If not a retry, clear the cached OAuth token data
+                 * 3. Recursively call makeRequest() with isRetry=true, which will:
+                 *    - Trigger ensureValidOauthData() to fetch a fresh token
+                 *    - Retry the original API request with the new token
+                 * 4. If it's already a retry and still fails, throw an exception
+                 */
                 if (! $isRetry) {
                     $this->resetOauthData();
 
