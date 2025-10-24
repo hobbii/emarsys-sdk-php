@@ -55,8 +55,8 @@ readonly class OauthData
     private function calculateExpiresAt(int $expiresIn): int
     {
         // Use a progressive safety buffer that preserves usable lifetime for short tokens
-        if ($expiresIn > 300) {
-            // Long-lived tokens (>5 min): 60s buffer
+        if ($expiresIn >= 300) {
+            // Long-lived tokens (>=5 min): 60s buffer
             $safetyBuffer = 60;
         } elseif ($expiresIn > 60) {
             // Medium tokens (1-5 min): 20% buffer (max 60s)
