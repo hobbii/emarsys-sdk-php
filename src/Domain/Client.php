@@ -128,6 +128,19 @@ class Client
     }
 
     /**
+     * Retry the request after refreshing the OAuth token.
+     *
+     * @param  array<string,mixed>  $options  Client options
+     *
+     * @throws ApiException
+     * @throws AuthenticationException
+     */
+    private function retryRequest(string $method, string $endpoint, array $options = []): Response
+    {
+        return $this->makeRequest($method, $endpoint, $options, true);
+    }
+
+    /**
      * Make an authenticated request to the API with retry logic.
      *
      * @param  array<string,mixed>  $options  Client options
@@ -151,8 +164,20 @@ class Client
             $statusCode = $e->getResponse()->getStatusCode();
 
             if ($statusCode === 401) {
-                // OAuth token has likely expired.
+                /**
+                 * Handle 401 Unauthorized - OAuth token has likely expired.
+                 *
+                 * This implements automatic token refresh with a single retry:
+                 * 1. Check if this is already a retry attempt to prevent infinite loops
+                 * 2. If not a retry, clear the cached OAuth token data
+                 * 3. Call retryRequest(), which will:
+                 *    - Trigger ensureValidOauthData() to fetch a fresh token
+                 *    - Retry the original API request with the new token
+                 * 4. If it's already a retry and still fails, throw an exception
+                 */
                 if (! $isRetry) {
+                    $this->resetOauthData();
+
                     // For retry, use original options (without auth headers from first attempt)
                     return $this->retryRequest($method, $endpoint, $options);
                 }
@@ -173,29 +198,6 @@ class Client
             throw new ApiException('Server error occurred', previous: $e);
         } catch (RequestException $e) {
             throw new ApiException('Request failed: '.$e->getMessage(), previous: $e);
-        }
-    }
-
-    /**
-     * This implements automatic token refresh with a single retry:
-     * 1. Store current token, clear cached OAuth data, and retry
-     * 2. If retry fails, restore the original token to prevent subsequent calls
-     *    from repeatedly attempting new token fetches when the issue isn't token expiry
-     *
-     * @throws AuthenticationException
-     */
-    private function retryRequest(string $method, string $endpoint, array $options = [], bool $isRetry = false): Response
-    {
-        $previousOauthData = $this->oauthData;
-        $this->resetOauthData();
-
-        try {
-            return $this->makeRequest($method, $endpoint, $options, true);
-        } catch (AuthenticationException $retryException) {
-            // Restore previous token state to prevent repeated token fetch attempts
-            // when the issue is likely permissions, not token expiry
-            $this->oauthData = $previousOauthData;
-            throw $retryException;
         }
     }
 
