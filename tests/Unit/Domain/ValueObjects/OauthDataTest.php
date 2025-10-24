@@ -197,18 +197,23 @@ class OauthDataTest extends TestCase
     {
         // Test that different token lifetimes use appropriate safety buffers
         $testCases = [
-            // Very short tokens (≤30s): minimal buffer preserves most lifetime
-            ['expiresIn' => 10, 'expectedNotExpired' => true, 'description' => '10s token with minimal buffer'],
-            ['expiresIn' => 20, 'expectedNotExpired' => true, 'description' => '20s token with minimal buffer'],
-            ['expiresIn' => 30, 'expectedNotExpired' => true, 'description' => '30s token with minimal buffer'],
+            // Very short tokens (≤10s): no buffer to preserve all time
+            ['expiresIn' => 1, 'expectedNotExpired' => true, 'description' => '1s token with no buffer'],
+            ['expiresIn' => 5, 'expectedNotExpired' => true, 'description' => '5s token with no buffer'],
+            ['expiresIn' => 10, 'expectedNotExpired' => true, 'description' => '10s token with no buffer'],
 
-            // Short tokens (30s-1min): 10% buffer
-            ['expiresIn' => 45, 'expectedNotExpired' => true, 'description' => '45s token with 10% buffer'],
-            ['expiresIn' => 60, 'expectedNotExpired' => true, 'description' => '60s token with 10% buffer'],
+            // Short tokens (10-30s): 10% buffer (1-3s range)
+            ['expiresIn' => 15, 'expectedNotExpired' => true, 'description' => '15s token with 1s buffer'],
+            ['expiresIn' => 20, 'expectedNotExpired' => true, 'description' => '20s token with 2s buffer'],
+            ['expiresIn' => 30, 'expectedNotExpired' => true, 'description' => '30s token with 3s buffer'],
 
-            // Medium tokens (1-5min): 20% buffer
-            ['expiresIn' => 120, 'expectedNotExpired' => true, 'description' => '2min token with 20% buffer'],
-            ['expiresIn' => 300, 'expectedNotExpired' => true, 'description' => '5min token with 20% buffer'],
+            // Short tokens (30s-1min): 10% buffer (max 6s)
+            ['expiresIn' => 45, 'expectedNotExpired' => true, 'description' => '45s token with 4s buffer'],
+            ['expiresIn' => 60, 'expectedNotExpired' => true, 'description' => '60s token with 6s buffer'],
+
+            // Medium tokens (1-5min): 20% buffer (max 60s)
+            ['expiresIn' => 120, 'expectedNotExpired' => true, 'description' => '2min token with 24s buffer'],
+            ['expiresIn' => 300, 'expectedNotExpired' => true, 'description' => '5min token with 60s buffer'],
 
             // Long tokens (>5min): 60s buffer
             ['expiresIn' => 600, 'expectedNotExpired' => true, 'description' => '10min token with 60s buffer'],

@@ -64,9 +64,12 @@ readonly class OauthData
         } elseif ($expiresIn > 30) {
             // Short tokens (30s-1min): 10% buffer (max 6s)
             $safetyBuffer = min(6, (int) ($expiresIn * 0.1));
+        } elseif ($expiresIn > 10) {
+            // Short tokens (10-30s): 10% buffer (minimum 1s, maximum 3s)
+            $safetyBuffer = max(1, min(3, (int) ($expiresIn * 0.1)));
         } else {
-            // Very short tokens (≤30s): minimal 2s buffer or 5% of lifetime, whichever is smaller
-            $safetyBuffer = min(2, max(1, (int) ($expiresIn * 0.05)));
+            // Very short tokens (≤10s): no buffer to preserve all usable time
+            $safetyBuffer = 0;
         }
 
         return time() + $expiresIn - $safetyBuffer;
