@@ -151,10 +151,7 @@ class Client
     private function makeRequest(string $method, string $endpoint, array $options = [], bool $isRetry = false): Response
     {
         $this->ensureValidOauthData();
-
-        $requestOptions = array_merge_recursive($options, [
-            'headers' => $this->getAuthHeaders(),
-        ]);
+        $requestOptions = $this->addAuthHeadersToRequestOptions($options);
 
         try {
             $response = $this->client->request($method, $endpoint, $requestOptions);
@@ -249,14 +246,24 @@ class Client
     }
 
     /**
-     * Generate authentication headers for the request.
-     *
-     * @return array<string,string>
+     * Add Authorization header to request options.
      */
-    private function getAuthHeaders(): array
+    private function addAuthHeadersToRequestOptions(array $options): array
     {
-        return [
-            'Authorization' => 'Bearer '.$this->oauthData?->accessToken,
-        ];
+        return $this->setRequestOptionsHeader($options, 'Authorization', 'Bearer '.$this->oauthData?->accessToken);
+    }
+
+    /**
+     * Set a header in the request options.
+     */
+    private function setRequestOptionsHeader(array $options, string $name, string $value): array
+    {
+        if (! isset($options['headers'])) {
+            $options['headers'] = [];
+        }
+
+        $options['headers'][$name] = $value;
+
+        return $options;
     }
 }
