@@ -25,6 +25,9 @@ down:
 shell: up
 	docker-compose exec php sh
 
+## sh: Alias for shell command
+sh: shell
+
 ## install: Install Composer dependencies
 install: up
 	docker-compose exec php git config --global --add safe.directory /app || true
