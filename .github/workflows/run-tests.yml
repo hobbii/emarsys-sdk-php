@@ -1,4 +1,4 @@
-name: Analyse and tests
+name: Format, analyse and test
 
 on:
   push:
@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -43,6 +45,14 @@ jobs:
 
       - name: List Installed Dependencies
         run: composer show -D
+
+      - name: Fix PHP code style issues
+        run: composer format
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: Fix styling
 
       - name: Analyse and run tests
         run: composer analyse && composer test
