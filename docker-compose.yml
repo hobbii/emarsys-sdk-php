@@ -7,8 +7,6 @@ services:
     volumes:
       # Mount source code for development
       - .:/app
-      # Persist vendor directory for better performance
-      - vendor:/app/vendor
     working_dir: /app
     environment:
       # Pass through environment variables for integration tests
@@ -16,7 +14,3 @@ services:
       - EMARSYS_CLIENT_SECRET=${EMARSYS_CLIENT_SECRET:-}
       - EMARSYS_BASE_URL=${EMARSYS_BASE_URL:-}
     command: tail -f /dev/null  # Keep container running
-
-volumes:
-  vendor:
-
