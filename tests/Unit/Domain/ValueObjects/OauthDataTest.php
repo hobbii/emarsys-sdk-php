@@ -197,11 +197,22 @@ class OauthDataTest extends TestCase
     {
         // Test that different token lifetimes use appropriate safety buffers
         $testCases = [
-            ['expiresIn' => 10, 'expectedNotExpired' => true],
-            ['expiresIn' => 30, 'expectedNotExpired' => true],
-            ['expiresIn' => 60, 'expectedNotExpired' => true],
-            ['expiresIn' => 120, 'expectedNotExpired' => true],
-            ['expiresIn' => 3600, 'expectedNotExpired' => true],
+            // Very short tokens (≤30s): minimal buffer preserves most lifetime
+            ['expiresIn' => 10, 'expectedNotExpired' => true, 'description' => '10s token with minimal buffer'],
+            ['expiresIn' => 20, 'expectedNotExpired' => true, 'description' => '20s token with minimal buffer'],
+            ['expiresIn' => 30, 'expectedNotExpired' => true, 'description' => '30s token with minimal buffer'],
+
+            // Short tokens (30s-1min): 10% buffer
+            ['expiresIn' => 45, 'expectedNotExpired' => true, 'description' => '45s token with 10% buffer'],
+            ['expiresIn' => 60, 'expectedNotExpired' => true, 'description' => '60s token with 10% buffer'],
+
+            // Medium tokens (1-5min): 20% buffer
+            ['expiresIn' => 120, 'expectedNotExpired' => true, 'description' => '2min token with 20% buffer'],
+            ['expiresIn' => 300, 'expectedNotExpired' => true, 'description' => '5min token with 20% buffer'],
+
+            // Long tokens (>5min): 60s buffer
+            ['expiresIn' => 600, 'expectedNotExpired' => true, 'description' => '10min token with 60s buffer'],
+            ['expiresIn' => 3600, 'expectedNotExpired' => true, 'description' => '1hr token with 60s buffer'],
         ];
 
         foreach ($testCases as $testCase) {
@@ -216,8 +227,43 @@ class OauthDataTest extends TestCase
             $this->assertSame(
                 $testCase['expectedNotExpired'],
                 ! $oauth->isExpired(),
-                "Token with {$testCase['expiresIn']} seconds should not be immediately expired"
+                $testCase['description'].' should not be immediately expired'
             );
         }
+    }
+
+    public function test_very_short_token_preserves_most_lifetime(): void
+    {
+        // Arrange - 10 second token should have minimal buffer
+        $expiresIn = 10;
+
+        // Act
+        $oauth = new OauthData(
+            accessToken: 'test-token',
+            tokenType: 'Bearer',
+            expiresIn: $expiresIn
+        );
+
+        // Assert - should not be expired and preserve most of the 10 seconds
+        $this->assertFalse($oauth->isExpired());
+
+        // The buffer should be minimal (1-2 seconds max) to preserve usable lifetime
+        // We can't test exact timing, but we verify it's not immediately expired
+    }
+
+    public function test_edge_case_very_short_token(): void
+    {
+        // Arrange - test with a 5 second token (extreme edge case)
+        $expiresIn = 5;
+
+        // Act
+        $oauth = new OauthData(
+            accessToken: 'test-token',
+            tokenType: 'Bearer',
+            expiresIn: $expiresIn
+        );
+
+        // Assert - even 5 second tokens should not be immediately expired
+        $this->assertFalse($oauth->isExpired());
     }
 }

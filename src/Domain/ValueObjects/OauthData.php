@@ -20,7 +20,7 @@ readonly class OauthData
         public ?string $scope = null,
     ) {
         $this->validateAccessToken();
-        $this->setupExpiredAt();
+        $this->expiresAt = $this->calculateExpiresAt($expiresIn);
     }
 
     private function validateAccessToken(): void
@@ -28,14 +28,6 @@ readonly class OauthData
         if (empty($this->accessToken)) {
             throw new InvalidArgumentException('Access token cannot be empty');
         }
-    }
-
-    private function setupExpiredAt(): void
-    {
-        // Use a safety buffer that doesn't exceed the token lifetime
-        // For tokens > 120s: 60s buffer, for shorter tokens: 50% of lifetime (minimum 5s)
-        $safetyBuffer = $this->expiresIn > 120 ? 60 : max(5, (int) ($this->expiresIn * 0.5));
-        $this->expiresAt = time() + $this->expiresIn - $safetyBuffer;
     }
 
     public function isExpired(): bool
@@ -58,5 +50,25 @@ readonly class OauthData
             expiresIn: (int) $arr['expires_in'],
             scope: $arr['scope'] ?? null,
         );
+    }
+
+    private function calculateExpiresAt(int $expiresIn): int
+    {
+        // Use a progressive safety buffer that preserves usable lifetime for short tokens
+        if ($expiresIn > 300) {
+            // Long-lived tokens (>5 min): 60s buffer
+            $safetyBuffer = 60;
+        } elseif ($expiresIn > 60) {
+            // Medium tokens (1-5 min): 20% buffer (max 60s)
+            $safetyBuffer = min(60, (int) ($expiresIn * 0.2));
+        } elseif ($expiresIn > 30) {
+            // Short tokens (30s-1min): 10% buffer (max 6s)
+            $safetyBuffer = min(6, (int) ($expiresIn * 0.1));
+        } else {
+            // Very short tokens (≤30s): minimal 2s buffer or 5% of lifetime, whichever is smaller
+            $safetyBuffer = min(2, max(1, (int) ($expiresIn * 0.05)));
+        }
+
+        return time() + $expiresIn - $safetyBuffer;
     }
 }
