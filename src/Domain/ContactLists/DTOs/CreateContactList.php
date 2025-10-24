@@ -13,7 +13,7 @@ class CreateContactList
 {
     public function __construct(
         public string $name,
-        public string $description,
+        public ?string $description = null,
         public string $keyId = 'email',
         /** @var array<int|string|array<int>> */
         public array $externalIds = [],
@@ -26,11 +26,11 @@ class CreateContactList
      */
     public function toArray(): array
     {
-        return [
+        return array_filter([
             'name' => $this->name,
             'description' => $this->description,
             'key_id' => $this->keyId,
             'external_ids' => $this->externalIds,
-        ];
+        ], fn ($value) => $value !== null);
     }
 }

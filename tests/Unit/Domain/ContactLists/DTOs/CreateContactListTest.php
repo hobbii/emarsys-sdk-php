@@ -12,12 +12,11 @@ class CreateContactListTest extends TestCase
     public function test_can_be_created_with_required_fields(): void
     {
         $createData = new CreateContactList(
-            name: 'Test List',
-            description: 'A test contact list',
+            name: 'Test List'
         );
 
         $this->assertSame('Test List', $createData->name);
-        $this->assertSame('A test contact list', $createData->description);
+        $this->assertNull($createData->description);
         $this->assertSame('email', $createData->keyId);
         $this->assertEmpty($createData->externalIds);
     }
