@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/vendor/autoload.php';
 
+use Hobbii\Emarsys\Client;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 use Hobbii\Emarsys\Tests\Integration\ContactListsIntegrationTest;
@@ -69,7 +70,11 @@ try {
     echo "🧪 Emarsys SDK Integration Test Runner\n";
     echo "=====================================\n\n";
 
-    $tests = getTests($testName, $availableTests);
+    $client = new Client($clientId, $clientSecret);
+
+    echo "✅ Client created successfully\n";
+
+    $tests = createTests($testName, $availableTests, $client);
 
     foreach ($tests as $test) {
         echo 'Running Test: '.get_class($test)."...\n\n";
@@ -87,10 +92,10 @@ try {
     echoExceptionDetails($e);
 }
 
-function getTests(string $testName, array $availableTests): array
+function createTests(string $testName, array $availableTests, Client $client): array
 {
     if ($testName === 'all') {
-        $test = array_values($availableTests);
+        $tests = array_values($availableTests);
     } else {
         $availableTestNames = array_keys($availableTests);
 
@@ -100,10 +105,10 @@ function getTests(string $testName, array $availableTests): array
             exit(0);
         }
 
-        $test = $availableTests[$testName];
+        $tests = [$availableTests[$testName]];
     }
 
-    return is_array($test) ? array_map(fn ($t) => new $t, $test) : [new $test];
+    return array_map(fn ($t) => new $t($client), $tests);
 }
 
 function echoUsageInfo(): void

@@ -9,16 +9,12 @@ use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 
 class ContactListsIntegrationTest
 {
+    public function __construct(private readonly Client $client) {}
+
     public function run(): void
     {
-        global $clientId, $clientSecret, $baseUrl;
-
-        echo "1️⃣  Initializing Emarsys client...\n";
-        $client = new Client($clientId, $clientSecret, $baseUrl);
-        echo "   ✅ Client initialized successfully\n\n";
-
-        echo "2️⃣  Testing: List existing contact lists...\n";
-        $existingLists = $client->contactLists()->list();
+        echo "⚒️  Testing: List existing contact lists...\n";
+        $existingLists = $this->client->contactLists()->list();
         echo "   ✅ Successfully retrieved contact lists\n";
         echo "   📊 Found {$existingLists->count()} contact lists\n";
 
@@ -30,19 +26,19 @@ class ContactListsIntegrationTest
         }
         echo "\n";
 
-        echo "3️⃣  Testing: Create a test contact list...\n";
+        echo "⚒️  Testing: Create a test contact list...\n";
         $testListName = 'SDK Test List '.date('Y-m-d H:i:s');
         $createData = new CreateContactList(
             name: $testListName,
             description: 'Test contact list created by Emarsys SDK integration test',
         );
 
-        $contactListId = $client->contactLists()->create($createData);
+        $contactListId = $this->client->contactLists()->create($createData);
         echo "   ✅ Successfully created contact list\n";
         echo "   📝 ID: {$contactListId}\n";
 
-        echo "4️⃣  Testing: Verify new list appears in list...\n";
-        $updatedLists = $client->contactLists()->list();
+        echo "⚒️  Testing: Verify new list appears in list...\n";
+        $updatedLists = $this->client->contactLists()->list();
         $foundNewList = false;
         foreach ($updatedLists->items as $list) {
             if ($list->id === $contactListId) {
@@ -58,20 +54,20 @@ class ContactListsIntegrationTest
             echo "   ⚠️  New contact list not found in list (might be a timing issue)\n\n";
         }
 
-        echo "5️⃣  Testing: Delete test contact list (cleanup)...\n";
+        echo "⚒️  Testing: Delete test contact list (cleanup)...\n";
         echo "\n\n\n\n ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ \n\n ";
         echo "Warning: For some reason Emarsys API returns 403 Forbidden on delete in sandbox accounts.\n";
         echo "         If you see this message, please verify deletion manually in Emarsys UI.\n";
         echo "\n\n ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ \n\n\n\n ";
-        // $deleteSuccess = $client->contactLists()->delete($contactListId);
+        // $deleteSuccess = $this->client->contactLists()->delete($contactListId);
 
         // if ($deleteSuccess) {
         //     echo "   ✅ Successfully deleted test contact list\n";
         //     echo "   🧹 Cleanup completed\n\n";
         // }
 
-        echo "6️⃣  Final verification: Confirm deletion...\n";
-        $finalLists = $client->contactLists()->list();
+        echo "⚒️  Final verification: Confirm deletion...\n";
+        $finalLists = $this->client->contactLists()->list();
         $deletedListFound = false;
         foreach ($finalLists->items as $list) {
             if ($list->id === $contactListId) {
