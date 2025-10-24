@@ -35,13 +35,14 @@ COPY . .
 # Generate autoloader
 RUN composer dump-autoload --optimize
 
+# Configure git to trust the /app directory
+RUN git config --global --add safe.directory /app
+
 # Set up git hooks if needed
 RUN if [ -d .githooks ]; then \
-        git config --global --add safe.directory /app && \
         git config core.hooksPath .githooks && \
         find .githooks -type f -exec chmod +x {} \; || true; \
     fi
 
 # Default command
 CMD ["php", "--version"]
-

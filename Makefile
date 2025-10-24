@@ -27,6 +27,7 @@ shell: up
 
 ## install: Install Composer dependencies
 install: up
+	docker-compose exec php git config --global --add safe.directory /app || true
 	docker-compose exec php composer install
 
 ## test: Run PHPUnit tests
@@ -43,6 +44,7 @@ analyse: up
 
 ## check: Run all checks (format, analyse, test)
 check: up
+	docker-compose exec php git config --global --add safe.directory /app || true
 	docker-compose exec php composer check
 
 ## integration-test: Run integration tests (requires .env)
@@ -56,4 +58,3 @@ clean:
 
 ## rebuild: Clean and rebuild everything
 rebuild: clean build install
-
