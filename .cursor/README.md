@@ -42,12 +42,20 @@ The AI will automatically fetch relevant documentation from Context7 to answer y
 
 Contains markdown files with project-specific development guidelines:
 
-- **`main-instructions.mdc`** - Complete development guide including:
+- **`main-instructions.mdc`** - **Master AI instructions** for all assistants including:
   - Docker workflow
   - PHP best practices
   - Testing patterns
   - Code quality standards
   - Architecture guidelines
+
+**Unified AI Instruction Approach:**
+
+This project uses a unified instruction system:
+
+- **Master file:** `.cursor/rules/main-instructions.mdc` (comprehensive)
+- **Copilot reference:** `.github/copilot-instructions.md` (essential rules + pointer to master)
+- **Benefits:** Single source of truth, consistent guidance across all AI assistants
 
 See [main-instructions.mdc](rules/main-instructions.mdc) for full documentation.
 
@@ -119,4 +127,3 @@ When adding new MCP servers:
    - Prerequisites
 3. Test the configuration works
 4. Document any troubleshooting steps
-

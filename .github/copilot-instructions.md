@@ -1,53 +1,84 @@
-# GitHub Copilot Instructions for PHP Package
+# GitHub Copilot Instructions for Emarsys SDK PHP
 
-## General
-- Language: **PHP 8.3**
-- Frameworks: **Laravel 10** (optional, core logic should be framework-agnostic)
-- Code Style: **PSR-12**
-- Principles: **SOLID, KISS, DRY, Clean Architecture**
-- Strict typing: **enable `declare(strict_types=1)`**
-- Visibility: **prefer private/protected, public only for API**
+> **Note:** This file contains essential Copilot-specific instructions. For comprehensive development guidelines, see [.cursor/rules/main-instructions.mdc](../.cursor/rules/main-instructions.mdc)
 
-## Testing
-- Framework: **PHPUnit**
-- Coverage: **high**
-- Mocks: **use Mockery or PHPUnit built-in mocks**
-- Generate **unit and integration tests** for all classes
-- Use `composer test` to run tests
-- Use `composer analyse` for static analysis (PHPStan)
-- Use `composer format` for code formatting (Laravel Pint)
+## Quick Reference
 
-## Documentation
-- Use **PHPDoc for all classes and methods**, but not for trivial getters/setters
-- Provide **usage examples** in the README
+- **Language:** PHP 8.3+ with strict typing (`declare(strict_types=1)`)
+- **Code Style:** PSR-12 (auto-formatted with Laravel Pint)
+- **Architecture:** Domain-driven with immutable Value Objects and DTOs
+- **Testing:** PHPUnit with comprehensive unit/integration tests
+- **Quality:** PHPStan level 8, high test coverage
 
-## Class and Folder Structure
-- `src/Domain/` – core business logic
-- `src/Laravel/` – service providers, facades, Laravel-specific logic
-- `src/DTO/` – value objects and data transfer objects
-- `tests/Unit/` – unit tests
-- `tests/Integration/` – integration tests
+## Essential Rules for Code Generation
 
-## API Clients
-- Use **GuzzleHttp** for HTTP requests
-- Handle errors with **exceptions**
-- Optionally support **retry strategies** for external APIs
+### 1. Type Safety (Critical)
+```php
+<?php
 
-## Best Practices
-- Git branches:
-  - `main` – stable production
-  - `feature/*` – new features
-  - `fix/*` – bug fixes
-  - `hotfix/*` – urgent fixes
-  - `chore/*` – maintenance tasks
-- Commit messages: **Conventional Commits**
-- Releases: **semantic versioning (vX.Y.Z)**
+declare(strict_types=1);
 
-## Coding Style
-- All functions and methods should follow **single responsibility principle**
-- Use **type hints** for all parameters and return types
-- Keep code **framework-agnostic** unless explicitly in Laravel layer
+// All parameters and returns MUST be typed
+public function create(CreateContactList $dto): ContactList
+{
+    // ...
+}
+```
 
-## Examples
-- Provide **code snippets** in Copilot suggestions
-- Include **unit test examples** along with class suggestions
+### 2. Immutable Classes
+```php
+readonly class ContactList
+{
+    public function __construct(
+        public int $id,
+        public string $name,
+        public ?string $description,
+    ) {}
+}
+```
+
+### 3. Project Structure
+- `src/Domain/Feature/` - business logic (e.g., `ContactLists/`)
+- `src/Domain/Feature/DTOs/` - input objects
+- `src/Domain/Feature/ValueObjects/` - output objects
+- Tests mirror source structure
+
+### 4. Exception Hierarchy
+```php
+EmarsysException (base)
+├─> AuthenticationException
+├─> RateLimitException
+└─> ApiException
+```
+
+### 5. Testing Pattern
+```php
+public function test_descriptive_action_and_expected_outcome(): void
+{
+    // Arrange
+    $client = $this->createClientWithMockHandler([/* responses */]);
+
+    // Act
+    $result = $client->someMethod();
+
+    // Assert
+    $this->assertInstanceOf(ExpectedClass::class, $result);
+}
+```
+
+## Commands (Use Docker)
+- `make test` - run PHPUnit tests
+- `make analyse` - PHPStan static analysis
+- `make format` - Laravel Pint formatting
+- `make check` - all quality checks
+
+## When Generating Code
+
+1. **Always include `declare(strict_types=1)`**
+2. **Use `readonly` for immutable classes**
+3. **Generate corresponding unit tests**
+4. **Add PHPDoc for public methods**
+5. **Follow naming: `PascalCase` classes, `camelCase` methods**
+6. **Handle errors with specific exceptions**
+
+For detailed patterns, architecture decisions, Docker workflow, and troubleshooting, refer to the comprehensive guide in `.cursor/rules/main-instructions.mdc`.
