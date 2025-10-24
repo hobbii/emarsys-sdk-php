@@ -20,7 +20,7 @@ readonly class OauthData
         public ?string $scope = null,
     ) {
         $this->validateAccessToken();
-        $this->expiresAt = time() + $expiresIn - 60; // Refresh 1 minute early
+        $this->setupExpiredAt();
     }
 
     private function validateAccessToken(): void
@@ -28,6 +28,14 @@ readonly class OauthData
         if (empty($this->accessToken)) {
             throw new InvalidArgumentException('Access token cannot be empty');
         }
+    }
+
+    private function setupExpiredAt(): void
+    {
+        // Use a safety buffer that doesn't exceed the token lifetime
+        // For tokens > 120s: 60s buffer, for shorter tokens: 50% of lifetime (minimum 5s)
+        $safetyBuffer = $this->expiresIn > 120 ? 60 : max(5, (int) ($this->expiresIn * 0.5));
+        $this->expiresAt = time() + $this->expiresIn - $safetyBuffer;
     }
 
     public function isExpired(): bool
