@@ -26,7 +26,7 @@ use Hobbii\Emarsys\Tests\Integration\QuickConnectionTest;
 use Symfony\Component\Dotenv\Dotenv;
 
 $dotenv = new Dotenv;
-$dotenv->load(__DIR__.'/.env');
+$dotenv->bootEnv(__DIR__.'/.env');
 
 // Check for credentials
 $clientId = $_ENV['EMARSYS_CLIENT_ID'] ?? null;
