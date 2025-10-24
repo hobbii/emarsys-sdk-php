@@ -29,6 +29,8 @@ class Client
 
     /**
      * Oauth2 token endpoint
+     *
+     * Important: it must not end with `/` at the end
      */
     private const OAUTH2_TOKEN_URL = 'https://auth.emarsys.net/oauth2/token';
 
@@ -206,9 +208,7 @@ class Client
     private function refreshOauthData(): OauthData
     {
         try {
-            // Important: it must not end with `/` at the end
-            $oauthTokenUrl = rtrim(self::OAUTH2_TOKEN_URL, '/');
-            $response = $this->client->request('POST', $oauthTokenUrl, [
+            $response = $this->client->request('POST', self::OAUTH2_TOKEN_URL, [
                 'auth' => [$this->clientId, $this->clientSecret],
                 'form_params' => [
                     'grant_type' => 'client_credentials',
