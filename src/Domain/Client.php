@@ -217,7 +217,6 @@ class Client
                     'Content-Type' => 'application/x-www-form-urlencoded',
                     'Accept' => 'application/json',
                 ],
-                'timeout' => 10,
             ]);
 
             $body = $response->getBody()->getContents();
