@@ -19,6 +19,9 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Format PHP code
+        run: composer format
+
       - name: Fix PHP code style issues
         uses: aglipanci/laravel-pint-action@2.6
 
