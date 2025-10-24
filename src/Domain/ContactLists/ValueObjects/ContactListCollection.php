@@ -23,11 +23,11 @@ readonly class ContactListCollection
 
     private function validateItems(array $items): void
     {
-        array_walk($items, function ($item) {
+        foreach ($items as $item) {
             if (! $item instanceof ContactList) {
                 throw new InvalidArgumentException('All items must be instances of ContactList');
             }
-        });
+        }
     }
 
     /**
