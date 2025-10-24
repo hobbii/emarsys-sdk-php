@@ -197,10 +197,14 @@ class OauthDataTest extends TestCase
     {
         // Test that different token lifetimes use appropriate safety buffers
         $testCases = [
-            // Very short tokens (≤10s): no buffer to preserve all time
+            // Very short tokens (≤2s): no buffer to preserve usable time
             ['expiresIn' => 1, 'expectedNotExpired' => true, 'description' => '1s token with no buffer'],
-            ['expiresIn' => 5, 'expectedNotExpired' => true, 'description' => '5s token with no buffer'],
-            ['expiresIn' => 10, 'expectedNotExpired' => true, 'description' => '10s token with no buffer'],
+            ['expiresIn' => 2, 'expectedNotExpired' => true, 'description' => '2s token with no buffer'],
+
+            // Short tokens (3-10s): 1s buffer for safety
+            ['expiresIn' => 3, 'expectedNotExpired' => true, 'description' => '3s token with 1s buffer'],
+            ['expiresIn' => 5, 'expectedNotExpired' => true, 'description' => '5s token with 1s buffer'],
+            ['expiresIn' => 10, 'expectedNotExpired' => true, 'description' => '10s token with 1s buffer'],
 
             // Short tokens (10-30s): 10% buffer (1-3s range)
             ['expiresIn' => 15, 'expectedNotExpired' => true, 'description' => '15s token with 1s buffer'],
@@ -237,10 +241,10 @@ class OauthDataTest extends TestCase
         }
     }
 
-    public function test_very_short_token_preserves_most_lifetime(): void
+    public function test_very_short_token_has_minimal_safety_buffer(): void
     {
-        // Arrange - 10 second token should have minimal buffer
-        $expiresIn = 10;
+        // Arrange - 3 second token should have minimal 1s buffer for safety
+        $expiresIn = 3;
 
         // Act
         $oauth = new OauthData(
@@ -249,17 +253,17 @@ class OauthDataTest extends TestCase
             expiresIn: $expiresIn
         );
 
-        // Assert - should not be expired and preserve most of the 10 seconds
+        // Assert - should not be expired but should have 1s buffer to prevent race conditions
         $this->assertFalse($oauth->isExpired());
 
-        // The buffer should be minimal (1-2 seconds max) to preserve usable lifetime
+        // For tokens > 2s, we apply 1s buffer to prevent network latency/clock skew issues
         // We can't test exact timing, but we verify it's not immediately expired
     }
 
     public function test_edge_case_very_short_token(): void
     {
-        // Arrange - test with a 5 second token (extreme edge case)
-        $expiresIn = 5;
+        // Arrange - test with a 1 second token (extreme edge case)
+        $expiresIn = 1;
 
         // Act
         $oauth = new OauthData(
@@ -268,7 +272,28 @@ class OauthDataTest extends TestCase
             expiresIn: $expiresIn
         );
 
-        // Assert - even 5 second tokens should not be immediately expired
+        // Assert - 1 second tokens get no buffer to preserve any usable time
+        // They accept the race condition risk to remain functional
         $this->assertFalse($oauth->isExpired());
+    }
+
+    public function test_two_second_token_boundary(): void
+    {
+        // Arrange - test the boundary case: 2s tokens get no buffer, 3s+ get 1s buffer
+        $twoSecondToken = new OauthData(
+            accessToken: 'test-token',
+            tokenType: 'Bearer',
+            expiresIn: 2
+        );
+
+        $threeSecondToken = new OauthData(
+            accessToken: 'test-token',
+            tokenType: 'Bearer',
+            expiresIn: 3
+        );
+
+        // Assert - both should not be immediately expired
+        $this->assertFalse($twoSecondToken->isExpired());
+        $this->assertFalse($threeSecondToken->isExpired());
     }
 }
