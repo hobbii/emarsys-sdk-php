@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
+use Hobbii\Emarsys\Domain\Exceptions\RateLimitException;
 use Hobbii\Emarsys\Domain\ValueObjects\OauthData;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 
@@ -166,6 +167,10 @@ class Client
 
             if ($statusCode === 403) {
                 throw new ApiException('Access forbidden - insufficient permissions for this endpoint', previous: $e);
+            }
+
+            if ($statusCode === 429) {
+                throw RateLimitException::fromPsrResponse($e->getResponse(), $e);
             }
 
             throw new ApiException('Client error occurred', previous: $e);

@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+.gitattributes
+.githooks
+
+# CI/CD
+.github
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
+vendor/
+
+# Testing
+.phpunit.cache
+.phpunit.result.cache
+
+# Documentation
+*.md
+!README.md
+CHANGELOG.md
+LICENSE.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.log
+

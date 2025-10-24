@@ -124,6 +124,7 @@ The SDK provides comprehensive error handling with custom exception classes:
 - `EmarsysException` - Base exception for all SDK errors
 - `ApiException` - General API errors with HTTP status codes and response details
 - `AuthenticationException` - Authentication failures
+- `RateLimitException` - Rate limit exceeded (429 responses)
 
 ```php
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
@@ -142,9 +143,140 @@ try {
 }
 ```
 
+### Rate Limiting
+
+The Emarsys API enforces rate limits to ensure fair usage and maintain system stability. When the rate limit is exceeded, the API returns a 429 (Too Many Requests) response, and the SDK throws a `RateLimitException`.
+
+**Emarsys Rate Limit Headers:**
+- `X-RateLimit-Limit`: Request limit per minute
+- `X-Ratelimit-Remaining`: The number of requests left for the time window
+- `X-RateLimit-Reset`: The time when the rate limit window resets (Unix timestamp)
+
+The exception includes all rate limit information:
+
+```php
+use Hobbii\Emarsys\Domain\Exceptions\RateLimitException;
+
+try {
+    $contactLists = $client->contactLists()->list();
+} catch (RateLimitException $e) {
+    // Get information about the rate limit
+    echo "Rate limit exceeded!\n";
+    echo "Retry after: {$e->retryAfterSeconds} seconds\n";
+    
+    if ($e->resetTimestamp !== null) {
+        $resetTime = date('Y-m-d H:i:s', $e->resetTimestamp);
+        echo "Rate limit resets at: {$resetTime}\n";
+    }
+    
+    if ($e->limitRemaining !== null) {
+        echo "Requests remaining: {$e->limitRemaining}\n";
+    }
+    
+    if ($e->limitTotal !== null) {
+        echo "Total limit: {$e->limitTotal} per minute\n";
+    }
+    
+    // Wait and retry
+    sleep($e->retryAfterSeconds);
+    $contactLists = $client->contactLists()->list();
+}
+```
+
+**Note:** In the current version (v1.0.0-RC1), rate limit handling is manual - you need to catch the exception and implement retry logic yourself. Automatic retry with exponential backoff is planned for a future release. See `RATE_LIMITING_SPEC.md` for details.
+
 ## Data Transfer Objects (DTOs)
 
 The SDK uses type-safe DTOs for all data exchange:
+
+## Docker Development Environment
+
+A Docker setup is provided for consistent development and testing across different environments. This is especially useful if you have PHP version or extension conflicts on your local machine.
+
+### Prerequisites
+
+- Docker Desktop or Docker Engine
+- Docker Compose (included with Docker Desktop)
+
+### Quick Start with Docker
+
+```bash
+# Build and start the container
+make up
+
+# Install dependencies
+make install
+
+# Run tests
+make test
+
+# Run all checks (format, analyse, test)
+make check
+
+# Open an interactive shell
+make shell
+```
+
+### Available Make Commands
+
+```bash
+make help            # Display all available commands
+make build           # Build the Docker image
+make up              # Start the container
+make down            # Stop the container
+make shell           # Open interactive shell
+make install         # Install composer dependencies
+make test            # Run PHPUnit tests
+make format          # Format code with Pint
+make analyse         # Run PHPStan analysis
+make check           # Run all checks
+make integration-test # Run integration tests
+make clean           # Remove containers and volumes
+make rebuild         # Clean and rebuild everything
+```
+
+### Using Docker Compose Directly
+
+If you prefer to use Docker Compose directly:
+
+```bash
+# Start container
+docker-compose up -d
+
+# Run tests
+docker-compose exec php composer test
+
+# Run PHPStan
+docker-compose exec php composer analyse
+
+# Format code
+docker-compose exec php composer format
+
+# Open shell
+docker-compose exec php sh
+
+# Stop container
+docker-compose down
+```
+
+### Environment Variables for Integration Tests
+
+To run integration tests with Docker, pass your credentials as environment variables:
+
+```bash
+# Set environment variables in your shell
+export EMARSYS_CLIENT_ID='your-client-id'
+export EMARSYS_CLIENT_SECRET='your-client-secret'
+
+# Or create a .env file (recommended)
+cp .env.example .env
+# Edit .env with your credentials
+
+# Run integration tests
+make integration-test
+```
+
+The Docker setup automatically passes through `EMARSYS_*` environment variables to the container.
 
 ## Testing
 
