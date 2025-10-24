@@ -49,7 +49,6 @@ class CreateContactListTest extends TestCase
             'name' => 'Test List',
             'description' => 'A test contact list',
             'key_id' => 'email',
-            'external_ids' => [],
         ];
 
         $this->assertEquals($expected, $array);

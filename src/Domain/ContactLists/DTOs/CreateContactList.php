@@ -15,8 +15,8 @@ class CreateContactList
         public string $name,
         public ?string $description = null,
         public string $keyId = 'email',
-        /** @var array<int|string|array<int>> */
-        public array $externalIds = [],
+        /** @var array<int|string|array<int>>|null */
+        public ?array $externalIds = null,
     ) {}
 
     /**
