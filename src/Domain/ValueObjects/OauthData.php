@@ -52,6 +52,21 @@ readonly class OauthData
         );
     }
 
+    /**
+     * Calculate the expiration timestamp with appropriate safety buffer.
+     *
+     * IMPORTANT: This method assumes that expiresIn represents the remaining lifetime
+     * from the current moment (time()). This is typically correct when processing
+     * an OAuth response immediately, but may be inaccurate if there are significant
+     * delays between receiving the OAuth response and constructing this object.
+     *
+     * For production use, minimize the time between OAuth response and object construction.
+     * If you need to account for known delays, consider subtracting them from expiresIn
+     * before passing to the constructor.
+     *
+     * @param  int  $expiresIn  Token lifetime in seconds from now
+     * @return int Unix timestamp when token should be considered expired
+     */
     private function calculateExpiresAt(int $expiresIn): int
     {
         // Use a progressive safety buffer that preserves usable lifetime while preventing race conditions
@@ -68,8 +83,9 @@ readonly class OauthData
             // Short tokens (10-30s): 10% buffer (minimum 1s, maximum 3s)
             $safetyBuffer = max(1, min(3, (int) ($expiresIn * 0.1)));
         } else {
-            // Very short tokens (≤10s): minimum 1s buffer, but never exceed 50% of token lifetime
-            // For tokens ≤ 2s, use no buffer to preserve any usable time
+            // Very short tokens (≤10s): apply minimal buffer to preserve usability
+            // For tokens ≤ 2s: no buffer (accept race condition risk for functionality)
+            // For tokens 3-10s: 1s buffer (minimal safety vs network latency)
             $safetyBuffer = $expiresIn <= 2 ? 0 : 1;
         }
 
