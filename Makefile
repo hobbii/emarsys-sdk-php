@@ -48,8 +48,9 @@ check: up
 	docker-compose exec php composer check
 
 ## integration-test: Run integration tests (requires .env)
+## Usage: make integration-test [test=test-name]
 integration-test: up
-	docker-compose exec php composer test-integration
+	docker-compose exec php composer test-integration $(test)
 
 ## clean: Remove containers, volumes, and vendor directory
 clean:
