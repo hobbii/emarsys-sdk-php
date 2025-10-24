@@ -102,12 +102,16 @@ class Client
     /**
      * Make a DELETE request to the API.
      *
+     * @param  array<string,mixed>  $query  URL query parameters
+     *
      * @throws ApiException
      * @throws AuthenticationException
      */
-    public function delete(string $endpoint): Response
+    public function delete(string $endpoint, array $query = []): Response
     {
-        return $this->request('DELETE', $endpoint);
+        return $this->request('DELETE', $endpoint, [
+            'query' => $query,
+        ]);
     }
 
     /**
