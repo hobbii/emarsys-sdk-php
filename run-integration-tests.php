@@ -23,23 +23,10 @@ use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 use Hobbii\Emarsys\Tests\Integration\ContactListsIntegrationTest;
 use Hobbii\Emarsys\Tests\Integration\QuickConnectionTest;
+use Symfony\Component\Dotenv\Dotenv;
 
-// Load .env file if it exists
-if (file_exists(__DIR__.'/.env')) {
-    $envLines = file(__DIR__.'/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($envLines as $line) {
-        if (strpos($line, '#') === 0 || strpos($line, '=') === false) {
-            continue; // Skip comments and invalid lines
-        }
-        [$key, $value] = explode('=', $line, 2);
-        $key = trim($key);
-        $value = trim($value, " \t\n\r\0\x0B\"'"); // Remove quotes and whitespace
-        if (! empty($key) && ! isset($_ENV[$key])) {
-            $_ENV[$key] = $value;
-            putenv("$key=$value");
-        }
-    }
-}
+$dotenv = new Dotenv;
+$dotenv->load(__DIR__.'/.env');
 
 // Check for credentials
 $clientId = $_ENV['EMARSYS_CLIENT_ID'] ?? null;
