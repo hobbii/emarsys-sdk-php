@@ -103,32 +103,6 @@ class BaseClient
     }
 
     /**
-     * Make a request to the API with OAuth token refresh handling.
-     *
-     * @param  array<string,mixed>  $options  Client options
-     *
-     * @throws ApiException
-     * @throws AuthenticationException
-     */
-    private function request(string $method, string $endpoint, array $options = []): Response
-    {
-        return $this->makeRequest($method, $endpoint, $options);
-    }
-
-    /**
-     * Retry the request after refreshing the OAuth token.
-     *
-     * @param  array<string,mixed>  $options  Client options
-     *
-     * @throws ApiException
-     * @throws AuthenticationException
-     */
-    private function retryRequest(string $method, string $endpoint, array $options = []): Response
-    {
-        return $this->makeRequest($method, $endpoint, $options, true);
-    }
-
-    /**
      * Make an authenticated request to the API with retry logic.
      *
      * @param  array<string,mixed>  $options  Client options
@@ -136,7 +110,7 @@ class BaseClient
      * @throws ApiException
      * @throws AuthenticationException
      */
-    private function makeRequest(string $method, string $endpoint, array $options = [], bool $isRetry = false): Response
+    private function request(string $method, string $endpoint, array $options = [], bool $isRetry = false): Response
     {
         $requestOptions = $this->oauthClient->addAuthHeadersToRequestOptions($options);
 
@@ -163,7 +137,7 @@ class BaseClient
                     $this->oauthClient->resetOauthData();
 
                     // For retry, use original options (without auth headers from first attempt)
-                    return $this->retryRequest($method, $endpoint, $options);
+                    return $this->request($method, $endpoint, $options, isRetry: true);
                 }
 
                 throw new AuthenticationException('Authentication failed', previous: $e);
