@@ -31,7 +31,7 @@ class OauthClient
         $this->client = $client ?? new Client([
             'base_uri' => self::OAUTH2_TOKEN_URL,
             'auth' => [$clientId, $clientSecret],
-            'timeout' => 30,
+            'timeout' => 10,
             'headers' => [
                 'Content-Type' => 'application/x-www-form-urlencoded',
                 'Accept' => 'application/json',

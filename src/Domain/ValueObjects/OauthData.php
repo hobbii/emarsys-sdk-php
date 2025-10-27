@@ -60,10 +60,6 @@ readonly class OauthData
      * an OAuth response immediately, but may be inaccurate if there are significant
      * delays between receiving the OAuth response and constructing this object.
      *
-     * For production use, minimize the time between OAuth response and object construction.
-     * If you need to account for known delays, consider subtracting them from expiresIn
-     * before passing to the constructor.
-     *
      * @param  int  $expiresIn  Token lifetime in seconds from now
      * @return int Unix timestamp when token should be considered expired
      */
