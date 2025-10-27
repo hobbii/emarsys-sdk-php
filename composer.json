@@ -1,45 +1,58 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "hobbii/emarsys-sdk-php",
+    "description": "Emarsys SDK",
+    "version": "0.1.0",
     "keywords": [
-        ":vendor_name",
-        ":package_slug"
+        "hobbii",
+        "emarsys-sdk-php"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/hobbii/emarsys-sdk-php",
     "license": "MIT",
-    "authors": [
-        {
-            "name": ":author_name",
-            "email": "author@domain.com",
-            "role": "Developer"
-        }
-    ],
     "require": {
-        "php": "^8.4"
+        "php": "^8.3",
+        "guzzlehttp/guzzle": "^7.0",
+        "illuminate/collections": "^12.35"
     },
     "require-dev": {
-        :require_dev_testing,
-        :require_dev_codestyle,
-        "spatie/ray": "^1.28"
+        "laravel/pint": "^1.25",
+        "phpstan/phpstan": "^2.1.31",
+        "phpunit/phpunit": "^12.4",
+        "spatie/ray": "^1.28",
+        "symfony/dotenv": "^7.3",
+        "symfony/var-dumper": "^7.3"
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src"
+            "Hobbii\\Emarsys\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests"
+            "Hobbii\\Emarsys\\Tests\\": "tests"
         }
     },
     "scripts": {
-        :scripts_testing,
-        :scripts_codestyle
+        "test": "vendor/bin/phpunit --no-coverage",
+        "format": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse",
+        "test-integration": "php run-integration-tests.php",
+        "check": [
+            "@format",
+            "@analyse",
+            "@test"
+        ],
+        "setup-git-hooks": [
+            "git config core.hooksPath .githooks",
+            "find .githooks -type f -exec chmod +x {} \\;"
+        ],
+        "post-install-cmd": [
+            "@setup-git-hooks"
+        ]
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            :plugins_testing,
+
             "phpstan/extension-installer": true
         }
     },

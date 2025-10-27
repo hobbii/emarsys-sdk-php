@@ -1,0 +1,16 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: emarsys-sdk-php
+    volumes:
+      # Mount source code for development
+      - .:/app
+    working_dir: /app
+    environment:
+      # Pass through environment variables for integration tests
+      - EMARSYS_CLIENT_ID=${EMARSYS_CLIENT_ID:-}
+      - EMARSYS_CLIENT_SECRET=${EMARSYS_CLIENT_SECRET:-}
+      - EMARSYS_BASE_URL=${EMARSYS_BASE_URL:-}
+    command: tail -f /dev/null  # Keep container running

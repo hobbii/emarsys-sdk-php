@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp-server",
+        "websites/dev_emarsys_core-api-reference"
+      ],
+      "env": {},
+      "description": "Emarsys Core API Reference documentation via Context7"
+    }
+  }
+}
+

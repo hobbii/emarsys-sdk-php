@@ -1,0 +1,11 @@
+parameters:
+	level: 8
+	paths:
+		- src
+		- tests/Unit
+	tmpDir: build/phpstan
+	treatPhpDocTypesAsCertain: false
+
+	ignoreErrors:
+		-
+			identifier: missingType.iterableValue

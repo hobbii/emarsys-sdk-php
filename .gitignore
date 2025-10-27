@@ -24,10 +24,15 @@ yarn-error.log
 .php_cs.cache
 .php-cs-fixer.cache
 
+# Static analysis
+/build/phpstan
+
 # Misc
 phpunit.xml
-phpstan.neon
 psalm.xml
 testbench.yaml
 /docs
 /coverage
+
+# Environment files with actual credentials
+.env
