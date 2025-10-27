@@ -66,6 +66,7 @@ class ContactListTest extends TestCase
         $this->assertSame(1, $contactList->id);
         $this->assertSame('Test List', $contactList->name);
         $this->assertNull($contactList->description);
+        $this->assertNull($contactList->created);
     }
 
     public function test_can_be_converted_to_array(): void
