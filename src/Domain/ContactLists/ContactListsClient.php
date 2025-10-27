@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\ContactLists;
 
-use Hobbii\Emarsys\Domain\Client;
+use Hobbii\Emarsys\Domain\BaseClient;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\ContactListCollection;
 use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\CreateContactListResponse;
@@ -19,7 +19,7 @@ class ContactListsClient
     private const ENDPOINT = 'contactlist';
 
     public function __construct(
-        private readonly Client $client
+        private readonly BaseClient $client
     ) {}
 
     /**

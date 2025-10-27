@@ -11,7 +11,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
-use Hobbii\Emarsys\Domain\Client;
+use Hobbii\Emarsys\Domain\BaseClient;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 use Hobbii\Emarsys\Domain\Exceptions\RateLimitException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
@@ -21,7 +21,7 @@ class ClientTest extends TestCase
 {
     private array $requestHistory = [];
 
-    private function createClientWithMockHandler(array $responses): Client
+    private function createClientWithMockHandler(array $responses): BaseClient
     {
         $this->requestHistory = [];
         // @phpstan-ignore-next-line
@@ -38,7 +38,7 @@ class ClientTest extends TestCase
 
         $oauthClient = new \Hobbii\Emarsys\Domain\OauthClient('test-client-id', 'test-client-secret', $guzzleClient);
 
-        return new Client($oauthClient, $guzzleClient);
+        return new BaseClient($oauthClient, $guzzleClient);
     }
 
     public function test_oauth_token_refresh_on_successful_auth(): void

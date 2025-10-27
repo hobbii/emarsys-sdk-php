@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys;
 
-use Hobbii\Emarsys\Domain\Client as EmarsysClient;
+use Hobbii\Emarsys\Domain\BaseClient;
 use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
 use Hobbii\Emarsys\Domain\OauthClient;
 
@@ -16,7 +16,7 @@ use Hobbii\Emarsys\Domain\OauthClient;
  */
 class Client
 {
-    private readonly EmarsysClient $client;
+    private readonly BaseClient $client;
 
     private ?ContactListsClient $contactLists = null;
 
@@ -25,7 +25,7 @@ class Client
         string $clientSecret,
     ) {
         $oauthClient = new OauthClient($clientId, $clientSecret);
-        $this->client = new EmarsysClient($oauthClient);
+        $this->client = new BaseClient($oauthClient);
     }
 
     /**

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Tests\Unit\Domain\ContactLists;
 
-use Hobbii\Emarsys\Domain\Client as EmarsysClient;
+use Hobbii\Emarsys\Domain\BaseClient as EmarsysClient;
 use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\ContactListCollection;

@@ -16,7 +16,7 @@ use Hobbii\Emarsys\Domain\ValueObjects\Response;
 /**
  * Base HTTP client for Emarsys API communication.
  */
-class Client
+class BaseClient
 {
     /**
      * Base Emarsys API v3 endpoint.
