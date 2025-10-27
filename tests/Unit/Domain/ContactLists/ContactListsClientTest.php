@@ -7,9 +7,10 @@ namespace Hobbii\Emarsys\Tests\Unit\Domain\ContactLists;
 use Hobbii\Emarsys\Domain\BaseClient as EmarsysClient;
 use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
-use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\ContactListCollection;
+use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\ContactList;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
+use Illuminate\Support\Collection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -103,9 +104,11 @@ class ContactListsClientTest extends TestCase
 
         $result = $this->client->list();
 
-        $this->assertInstanceOf(ContactListCollection::class, $result);
+        $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(2, $result->count());
 
+        $this->assertInstanceOf(ContactList::class, $result[0]);
+        $this->assertInstanceOf(ContactList::class, $result[1]);
         $this->assertSame(1, $result[0]->id);
         $this->assertSame('List 1', $result[0]->name);
         $this->assertSame(2, $result[1]->id);

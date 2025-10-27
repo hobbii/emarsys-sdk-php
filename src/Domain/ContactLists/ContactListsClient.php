@@ -6,10 +6,11 @@ namespace Hobbii\Emarsys\Domain\ContactLists;
 
 use Hobbii\Emarsys\Domain\BaseClient;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
-use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\ContactListCollection;
+use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\ContactList;
 use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\CreateContactListResponse;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
+use Illuminate\Support\Collection;
 
 /**
  * Service for managing Emarsys Contact Lists.
@@ -48,16 +49,18 @@ class ContactListsClient
     /**
      * List all contact lists.
      *
+     * @return Collection<int,ContactList>
+     *
      * @throws ApiException
      * @throws AuthenticationException
      *
      * @see https://dev.emarsys.com/docs/core-api-reference/axpotjvepqdla-list-contact-lists
      */
-    public function list(): ContactListCollection
+    public function list(): Collection
     {
         $response = $this->client->get(self::ENDPOINT);
 
-        return ContactListCollection::from($response->dataAsArray());
+        return collect($response->dataAsArray())->map(fn (array $data) => ContactList::from($data))->values();
     }
 
     /**
