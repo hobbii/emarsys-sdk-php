@@ -14,7 +14,6 @@ class ContactListCollectionTest extends TestCase
     {
         $collection = new ContactListCollection([]);
 
-        $this->assertEmpty($collection->items);
         $this->assertSame(0, $collection->count());
         $this->assertTrue($collection->isEmpty());
     }
@@ -26,7 +25,6 @@ class ContactListCollectionTest extends TestCase
 
         $collection = new ContactListCollection([$contactList1, $contactList2]);
 
-        $this->assertCount(2, $collection->items);
         $this->assertSame(2, $collection->count());
         $this->assertFalse($collection->isEmpty());
     }
@@ -46,22 +44,19 @@ class ContactListCollectionTest extends TestCase
 
         $collection = ContactListCollection::from($data);
 
-        $this->assertCount(2, $collection->items);
         $this->assertSame(2, $collection->count());
         $this->assertFalse($collection->isEmpty());
 
-        $contactLists = $collection->items;
-        $this->assertSame(1, $contactLists[0]->id);
-        $this->assertSame('List 1', $contactLists[0]->name);
-        $this->assertSame(2, $contactLists[1]->id);
-        $this->assertSame('List 2', $contactLists[1]->name);
+        $this->assertSame(1, $collection[0]->id);
+        $this->assertSame('List 1', $collection[0]->name);
+        $this->assertSame(2, $collection[1]->id);
+        $this->assertSame('List 2', $collection[1]->name);
     }
 
     public function test_can_be_created_from_empty_array(): void
     {
         $collection = ContactListCollection::from([]);
 
-        $this->assertEmpty($collection->items);
         $this->assertTrue($collection->isEmpty());
     }
 

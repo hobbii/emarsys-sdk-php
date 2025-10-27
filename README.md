@@ -91,13 +91,13 @@ try {
 
 ```php
 try {
-    $collection = $client->contactLists()->list();
+    $contactLists = $client->contactLists()->list();
 
-    foreach ($collection->items as $contactList) {
+    foreach ($contactLists as $contactList) {
         echo "ID: {$contactList->id}, Name: {$contactList->name}\n";
     }
 
-    echo "Total contact lists: {$collection->count()}";
+    echo "Total contact lists: {$contactLists->count()}";
 } catch (\Hobbii\Emarsys\Domain\Exceptions\ApiException $e) {
     echo "Error: {$e->getMessage()}";
 }
@@ -163,20 +163,20 @@ try {
     // Get information about the rate limit
     echo "Rate limit exceeded!\n";
     echo "Retry after: {$e->retryAfterSeconds} seconds\n";
-    
+
     if ($e->resetTimestamp !== null) {
         $resetTime = date('Y-m-d H:i:s', $e->resetTimestamp);
         echo "Rate limit resets at: {$resetTime}\n";
     }
-    
+
     if ($e->limitRemaining !== null) {
         echo "Requests remaining: {$e->limitRemaining}\n";
     }
-    
+
     if ($e->limitTotal !== null) {
         echo "Total limit: {$e->limitTotal} per minute\n";
     }
-    
+
     // Wait and retry
     sleep($e->retryAfterSeconds);
     $contactLists = $client->contactLists()->list();

@@ -4,23 +4,28 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\ContactLists\ValueObjects;
 
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 /**
  * ContactList collection
+ *
+ * @extends Collection<int,ContactList>
  */
-readonly class ContactListCollection
+final class ContactListCollection extends Collection
 {
     /**
-     * @param  ContactList[]  $items
-     *
-     * @throws InvalidArgumentException
+     * @param  array<int,ContactList>  $items
      */
-    public function __construct(public array $items = [])
+    public function __construct(array $items = [])
     {
         $this->validateItems($items);
+        parent::__construct($items);
     }
 
+    /**
+     * @param  array<int,ContactList>  $items
+     */
     private function validateItems(array $items): void
     {
         foreach ($items as $item) {
@@ -40,21 +45,5 @@ readonly class ContactListCollection
         $contactLists = array_map(fn ($item) => $item instanceof ContactList ? $item : ContactList::from($item), $data);
 
         return new self($contactLists);
-    }
-
-    /**
-     * Get the count of contact lists.
-     */
-    public function count(): int
-    {
-        return count($this->items);
-    }
-
-    /**
-     * Check if the collection is empty.
-     */
-    public function isEmpty(): bool
-    {
-        return empty($this->items);
     }
 }

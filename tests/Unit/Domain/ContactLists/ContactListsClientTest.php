@@ -106,11 +106,10 @@ class ContactListsClientTest extends TestCase
         $this->assertInstanceOf(ContactListCollection::class, $result);
         $this->assertSame(2, $result->count());
 
-        $contactLists = $result->items;
-        $this->assertSame(1, $contactLists[0]->id);
-        $this->assertSame('List 1', $contactLists[0]->name);
-        $this->assertSame(2, $contactLists[1]->id);
-        $this->assertSame('List 2', $contactLists[1]->name);
+        $this->assertSame(1, $result[0]->id);
+        $this->assertSame('List 1', $result[0]->name);
+        $this->assertSame(2, $result[1]->id);
+        $this->assertSame('List 2', $result[1]->name);
     }
 
     public function test_delete_contact_list(): void
