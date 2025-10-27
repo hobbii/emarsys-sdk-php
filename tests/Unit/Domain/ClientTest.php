@@ -37,7 +37,10 @@ class ClientTest extends TestCase
             'base_uri' => '',
         ]);
 
-        return new Client('test-client-id', 'test-client-secret', null, $guzzleClient);
+        // Inject OauthClient using the same Guzzle mock
+        $oauthClient = new \Hobbii\Emarsys\Domain\OauthClient('test-client-id', 'test-client-secret', null, $guzzleClient);
+
+        return new Client('test-client-id', 'test-client-secret', null, $guzzleClient, $oauthClient);
     }
 
     public function test_oauth_token_refresh_on_successful_auth(): void

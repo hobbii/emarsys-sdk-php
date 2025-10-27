@@ -11,7 +11,6 @@ use GuzzleHttp\Exception\ServerException;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 use Hobbii\Emarsys\Domain\Exceptions\RateLimitException;
-use Hobbii\Emarsys\Domain\ValueObjects\OauthData;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 
 /**
@@ -27,22 +26,16 @@ class Client
      */
     private const BASE_URL = 'https://api.emarsys.net/api/v3/';
 
-    /**
-     * Oauth2 token endpoint
-     *
-     * Important: it must not end with `/` at the end
-     */
-    private const OAUTH2_TOKEN_URL = 'https://auth.emarsys.net/oauth2/token';
-
     private readonly GuzzleClient $client;
 
-    private ?OauthData $oauthData = null;
+    private readonly OauthClient $oauthClient;
 
     public function __construct(
-        private readonly string $clientId,
-        private readonly string $clientSecret,
+        string $clientId,
+        string $clientSecret,
         ?string $baseUrl = null,
-        ?GuzzleClient $client = null
+        ?GuzzleClient $client = null,
+        ?OauthClient $oauthClient = null,
     ) {
         $this->client = $client ?? new GuzzleClient([
             'base_uri' => $baseUrl ?? self::BASE_URL,
@@ -52,6 +45,8 @@ class Client
                 'Accept' => 'application/json',
             ],
         ]);
+
+        $this->oauthClient = $oauthClient ?? new OauthClient($clientId, $clientSecret);
     }
 
     /**
@@ -150,8 +145,7 @@ class Client
      */
     private function makeRequest(string $method, string $endpoint, array $options = [], bool $isRetry = false): Response
     {
-        $this->ensureValidOauthData();
-        $requestOptions = $this->addAuthHeadersToRequestOptions($options);
+        $requestOptions = $this->oauthClient->addAuthHeadersToRequestOptions($options);
 
         try {
             $response = $this->client->request($method, $endpoint, $requestOptions);
@@ -173,7 +167,7 @@ class Client
                  * 4. If it's already a retry and still fails, throw an exception
                  */
                 if (! $isRetry) {
-                    $this->resetOauthData();
+                    $this->oauthClient->resetOauthData();
 
                     // For retry, use original options (without auth headers from first attempt)
                     return $this->retryRequest($method, $endpoint, $options);
@@ -196,74 +190,5 @@ class Client
         } catch (RequestException $e) {
             throw new ApiException('Request failed: '.$e->getMessage(), previous: $e);
         }
-    }
-
-    /**
-     * Ensure we have a valid oauth data, refresh if necessary.
-     *
-     * @throws AuthenticationException
-     */
-    private function ensureValidOauthData(): void
-    {
-        if ($this->oauthData === null || $this->oauthData->isExpired()) {
-            $this->oauthData = $this->refreshOauthData();
-        }
-    }
-
-    private function resetOauthData(): void
-    {
-        $this->oauthData = null;
-    }
-
-    /**
-     * Refresh the access token using OAuth 2.0 client credentials flow.
-     *
-     * @throws AuthenticationException
-     */
-    private function refreshOauthData(): OauthData
-    {
-        try {
-            $response = $this->client->request('POST', self::OAUTH2_TOKEN_URL, [
-                'auth' => [$this->clientId, $this->clientSecret],
-                'form_params' => [
-                    'grant_type' => 'client_credentials',
-                ],
-                'headers' => [
-                    'Content-Type' => 'application/x-www-form-urlencoded',
-                    'Accept' => 'application/json',
-                ],
-            ]);
-
-            $body = $response->getBody()->getContents();
-            $data = (array) json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-
-            return OauthData::fromArray($data);
-        } catch (ClientException $e) {
-            throw new AuthenticationException('OAuth authentication failed', previous: $e);
-        } catch (RequestException $e) {
-            throw new AuthenticationException('OAuth request failed', previous: $e);
-        }
-    }
-
-    /**
-     * Add Authorization header to request options.
-     */
-    private function addAuthHeadersToRequestOptions(array $options): array
-    {
-        return $this->setRequestOptionsHeader($options, 'Authorization', 'Bearer '.$this->oauthData?->accessToken);
-    }
-
-    /**
-     * Set a header in the request options.
-     */
-    private function setRequestOptionsHeader(array $options, string $name, string $value): array
-    {
-        if (! isset($options['headers'])) {
-            $options['headers'] = [];
-        }
-
-        $options['headers'][$name] = $value;
-
-        return $options;
     }
 }
