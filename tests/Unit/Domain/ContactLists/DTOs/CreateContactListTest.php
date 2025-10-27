@@ -18,7 +18,7 @@ class CreateContactListTest extends TestCase
         $this->assertSame('Test List', $createData->name);
         $this->assertNull($createData->description);
         $this->assertSame('email', $createData->keyId);
-        $this->assertEmpty($createData->externalIds);
+        $this->assertNull($createData->externalIds);
     }
 
     public function test_can_be_created_with_all_fields(): void
