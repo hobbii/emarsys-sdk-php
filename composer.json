@@ -1,6 +1,7 @@
 {
     "name": "hobbii/emarsys-sdk-php",
     "description": "Emarsys SDK",
+    "version": "0.1.0",
     "keywords": [
         "hobbii",
         "emarsys-sdk-php"
