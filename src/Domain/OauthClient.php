@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
@@ -19,16 +19,16 @@ class OauthClient
      */
     private const OAUTH2_TOKEN_URL = 'https://auth.emarsys.net/oauth2/token';
 
-    private readonly Client $client;
+    private readonly GuzzleClient $client;
 
     private ?OauthData $oauthData = null;
 
     public function __construct(
         string $clientId,
         string $clientSecret,
-        ?Client $client = null,
+        ?GuzzleClient $client = null,
     ) {
-        $this->client = $client ?? new Client([
+        $this->client = $client ?? new GuzzleClient([
             'base_uri' => self::OAUTH2_TOKEN_URL,
             'auth' => [$clientId, $clientSecret],
             'timeout' => 10,
