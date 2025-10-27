@@ -336,35 +336,18 @@ readonly class ContactList
 ### 2. Collection Pattern
 
 ```php
-use Illuminate\Support\Collection;
+use Hobbii\Emarsys\Domain\ValueObjects\DataCollection;
 
-final class ContactListCollection extends Collection
+/**
+ * ContactList collection
+ *
+ * @extends DataCollection<int,ContactList>
+ */
+final class ContactListCollection extends DataCollection
 {
-    public function __construct($items = [])
+    protected static function getItemClass(): string
     {
-        $this->validateItems($items);
-        parent::__construct($items);
-    }
-
-    private function validateItems(array $items): void
-    {
-        foreach ($items as $item) {
-            if (! $item instanceof ContactList) {
-                throw new InvalidArgumentException('All items must be instances of ContactList');
-            }
-        }
-    }
-
-    /**
-     * Create a collection from data.
-     *
-     * @param  array<int,array<string,mixed>|ContactList>  $data
-     */
-    public static function from(array $data): self
-    {
-        $contactLists = array_map(fn ($item) => $item instanceof ContactList ? $item : ContactList::from($item), $data);
-
-        return new self($contactLists);
+        return ContactList::class;
     }
 }
 ```
