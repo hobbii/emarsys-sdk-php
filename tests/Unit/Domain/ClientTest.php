@@ -31,16 +31,14 @@ class ClientTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $handlerStack->push($history);
 
-        // Use empty base_uri to ensure absolute URLs work
         $guzzleClient = new GuzzleClient([
             'handler' => $handlerStack,
             'base_uri' => '',
         ]);
 
-        // Inject OauthClient using the same Guzzle mock
-        $oauthClient = new \Hobbii\Emarsys\Domain\OauthClient('test-client-id', 'test-client-secret', null, $guzzleClient);
+        $oauthClient = new \Hobbii\Emarsys\Domain\OauthClient('test-client-id', 'test-client-secret', $guzzleClient);
 
-        return new Client('test-client-id', 'test-client-secret', null, $guzzleClient, $oauthClient);
+        return new Client($oauthClient, $guzzleClient);
     }
 
     public function test_oauth_token_refresh_on_successful_auth(): void

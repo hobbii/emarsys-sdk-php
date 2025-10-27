@@ -6,6 +6,7 @@ namespace Hobbii\Emarsys;
 
 use Hobbii\Emarsys\Domain\Client as EmarsysClient;
 use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
+use Hobbii\Emarsys\Domain\OauthClient;
 
 /**
  * Main Emarsys API client.
@@ -22,9 +23,9 @@ class Client
     public function __construct(
         string $clientId,
         string $clientSecret,
-        ?string $baseUrl = null
     ) {
-        $this->client = new EmarsysClient($clientId, $clientSecret, $baseUrl);
+        $oauthClient = new OauthClient($clientId, $clientSecret);
+        $this->client = new EmarsysClient($oauthClient);
     }
 
     /**

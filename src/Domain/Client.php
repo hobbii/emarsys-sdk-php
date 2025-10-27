@@ -28,25 +28,18 @@ class Client
 
     private readonly GuzzleClient $client;
 
-    private readonly OauthClient $oauthClient;
-
     public function __construct(
-        string $clientId,
-        string $clientSecret,
-        ?string $baseUrl = null,
+        private readonly OauthClient $oauthClient,
         ?GuzzleClient $client = null,
-        ?OauthClient $oauthClient = null,
     ) {
         $this->client = $client ?? new GuzzleClient([
-            'base_uri' => $baseUrl ?? self::BASE_URL,
+            'base_uri' => self::BASE_URL,
             'timeout' => 30,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ],
         ]);
-
-        $this->oauthClient = $oauthClient ?? new OauthClient($clientId, $clientSecret);
     }
 
     /**

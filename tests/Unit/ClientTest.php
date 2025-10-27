@@ -36,11 +36,4 @@ class ClientTest extends TestCase
 
         $this->assertSame($contactListsClient1, $contactListsClient2);
     }
-
-    public function test_can_be_created_with_custom_base_url(): void
-    {
-        $client = new Client('test-client-id', 'test-client-secret', 'https://custom.api.url');
-
-        $this->assertInstanceOf(Client::class, $client);
-    }
 }

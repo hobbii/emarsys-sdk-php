@@ -26,7 +26,7 @@ class OauthClientTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $client = new GuzzleClient(['handler' => $handlerStack]);
 
-        $oauthClient = new OauthClient('id', 'secret', null, $client);
+        $oauthClient = new OauthClient('id', 'secret', $client);
         $options = $oauthClient->addAuthHeadersToRequestOptions([]);
         $this->assertArrayHasKey('headers', $options);
         $this->assertEquals('Bearer test_token', $options['headers']['Authorization']);
@@ -42,7 +42,7 @@ class OauthClientTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $client = new GuzzleClient(['handler' => $handlerStack]);
 
-        $oauthClient = new OauthClient('id', 'secret', null, $client);
+        $oauthClient = new OauthClient('id', 'secret', $client);
 
         $this->expectException(AuthenticationException::class);
         $oauthClient->addAuthHeadersToRequestOptions([]);
@@ -65,7 +65,7 @@ class OauthClientTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $client = new GuzzleClient(['handler' => $handlerStack]);
 
-        $oauthClient = new OauthClient('id', 'secret', null, $client);
+        $oauthClient = new OauthClient('id', 'secret', $client);
         $this->assertEquals('Bearer token1', $oauthClient->addAuthHeadersToRequestOptions([])['headers']['Authorization']);
 
         $oauthClient->resetOauthData();

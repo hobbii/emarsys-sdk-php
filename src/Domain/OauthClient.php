@@ -26,11 +26,10 @@ class OauthClient
     public function __construct(
         string $clientId,
         string $clientSecret,
-        ?string $baseUrl = null,
         ?Client $client = null,
     ) {
         $this->client = $client ?? new Client([
-            'base_uri' => $baseUrl ?? self::OAUTH2_TOKEN_URL,
+            'base_uri' => self::OAUTH2_TOKEN_URL,
             'auth' => [$clientId, $clientSecret],
             'timeout' => 30,
             'headers' => [
