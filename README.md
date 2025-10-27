@@ -42,13 +42,6 @@ $client = new Client(
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret'
 );
-
-// Optionally specify a custom API base URL
-$client = new Client(
-    clientId: 'your-client-id',
-    clientSecret: 'your-client-secret',
-    baseUrl: 'https://custom.emarsys.net/api/v3'
-);
 ```
 
 ## Authentication
