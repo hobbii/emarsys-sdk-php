@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\Contacts\ValueObjects;
 
-use Illuminate\Support\Collection;
+use ArrayIterator;
+use IteratorAggregate;
+use Traversable;
 
-final readonly class ContactData
+/**
+ * @implements IteratorAggregate<int, string|null|array<string|null>>
+ */
+final readonly class ContactData implements IteratorAggregate
 {
     /**
      * @param  array<int,string|null|array<string|null>>  $data
@@ -15,13 +20,8 @@ final readonly class ContactData
         public array $data,
     ) {}
 
-    /**
-     * Get the data as a collection.
-     *
-     * @return Collection<int,string|null|array<string|null>>
-     */
-    public function collection(): Collection
+    public function getIterator(): Traversable
     {
-        return collect($this->data);
+        return new ArrayIterator($this->data);
     }
 }
