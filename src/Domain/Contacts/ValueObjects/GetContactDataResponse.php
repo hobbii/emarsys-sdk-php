@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Domain\Contact\ValueObjects;
+namespace Hobbii\Emarsys\Domain\Contacts\ValueObjects;
 
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use InvalidArgumentException;

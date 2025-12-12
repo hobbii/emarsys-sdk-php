@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys;
 
 use Hobbii\Emarsys\Domain\BaseClient;
-use Hobbii\Emarsys\Domain\Contact\ContactsClient;
 use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
+use Hobbii\Emarsys\Domain\Contacts\ContactsClient;
 use Hobbii\Emarsys\Domain\OauthClient;
 
 /**

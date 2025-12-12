@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Domain\Contact;
+namespace Hobbii\Emarsys\Domain\Contacts;
 
 use Hobbii\Emarsys\Domain\BaseClient;
-use Hobbii\Emarsys\Domain\Contact\DTOs\GetContactData;
-use Hobbii\Emarsys\Domain\Contact\ValueObjects\GetContactDataResponse;
+use Hobbii\Emarsys\Domain\Contacts\DTOs\GetContactData;
+use Hobbii\Emarsys\Domain\Contacts\ValueObjects\GetContactDataResponse;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 

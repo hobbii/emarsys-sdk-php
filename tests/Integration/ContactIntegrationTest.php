@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Tests\Integration;
 
 use Hobbii\Emarsys\Client;
-use Hobbii\Emarsys\Domain\Contact\DTOs\GetContactData;
+use Hobbii\Emarsys\Domain\Contacts\DTOs\GetContactData;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Domain\Contact\DTOs;
+namespace Hobbii\Emarsys\Domain\Contacts\DTOs;
 
 /**
  * DTO for getting contact data from Emarsys API.

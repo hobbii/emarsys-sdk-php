@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Tests\Unit\Domain\Contact;
+namespace Hobbii\Emarsys\Tests\Unit\Domain\Contacts;
 
 use Hobbii\Emarsys\Domain\BaseClient as EmarsysClient;
-use Hobbii\Emarsys\Domain\Contact\ContactsClient;
-use Hobbii\Emarsys\Domain\Contact\DTOs\GetContactData;
-use Hobbii\Emarsys\Domain\Contact\ValueObjects\ContactData;
-use Hobbii\Emarsys\Domain\Contact\ValueObjects\GetContactDataResponse;
+use Hobbii\Emarsys\Domain\Contacts\ContactsClient;
+use Hobbii\Emarsys\Domain\Contacts\DTOs\GetContactData;
+use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
+use Hobbii\Emarsys\Domain\Contacts\ValueObjects\GetContactDataResponse;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use PHPUnit\Framework\MockObject\MockObject;
