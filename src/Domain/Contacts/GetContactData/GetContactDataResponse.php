@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\Contacts\GetContactData;
 
-use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
+use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactDataResult;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use InvalidArgumentException;
 
 final readonly class GetContactDataResponse
 {
     /**
-     * @param  array<int,ContactData>  $result  The list of contacts added to the contact list
+     * @param  array<int,ContactDataResult>  $result  The list of contacts added to the contact list
      * @param  array<int,string>|null  $errors  The details of any contacts not added to the list, expressed as an array that contains the error code and reason
      */
     public function __construct(
@@ -32,7 +32,7 @@ final readonly class GetContactDataResponse
         // Convert array to ContactData objects
         $contactData = [];
         foreach ($result as $data) {
-            $contactData[] = ContactData::from($data);
+            $contactData[] = ContactDataResult::from($data);
         }
 
         return new self(

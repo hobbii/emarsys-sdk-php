@@ -9,7 +9,7 @@ use InvalidArgumentException;
 /**
  * Represents contact data returned from Emarsys API.
  */
-readonly class ContactData
+readonly class ContactDataResult
 {
     /**
      * @param  array<int,string|null|array<string|null>>  $data
