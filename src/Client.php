@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys;
 
 use Hobbii\Emarsys\Domain\BaseClient;
-use Hobbii\Emarsys\Domain\Contact\ContactClient;
+use Hobbii\Emarsys\Domain\Contact\ContactsClient;
 use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
 use Hobbii\Emarsys\Domain\OauthClient;
 
@@ -19,9 +19,9 @@ class Client
 {
     private readonly BaseClient $client;
 
-    private ?ContactClient $contact = null;
+    private ?ContactsClient $contactsClient = null;
 
-    private ?ContactListsClient $contactLists = null;
+    private ?ContactListsClient $contactListsClient = null;
 
     public function __construct(
         string $clientId,
@@ -32,11 +32,11 @@ class Client
     }
 
     /**
-     * Get the Contact client.
+     * Get the Contacts client.
      */
-    public function contact(): ContactClient
+    public function contacts(): ContactsClient
     {
-        return $this->contact ??= new ContactClient($this->client);
+        return $this->contactsClient ??= new ContactsClient($this->client);
     }
 
     /**
@@ -44,6 +44,6 @@ class Client
      */
     public function contactLists(): ContactListsClient
     {
-        return $this->contactLists ??= new ContactListsClient($this->client);
+        return $this->contactListsClient ??= new ContactListsClient($this->client);
     }
 }

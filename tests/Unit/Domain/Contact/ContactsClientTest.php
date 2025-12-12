@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Tests\Unit\Domain\Contact;
 
 use Hobbii\Emarsys\Domain\BaseClient as EmarsysClient;
-use Hobbii\Emarsys\Domain\Contact\ContactClient;
+use Hobbii\Emarsys\Domain\Contact\ContactsClient;
 use Hobbii\Emarsys\Domain\Contact\DTOs\GetContactData;
 use Hobbii\Emarsys\Domain\Contact\ValueObjects\ContactData;
 use Hobbii\Emarsys\Domain\Contact\ValueObjects\GetContactDataResponse;
@@ -17,16 +17,16 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \Hobbii\Emarsys\Domain\Contact\ContactClient
  */
-final class ContactClientTest extends TestCase
+final class ContactsClientTest extends TestCase
 {
-    private ContactClient $client;
+    private ContactsClient $client;
 
     private EmarsysClient&MockObject $emarsysClient;
 
     protected function setUp(): void
     {
         $this->emarsysClient = $this->createMock(EmarsysClient::class);
-        $this->client = new ContactClient($this->emarsysClient);
+        $this->client = new ContactsClient($this->emarsysClient);
     }
 
     public function test_get_data_returns_contact_data_on_successful_response(): void
@@ -69,7 +69,7 @@ final class ContactClientTest extends TestCase
         );
 
         // Act
-        $result = $this->client->getData($input);
+        $result = $this->client->getContactData($input);
 
         // Assert
         $this->assertInstanceOf(GetContactDataResponse::class, $result);
@@ -108,6 +108,6 @@ final class ContactClientTest extends TestCase
         $this->expectException(ApiException::class);
         $this->expectExceptionMessage('Invalid response format: missing data field');
 
-        $this->client->getData($input);
+        $this->client->getContactData($input);
     }
 }

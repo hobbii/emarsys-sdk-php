@@ -31,7 +31,7 @@ class ContactIntegrationTest
                 keyValues: [$this->email],
             );
 
-            $contactDataResponse = $this->client->contact()->getData($getContactData);
+            $contactDataResponse = $this->client->contacts()->getContactData($getContactData);
 
             echo "   ✅ Successfully retrieved contact data\n";
 

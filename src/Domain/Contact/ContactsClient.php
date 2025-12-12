@@ -13,7 +13,7 @@ use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 /**
  * Service for managing Emarsys Contacts.
  */
-class ContactClient
+class ContactsClient
 {
     private const ENDPOINT = 'contact';
 
@@ -35,7 +35,7 @@ class ContactClient
      *
      * @see https://dev.emarsys.com/docs/core-api-reference/blzojxt3ga5be-get-contact-data
      */
-    public function getData(GetContactData $input): GetContactDataResponse
+    public function getContactData(GetContactData $input): GetContactDataResponse
     {
         $response = $this->client->post(self::ENDPOINT.'/getdata', $input->toArray());
 
