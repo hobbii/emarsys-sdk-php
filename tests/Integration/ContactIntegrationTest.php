@@ -45,7 +45,7 @@ class ContactIntegrationTest
                     echo "         UID: {$contact->uid}\n";
                     echo "         Data:\n";
 
-                    foreach ($contact->data as $fieldId => $value) {
+                    foreach ($contact->data->collection() as $fieldId => $value) {
                         echo "         Field {$fieldId}: ".(is_array($value) ? json_encode($value) : $value)."\n";
                     }
                 }

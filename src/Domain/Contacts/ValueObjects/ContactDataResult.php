@@ -11,13 +11,10 @@ use InvalidArgumentException;
  */
 readonly class ContactDataResult
 {
-    /**
-     * @param  array<int,string|null|array<string|null>>  $data
-     */
     public function __construct(
         public int $id,
         public string $uid,
-        public array $data,
+        public ContactData $data,
     ) {}
 
     /**
@@ -40,7 +37,7 @@ readonly class ContactDataResult
         return new self(
             id: (int) $arr['id'],
             uid: $arr['uid'],
-            data: $data,
+            data: new ContactData($data),
         );
     }
 }
