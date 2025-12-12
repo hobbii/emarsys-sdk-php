@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Tests\Integration;
 
 use Hobbii\Emarsys\Client;
-use Hobbii\Emarsys\Domain\Contacts\DTOs\GetContactData;
+use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataRequest;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 
@@ -25,7 +25,7 @@ class ContactIntegrationTest
         echo "⚒️  Testing: Get contact data by email ({$this->args['email']})...\n";
 
         try {
-            $getContactData = new GetContactData(
+            $getContactData = new GetContactDataRequest(
                 fields: ['1', '2', '3', '4'], // Common fields: ID, First Name, Last Name, Email
                 keyId: '3', // Use email field as identifier (field ID 3 is typically email)
                 keyValues: [$this->email],

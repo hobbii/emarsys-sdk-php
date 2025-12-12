@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Domain\Contacts\ValueObjects;
+namespace Hobbii\Emarsys\Domain\Contacts\GetContactData;
 
+use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use InvalidArgumentException;
 
-readonly class GetContactDataResponse
+final readonly class GetContactDataResponse
 {
     /**
      * @param  array<int,ContactData>  $result  The list of contacts added to the contact list

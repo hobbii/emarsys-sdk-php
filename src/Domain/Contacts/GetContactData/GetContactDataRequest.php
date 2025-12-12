@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Hobbii\Emarsys\Domain\Contacts\DTOs;
+namespace Hobbii\Emarsys\Domain\Contacts\GetContactData;
 
 /**
- * DTO for getting contact data from Emarsys API.
+ * Request object for getting contact data from Emarsys API.
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/blzojxt3ga5be-get-contact-data
  */
-class GetContactData
+final readonly class GetContactDataRequest
 {
     /**
      * @param  array<string>  $fields  The field names/IDs to retrieve for the contacts
@@ -23,7 +23,7 @@ class GetContactData
     ) {}
 
     /**
-     * Convert the DTO to an array for API request.
+     * Convert the object to an array for API request.
      *
      * @return array<string,mixed>
      */

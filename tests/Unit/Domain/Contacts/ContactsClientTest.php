@@ -6,9 +6,9 @@ namespace Hobbii\Emarsys\Tests\Unit\Domain\Contacts;
 
 use Hobbii\Emarsys\Domain\BaseClient as EmarsysClient;
 use Hobbii\Emarsys\Domain\Contacts\ContactsClient;
-use Hobbii\Emarsys\Domain\Contacts\DTOs\GetContactData;
+use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataRequest;
+use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataResponse;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
-use Hobbii\Emarsys\Domain\Contacts\ValueObjects\GetContactDataResponse;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -62,7 +62,7 @@ final class ContactsClientTest extends TestCase
             ])
             ->willReturn($response);
 
-        $input = new GetContactData(
+        $input = new GetContactDataRequest(
             fields: ['1', '2', '3'],
             keyId: '1',
             keyValues: ['john@example.com']
@@ -98,7 +98,7 @@ final class ContactsClientTest extends TestCase
             ])
             ->willReturn($response);
 
-        $input = new GetContactData(
+        $input = new GetContactDataRequest(
             fields: ['1', '2', '3'],
             keyId: '1',
             keyValues: ['john@example.com']
