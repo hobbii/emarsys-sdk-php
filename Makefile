@@ -63,9 +63,9 @@ check: ## Run all checks (format, analyse, test)
 	$(DOCKER_EXEC_CMD) composer check
 
 .PHONY: integration-test
-integration-test: ## Run integration tests (requires .env). Usage: make integration-test [test=test-name]
+integration-test: ## Run integration tests (requires .env). Usage: make integration-test [test=test-name] [email=user@example.com]
 	$(MAKE) up
-	$(DOCKER_EXEC_CMD) composer test-integration $(test)
+	$(DOCKER_EXEC_CMD) php run-integration-tests.php $(test) $(if $(email),email=$(email),)
 
 .PHONY: clean
 clean: ## Remove containers, volumes, and vendor directory
