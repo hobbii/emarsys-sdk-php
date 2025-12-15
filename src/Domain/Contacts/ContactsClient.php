@@ -59,7 +59,7 @@ class ContactsClient
      */
     public function updateContact(UpdateContactsRequest $request): UpdateContactsResponseData
     {
-        $endpoint = self::ENDPOINT;
+        $endpoint = self::ENDPOINT.'/';
 
         if ($request->createIfNotExists) {
             $endpoint .= '?createIfNotExists=1';
