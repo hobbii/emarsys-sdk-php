@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\Contacts\UpdateContacts;
 
+use BackedEnum;
+use Hobbii\Emarsys\Domain\Contacts\Utils;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
 use InvalidArgumentException;
 use JsonSerializable;
@@ -17,23 +19,30 @@ final readonly class UpdateContactsRequest implements JsonSerializable
 {
     private const MAX_CONTACTS_PER_REQUEST = 1000;
 
+    private function __construct(
+        public string|int $keyId,
+        /** @var array<ContactData> */
+        public array $contacts,
+        public bool $createIfNotExists = false,
+    ) {}
+
     /**
      * @param  array<ContactData>  $contacts  List of contacts to be updated.
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(
-        public string|int $keyId,
-        public array $contacts,
-        public bool $createIfNotExists = false,
-    ) {
-        if (empty($contacts)) {
-            throw new InvalidArgumentException('Contacts array cannot be empty');
-        }
+    public static function make(
+        string|int|BackedEnum $keyId,
+        array $contacts,
+        bool $createIfNotExists = false,
+    ): self {
+        self::validateContacts($contacts);
 
-        if (count($contacts) > self::MAX_CONTACTS_PER_REQUEST) {
-            throw new InvalidArgumentException(sprintf('The maximum batch size is %d contacts per call. You provided %d items.', self::MAX_CONTACTS_PER_REQUEST, count($contacts)));
-        }
+        return new self(
+            keyId: Utils::normalizeKeyId($keyId),
+            contacts: $contacts,
+            createIfNotExists: $createIfNotExists,
+        );
     }
 
     /**
@@ -45,5 +54,16 @@ final readonly class UpdateContactsRequest implements JsonSerializable
             'keyId' => $this->keyId,
             'contacts' => $this->contacts,
         ];
+    }
+
+    private static function validateContacts(array $contacts): void
+    {
+        if (empty($contacts)) {
+            throw new InvalidArgumentException('Contacts array cannot be empty');
+        }
+
+        if (count($contacts) > self::MAX_CONTACTS_PER_REQUEST) {
+            throw new InvalidArgumentException(sprintf('The maximum batch size is %d contacts per call. You provided %d items.', self::MAX_CONTACTS_PER_REQUEST, count($contacts)));
+        }
     }
 }

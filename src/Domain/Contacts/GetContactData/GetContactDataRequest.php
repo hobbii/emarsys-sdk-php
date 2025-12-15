@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Domain\Contacts\GetContactData;
 
 use BackedEnum;
+use Hobbii\Emarsys\Domain\Contacts\Utils;
 use JsonSerializable;
 
 /**
@@ -38,7 +39,9 @@ final readonly class GetContactDataRequest implements JsonSerializable
     /**
      * @param  array<int|string|BackedEnum>  $fields  The field IDs to retrieve for the contacts
      * @param  string|int|BackedEnum  $keyId  Identifies the contact by their id, uid, or custom field name/ID (e.g., 'email', '3')
-     * @param  array<string>  $keyValues  Array of contact identifiers (emails,
+     * @param  array<string>  $keyValues  Array of contact identifiers (emails, ids, uid)
+     *
+     * @throws \InvalidArgumentException if any field ID enum does not have an integer backing value
      */
     public static function make(
         array $fields,
@@ -46,26 +49,11 @@ final readonly class GetContactDataRequest implements JsonSerializable
         array $keyValues,
     ): self {
         /** @var array<int> $requestFields */
-        $requestFields = [];
-
-        foreach ($fields as $index => $field) {
-            if ($field instanceof BackedEnum) {
-                if (! is_int($field->value)) {
-                    throw new \InvalidArgumentException('Field enum must have an integer backing value. Got '.gettype($field->value).'.');
-                }
-                $requestFields[$index] = $field->value;
-            } else {
-                $requestFields[$index] = (int) $field;
-            }
-        }
-
-        if ($keyId instanceof BackedEnum) {
-            $keyId = $keyId->value;
-        }
+        $requestFields = array_map(Utils::normalizeFieldId(...), $fields);
 
         return new self(
             fields: $requestFields,
-            keyId: $keyId,
+            keyId: Utils::normalizeKeyId($keyId),
             keyValues: $keyValues,
         );
     }

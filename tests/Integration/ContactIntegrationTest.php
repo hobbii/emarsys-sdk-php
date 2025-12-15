@@ -99,7 +99,7 @@ class ContactIntegrationTest
             ]);
         }
 
-        $createRequest = new UpdateContactsRequest(
+        $createRequest = UpdateContactsRequest::make(
             keyId: ContactSystemFieldId::EMAIL->value, // Use email as key for identifying contacts
             contacts: $contactsData,
             createIfNotExists: true
@@ -191,7 +191,7 @@ class ContactIntegrationTest
             ]);
         }
 
-        $updateRequest = new UpdateContactsRequest(
+        $updateRequest = UpdateContactsRequest::make(
             keyId: ContactSystemFieldId::EMAIL->value,
             contacts: $updatedContactsData,
             createIfNotExists: false // Should not create new contacts
