@@ -34,7 +34,7 @@ final class Utils
      * Handles BackedEnum values by extracting their underlying value,
      * while passing through int values unchanged.
      */
-    public static function normalizeFieldId(int|string|BackedEnum $fieldId): int|string
+    public static function normalizeFieldId(int|string|BackedEnum $fieldId): int
     {
         if (is_int($fieldId)) {
             return $fieldId;
@@ -48,6 +48,6 @@ final class Utils
             $fieldId = $fieldId->value;
         }
 
-        return $fieldId;
+        return (int) $fieldId;
     }
 }
