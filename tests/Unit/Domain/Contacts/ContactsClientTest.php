@@ -62,14 +62,14 @@ final class ContactsClientTest extends TestCase
             ])
             ->willReturn($response);
 
-        $input = GetContactDataRequest::make(
+        $requestData = GetContactDataRequest::make(
             fields: ['1', '2', '3'],
             keyId: '1',
             keyValues: ['john@example.com']
         );
 
         // Act
-        $result = $this->client->getContactData($input);
+        $result = $this->client->getContactData($requestData);
 
         // Assert
         $this->assertInstanceOf(GetContactDataResponse::class, $result);
@@ -99,7 +99,7 @@ final class ContactsClientTest extends TestCase
             ])
             ->willReturn($response);
 
-        $input = GetContactDataRequest::make(
+        $requestData = GetContactDataRequest::make(
             fields: ['1', '2', '3'],
             keyId: '1',
             keyValues: ['john@example.com']
@@ -109,6 +109,6 @@ final class ContactsClientTest extends TestCase
         $this->expectException(ApiException::class);
         $this->expectExceptionMessage('Response data is not an array');
 
-        $this->client->getContactData($input);
+        $this->client->getContactData($requestData);
     }
 }
