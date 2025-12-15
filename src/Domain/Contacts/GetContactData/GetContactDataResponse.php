@@ -27,22 +27,24 @@ final readonly class GetContactDataResponse
      */
     public static function fromResponse(Response $response): self
     {
-        if (! isset($response->dataAsArray()['result'])) {
+        $responseData = $response->dataAsArray();
+
+        if (! isset($responseData['result'])) {
             throw new InvalidArgumentException('Missing "result" in contact data response');
         }
 
-        $dataResult = $response->dataAsArray()['result'];
+        $dataResult = $responseData['result'];
         $result = null;
 
         if (is_array($dataResult)) {
-            $result = array_map(fn (array $data) => ContactData::fromResponseResultData($data), $dataResult);
+            $result = array_map(ContactData::fromResponseResultData(...), $dataResult);
         }
 
-        $dataErrors = $response->dataAsArray()['errors'] ?? null;
+        $dataErrors = $responseData['errors'] ?? null;
         $errors = null;
 
         if (is_array($dataErrors)) {
-            $errors = array_map(fn (array $errorData) => ErrorObject::fromArray($errorData), $dataErrors);
+            $errors = array_map(ErrorObject::fromArray(...), $dataErrors);
         }
 
         return new self($result, $errors);

@@ -26,18 +26,20 @@ final readonly class UpdateContactsResponseData
 
     public static function fromResponse(Response $response): self
     {
-        $ids = $response->dataAsArray()['ids'] ?? throw new InvalidArgumentException('Missing "ids" in data response');
+        $responseData = $response->dataAsArray();
+
+        if (! isset($responseData['ids'])) {
+            throw new InvalidArgumentException('Missing "ids" in data response');
+        }
+
         $errors = [];
 
-        foreach ($response->dataAsArray()['errors'] ?? [] as $key => $errorData) {
+        foreach ($responseData['errors'] ?? [] as $key => $errorData) {
             foreach ($errorData as $errorCode => $errorMessage) {
                 $errors[] = new ErrorObject($key, (int) $errorCode, $errorMessage);
             }
         }
 
-        return new self(
-            ids: $ids['ids'] ?? [],
-            errors: $errors
-        );
+        return new self($responseData['ids'], $errors);
     }
 }
