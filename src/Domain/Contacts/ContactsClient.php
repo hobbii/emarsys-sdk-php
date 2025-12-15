@@ -62,7 +62,7 @@ class ContactsClient
         $endpoint = self::ENDPOINT.'/';
 
         if ($request->createIfNotExists) {
-            $endpoint .= '?createIfNotExists=1';
+            $endpoint .= '?create_if_not_exists=1';
         }
 
         $response = $this->client->put($endpoint, $request->toRequestData());
