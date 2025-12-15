@@ -267,15 +267,15 @@ class ContactIntegrationTest
     {
         echo "\n🔍 Step 5: Testing existing contact lookup ({$this->baseEmail})...\n";
 
-        $getContactData = new GetContactDataRequest(
+        $getContactData = GetContactDataRequest::make(
             fields: [
-                (string) ContactSystemFieldId::INTERESTS->value, // Contact ID equivalent
-                (string) ContactSystemFieldId::FIRST_NAME->value,
-                (string) ContactSystemFieldId::LAST_NAME->value,
-                (string) ContactSystemFieldId::EMAIL->value,
-                (string) ContactSystemFieldId::OPT_IN->value,
+                ContactSystemFieldId::INTERESTS,
+                ContactSystemFieldId::FIRST_NAME,
+                ContactSystemFieldId::LAST_NAME,
+                ContactSystemFieldId::EMAIL,
+                ContactSystemFieldId::OPT_IN,
             ],
-            keyId: (string) ContactSystemFieldId::EMAIL->value,
+            keyId: ContactSystemFieldId::EMAIL,
             keyValues: [$this->baseEmail],
         );
 
