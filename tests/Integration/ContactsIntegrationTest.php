@@ -13,7 +13,7 @@ use Hobbii\Emarsys\Domain\Enums\OptInStatus;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 
-class ContactIntegrationTest
+class ContactsIntegrationTest
 {
     private string $baseEmail;
 

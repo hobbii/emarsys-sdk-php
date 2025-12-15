@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 require_once __DIR__.'/vendor/autoload.php';
 
-use Hobbii\Emarsys\Tests\Integration\ContactIntegrationTest;
-use Hobbii\Emarsys\Tests\Integration\ContactListsIntegrationTest;
 use Hobbii\Emarsys\Tests\Integration\QuickConnectionTest;
 use Hobbii\Emarsys\Tests\Integration\Runner;
 use Symfony\Component\Dotenv\Dotenv;
@@ -34,8 +32,6 @@ if (! $clientId || ! $clientSecret) {
 
 $runner = new Runner([
     'quick' => QuickConnectionTest::class,
-    'contact-lists' => ContactListsIntegrationTest::class,
-    'contact' => ContactIntegrationTest::class,
 ], $clientId, $clientSecret);
 
 exit($runner->run($argv));

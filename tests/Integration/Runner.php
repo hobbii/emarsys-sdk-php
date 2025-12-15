@@ -123,14 +123,7 @@ final class Runner
             }
         }
 
-        return array_map(function ($testClass) use ($client, $args) {
-            // Pass email parameter to ContactIntegrationTest
-            if ($testClass === ContactIntegrationTest::class) {
-                return new $testClass($client, $args);
-            }
-
-            return new $testClass($client);
-        }, $tests);
+        return array_map(fn (string $testClass) => new $testClass($client, $args), $tests);
     }
 
     /**
