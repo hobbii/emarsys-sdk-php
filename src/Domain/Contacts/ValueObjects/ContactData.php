@@ -8,6 +8,7 @@ use ArrayAccess;
 use ArrayIterator;
 use Hobbii\Emarsys\Domain\Enums\ContactSystemFieldId;
 use Hobbii\Emarsys\Domain\Enums\OptInStatus;
+use InvalidArgumentException;
 use IteratorAggregate;
 use Traversable;
 
@@ -56,5 +57,18 @@ final readonly class ContactData implements ArrayAccess, IteratorAggregate
     {
         // ContactData is immutable - modifications are not allowed
         throw new \BadMethodCallException('ContactData is immutable and cannot be modified.');
+    }
+
+    public static function fromResponseResultData(array $data): self
+    {
+        if (! isset($data['id'])) {
+            throw new InvalidArgumentException('Missing id in contact data result');
+        }
+
+        if (! isset($data['uid'])) {
+            throw new InvalidArgumentException('Missing uid in contact data result');
+        }
+
+        return new self(data: $data);
     }
 }
