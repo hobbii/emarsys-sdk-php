@@ -6,6 +6,8 @@ namespace Hobbii\Emarsys\Domain\Contacts\ValueObjects;
 
 use ArrayAccess;
 use ArrayIterator;
+use Hobbii\Emarsys\Domain\Enums\ContactSystemFieldId;
+use Hobbii\Emarsys\Domain\Enums\OptInStatus;
 use IteratorAggregate;
 use Traversable;
 
@@ -21,6 +23,13 @@ final readonly class ContactData implements ArrayAccess, IteratorAggregate
     public function __construct(
         public array $data,
     ) {}
+
+    public function getOptInStatus(): ?OptInStatus
+    {
+        $optInValue = $this->data[ContactSystemFieldId::OPT_IN->value] ?? null;
+
+        return $optInValue !== null ? OptInStatus::from((int) $optInValue) : null;
+    }
 
     public function getIterator(): Traversable
     {
