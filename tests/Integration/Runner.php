@@ -244,9 +244,7 @@ final class Runner
      */
     private function echoExceptionDetails(Throwable $e): void
     {
-        echo "❌ Error: {$e->getMessage()}\n";
-        echo "Stack Trace:\n".$e->getTraceAsString();
-        echo "\n";
+        echo '❌ '.(string) $e."\n";
 
         if ($e->getPrevious() !== null) {
             echo "\nCaused by:\n";
