@@ -15,8 +15,6 @@ final readonly class GetContactDataRequest
 {
     /**
      * @param  array<int>  $fields  The field IDs to retrieve for the contacts
-     * @param  string|int  $keyId  Identifies the contact by their id, uid, or custom field name/ID (e.g., 'email', '3')
-     * @param  array<string>  $keyValues  Array of contact identifiers (emails, IDs, etc.)
      */
     private function __construct(
         public array $fields,
@@ -39,7 +37,9 @@ final readonly class GetContactDataRequest
     }
 
     /**
-     * @param  array<int|string|BackedEnum>  $fields
+     * @param  array<int|string|BackedEnum>  $fields  The field IDs to retrieve for the contacts
+     * @param  string|int|BackedEnum  $keyId  Identifies the contact by their id, uid, or custom field name/ID (e.g., 'email', '3')
+     * @param  array<string>  $keyValues  Array of contact identifiers (emails,
      */
     public static function make(
         array $fields,
