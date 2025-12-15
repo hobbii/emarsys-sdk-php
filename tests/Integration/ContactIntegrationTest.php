@@ -140,16 +140,16 @@ class ContactIntegrationTest
 
         $testEmails = array_column($this->testContacts, 'email');
 
-        $getContactData = new GetContactDataRequest(
-            fields: array_map('strval', [
-                ContactSystemFieldId::INTERESTS->value, // Contact ID equivalent
-                ContactSystemFieldId::FIRST_NAME->value,
-                ContactSystemFieldId::LAST_NAME->value,
-                ContactSystemFieldId::EMAIL->value,
-                ContactSystemFieldId::OPT_IN->value,
-                ContactSystemFieldId::PHONE->value,
-            ]),
-            keyId: (string) ContactSystemFieldId::EMAIL->value,
+        $getContactData = GetContactDataRequest::make(
+            fields: [
+                ContactSystemFieldId::INTERESTS,
+                ContactSystemFieldId::FIRST_NAME,
+                ContactSystemFieldId::LAST_NAME,
+                ContactSystemFieldId::EMAIL,
+                ContactSystemFieldId::OPT_IN,
+                ContactSystemFieldId::PHONE,
+            ],
+            keyId: ContactSystemFieldId::EMAIL,
             keyValues: $testEmails,
         );
 
@@ -218,16 +218,16 @@ class ContactIntegrationTest
 
         $testEmails = array_column($this->testContacts, 'email');
 
-        $getContactData = new GetContactDataRequest(
+        $getContactData = GetContactDataRequest::make(
             fields: [
-                (string) ContactSystemFieldId::INTERESTS->value, // Contact ID equivalent
-                (string) ContactSystemFieldId::FIRST_NAME->value,
-                (string) ContactSystemFieldId::LAST_NAME->value,
-                (string) ContactSystemFieldId::EMAIL->value,
-                (string) ContactSystemFieldId::OPT_IN->value,
-                (string) ContactSystemFieldId::PHONE->value,
+                ContactSystemFieldId::INTERESTS,
+                ContactSystemFieldId::FIRST_NAME,
+                ContactSystemFieldId::LAST_NAME,
+                ContactSystemFieldId::EMAIL,
+                ContactSystemFieldId::OPT_IN,
+                ContactSystemFieldId::PHONE,
             ],
-            keyId: (string) ContactSystemFieldId::EMAIL->value,
+            keyId: ContactSystemFieldId::EMAIL,
             keyValues: $testEmails,
         );
 
@@ -238,19 +238,19 @@ class ContactIntegrationTest
         foreach ($response->result as $contact) {
             $firstName = $contact[ContactSystemFieldId::FIRST_NAME->value];
             $lastName = $contact[ContactSystemFieldId::LAST_NAME->value];
-            $optIn = $contact->getOptInStatus()?->value;
+            $optIn = $contact->getOptInStatus();
             $phone = $contact[ContactSystemFieldId::PHONE->value];
 
             echo "      Contact ID: {$contact['id']}\n";
             echo '         Email: '.$contact[ContactSystemFieldId::EMAIL->value]."\n";
             echo "         Updated Name: {$firstName} {$lastName}\n";
             echo "         Updated Phone: {$phone}\n";
-            echo '         Updated Opt-in: '.($optIn == OptInStatus::FALSE->value ? 'No (Updated)' : 'Yes')."\n";
+            echo '         Updated Opt-in: '.($optIn?->isFalse() ? 'No (Updated)' : 'Yes')."\n";
 
             // Verify updates
             $hasUpdatedSuffix = str_ends_with($firstName, ' Updated') && str_ends_with($lastName, ' Modified');
             $hasCorrectPhone = $phone === '+1111111111';
-            $hasCorrectOptIn = $optIn == OptInStatus::FALSE->value;
+            $hasCorrectOptIn = $optIn?->isFalse();
 
             if ($hasUpdatedSuffix && $hasCorrectPhone && $hasCorrectOptIn) {
                 echo "         ✅ All updates verified for this contact\n";

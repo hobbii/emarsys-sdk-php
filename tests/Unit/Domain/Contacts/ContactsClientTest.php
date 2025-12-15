@@ -62,7 +62,7 @@ final class ContactsClientTest extends TestCase
             ])
             ->willReturn($response);
 
-        $input = new GetContactDataRequest(
+        $input = GetContactDataRequest::make(
             fields: ['1', '2', '3'],
             keyId: '1',
             keyValues: ['john@example.com']
@@ -99,7 +99,7 @@ final class ContactsClientTest extends TestCase
             ])
             ->willReturn($response);
 
-        $input = new GetContactDataRequest(
+        $input = GetContactDataRequest::make(
             fields: ['1', '2', '3'],
             keyId: '1',
             keyValues: ['john@example.com']
