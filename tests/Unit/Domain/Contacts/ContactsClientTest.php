@@ -8,7 +8,7 @@ use Hobbii\Emarsys\Domain\BaseClient as EmarsysClient;
 use Hobbii\Emarsys\Domain\Contacts\ContactsClient;
 use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataRequest;
 use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataResponse;
-use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactDataResult;
+use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -74,8 +74,9 @@ final class ContactsClientTest extends TestCase
         // Assert
         $this->assertInstanceOf(GetContactDataResponse::class, $result);
         $this->assertEmpty($result->errors);
+        $this->assertNotNull($result->result);
         $this->assertCount(1, $result->result);
-        $this->assertInstanceOf(ContactDataResult::class, $result->result[0]);
+        $this->assertInstanceOf(ContactData::class, $result->result[0]);
     }
 
     public function test_get_data_throws_api_exception_when_data_field_missing(): void
@@ -106,7 +107,7 @@ final class ContactsClientTest extends TestCase
 
         // Assert & Act
         $this->expectException(ApiException::class);
-        $this->expectExceptionMessage('Invalid response format: missing data field');
+        $this->expectExceptionMessage('Response data is not an array');
 
         $this->client->getContactData($input);
     }

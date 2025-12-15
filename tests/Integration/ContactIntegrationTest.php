@@ -9,6 +9,7 @@ use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataRequest;
 use Hobbii\Emarsys\Domain\Contacts\UpdateContacts\UpdateContactsRequest;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
 use Hobbii\Emarsys\Domain\Enums\ContactSystemFieldId;
+use Hobbii\Emarsys\Domain\Enums\OptInStatus;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 
@@ -67,7 +68,7 @@ class ContactIntegrationTest
         echo "📝 Step 1: Creating test contacts...\n";
 
         // Generate unique test emails to avoid conflicts
-        $timestamp = time();
+        $timestamp = date_format(new \DateTime, 'YmdH');
         $testEmail1 = str_replace('@', "+test1_{$timestamp}@", $this->baseEmail);
         $testEmail2 = str_replace('@', "+test2_{$timestamp}@", $this->baseEmail);
 
@@ -94,7 +95,7 @@ class ContactIntegrationTest
                 ContactSystemFieldId::FIRST_NAME->value => $contact['firstName'],
                 ContactSystemFieldId::LAST_NAME->value => $contact['lastName'],
                 ContactSystemFieldId::PHONE->value => $contact['phone'],
-                ContactSystemFieldId::OPT_IN->value => 1, // Opt-in: 1 = True, 2 = False
+                ContactSystemFieldId::OPT_IN->value => OptInStatus::TRUE->value,
             ]);
         }
 
@@ -106,23 +107,23 @@ class ContactIntegrationTest
 
         echo '   👉 Creating '.count($contactsData)." contacts...\n";
         foreach ($createRequest->contacts as $contact) {
-            echo '      ➕ '.$contact->data[ContactSystemFieldId::EMAIL->value]."\n";
+            echo '      ➕ '.$contact[ContactSystemFieldId::EMAIL->value]."\n";
         }
 
-        $response = $this->client->contacts()->updateContact($createRequest);
+        $responseData = $this->client->contacts()->updateContact($createRequest);
 
-        if ($response->hasErrors()) {
+        if ($responseData->hasErrors()) {
             echo "   ⚠️  Errors during contact creation:\n";
-            foreach ($response->errors as $error) {
-                echo '      - '.(is_array($error) ? json_encode($error) : $error)."\n";
+            foreach ($responseData->errors as $error) {
+                echo '      - '.(string) $error."\n";
             }
         } else {
             echo '   ✅ Successfully created '.count($this->testContacts)." test contacts\n";
         }
 
         // Store contact IDs for later use
-        if (! empty($response->ids)) {
-            foreach ($response->ids as $index => $contactId) {
+        if (! empty($responseData->ids)) {
+            foreach ($responseData->ids as $index => $contactId) {
                 if (isset($this->testContacts[$index])) {
                     $this->testContacts[$index]['id'] = $contactId;
                 }
@@ -157,11 +158,11 @@ class ContactIntegrationTest
         echo '   📊 Retrieved '.count($response->result)." contacts:\n";
 
         foreach ($response->result as $contact) {
-            echo "      Contact ID: {$contact->id}\n";
-            echo '         Email: '.$contact->data[ContactSystemFieldId::EMAIL->value]."\n";
-            echo '         Name: '.$contact->data[ContactSystemFieldId::FIRST_NAME->value].' '.$contact->data[ContactSystemFieldId::LAST_NAME->value]."\n";
-            echo '         Phone: '.$contact->data[ContactSystemFieldId::PHONE->value]."\n";
-            echo '         Opt-in: '.($contact->data[ContactSystemFieldId::OPT_IN->value] == 1 ? 'Yes' : 'No')."\n";
+            echo "      Contact ID: {$contact['id']}\n";
+            echo '         Email: '.$contact[ContactSystemFieldId::EMAIL->value]."\n";
+            echo '         Name: '.$contact[ContactSystemFieldId::FIRST_NAME->value].' '.$contact[ContactSystemFieldId::LAST_NAME->value]."\n";
+            echo '         Phone: '.$contact[ContactSystemFieldId::PHONE->value]."\n";
+            echo '         Opt-in: '.$contact->getOptInStatus()->label()."\n";
         }
 
         if (count($response->result) === count($this->testContacts)) {
@@ -235,21 +236,21 @@ class ContactIntegrationTest
         echo '   📊 Verifying updates for '.count($response->result)." contacts:\n";
 
         foreach ($response->result as $contact) {
-            $firstName = $contact->data[ContactSystemFieldId::FIRST_NAME->value];
-            $lastName = $contact->data[ContactSystemFieldId::LAST_NAME->value];
-            $optIn = $contact->data[ContactSystemFieldId::OPT_IN->value];
-            $phone = $contact->data[ContactSystemFieldId::PHONE->value];
+            $firstName = $contact[ContactSystemFieldId::FIRST_NAME->value];
+            $lastName = $contact[ContactSystemFieldId::LAST_NAME->value];
+            $optIn = $contact->getOptInStatus()?->value;
+            $phone = $contact[ContactSystemFieldId::PHONE->value];
 
-            echo "      Contact ID: {$contact->id}\n";
-            echo '         Email: '.$contact->data[ContactSystemFieldId::EMAIL->value]."\n";
+            echo "      Contact ID: {$contact['id']}\n";
+            echo '         Email: '.$contact[ContactSystemFieldId::EMAIL->value]."\n";
             echo "         Updated Name: {$firstName} {$lastName}\n";
             echo "         Updated Phone: {$phone}\n";
-            echo '         Updated Opt-in: '.($optIn == 2 ? 'No (Updated)' : 'Yes')."\n";
+            echo '         Updated Opt-in: '.($optIn == OptInStatus::FALSE->value ? 'No (Updated)' : 'Yes')."\n";
 
             // Verify updates
             $hasUpdatedSuffix = str_ends_with($firstName, ' Updated') && str_ends_with($lastName, ' Modified');
             $hasCorrectPhone = $phone === '+1111111111';
-            $hasCorrectOptIn = $optIn == 2;
+            $hasCorrectOptIn = $optIn == OptInStatus::FALSE->value;
 
             if ($hasUpdatedSuffix && $hasCorrectPhone && $hasCorrectOptIn) {
                 echo "         ✅ All updates verified for this contact\n";
@@ -278,15 +279,15 @@ class ContactIntegrationTest
             keyValues: [$this->baseEmail],
         );
 
-        $response = $this->client->contacts()->getContactData($getContactData);
+        $responseData = $this->client->contacts()->getContactData($getContactData);
 
-        if (! empty($response->result)) {
+        if (! empty($responseData->result)) {
             echo "   ✅ Found existing contact with email: {$this->baseEmail}\n";
 
-            foreach ($response->result as $contact) {
-                echo "      Contact ID: {$contact->id}\n";
-                echo '      Name: '.$contact->data[ContactSystemFieldId::FIRST_NAME->value].' '.$contact->data[ContactSystemFieldId::LAST_NAME->value]."\n";
-                echo '      Opt-in: '.($contact->data[ContactSystemFieldId::OPT_IN->value] == 1 ? 'Yes' : 'No')."\n";
+            foreach ($responseData->result as $contact) {
+                echo "      Contact ID: {$contact['id']}\n";
+                echo '      Name: '.$contact[ContactSystemFieldId::FIRST_NAME->value].' '.$contact[ContactSystemFieldId::LAST_NAME->value]."\n";
+                echo '      Opt-in: '.$contact->getOptInStatus()->label()."\n";
             }
         } else {
             echo "   ℹ️  No existing contact found with email: {$this->baseEmail}\n";
