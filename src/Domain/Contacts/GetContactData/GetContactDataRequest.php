@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Domain\Contacts\GetContactData;
 
 use BackedEnum;
+use JsonSerializable;
 
 /**
  * Request object for getting contact data from Emarsys API.
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/blzojxt3ga5be-get-contact-data
  */
-final readonly class GetContactDataRequest
+final readonly class GetContactDataRequest implements JsonSerializable
 {
     /**
      * @param  array<int>  $fields  The field IDs to retrieve for the contacts
@@ -23,11 +24,9 @@ final readonly class GetContactDataRequest
     ) {}
 
     /**
-     * Convert the object to an array for API request.
-     *
      * @return array<string,mixed>
      */
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return [
             'fields' => $this->fields,

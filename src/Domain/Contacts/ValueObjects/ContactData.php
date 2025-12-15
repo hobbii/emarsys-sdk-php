@@ -10,13 +10,14 @@ use Hobbii\Emarsys\Domain\Enums\ContactSystemFieldId;
 use Hobbii\Emarsys\Domain\Enums\OptInStatus;
 use InvalidArgumentException;
 use IteratorAggregate;
+use JsonSerializable;
 use Traversable;
 
 /**
  * @implements IteratorAggregate<int, string|null|array<string|null>>
  * @implements ArrayAccess<int, string|null|array<string|null>>
  */
-final readonly class ContactData implements ArrayAccess, IteratorAggregate
+final readonly class ContactData implements ArrayAccess, IteratorAggregate, JsonSerializable
 {
     /**
      * @param  array<int,string|null|array<string|null>>  $data
@@ -30,6 +31,14 @@ final readonly class ContactData implements ArrayAccess, IteratorAggregate
         $optInValue = $this->data[ContactSystemFieldId::OPT_IN->value] ?? null;
 
         return $optInValue !== null ? OptInStatus::from((int) $optInValue) : null;
+    }
+
+    /**
+     * @return array<int,string|null|array<string|null>>
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->data;
     }
 
     public function getIterator(): Traversable

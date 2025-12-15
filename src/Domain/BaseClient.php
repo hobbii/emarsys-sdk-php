@@ -12,6 +12,7 @@ use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 use Hobbii\Emarsys\Domain\Exceptions\RateLimitException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
+use JsonSerializable;
 
 /**
  * Base HTTP client for Emarsys API communication.
@@ -65,7 +66,7 @@ class BaseClient
      * @throws ApiException
      * @throws AuthenticationException
      */
-    public function post(string $endpoint, array $data = []): Response
+    public function post(string $endpoint, array|JsonSerializable $data = []): Response
     {
         return $this->request('POST', $endpoint, [
             'json' => $data,
@@ -80,7 +81,7 @@ class BaseClient
      * @throws ApiException
      * @throws AuthenticationException
      */
-    public function put(string $endpoint, array $data = []): Response
+    public function put(string $endpoint, array|JsonSerializable $data = []): Response
     {
         return $this->request('PUT', $endpoint, [
             'json' => $data,

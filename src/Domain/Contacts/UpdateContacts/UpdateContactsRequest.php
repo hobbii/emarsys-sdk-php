@@ -6,13 +6,14 @@ namespace Hobbii\Emarsys\Domain\Contacts\UpdateContacts;
 
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
 use InvalidArgumentException;
+use JsonSerializable;
 
 /**
  * Request object for updating contacts in Emarsys API.
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/f8ljhut3ac2i1-update-contacts
  */
-final readonly class UpdateContactsRequest
+final readonly class UpdateContactsRequest implements JsonSerializable
 {
     private const MAX_CONTACTS_PER_REQUEST = 1000;
 
@@ -35,14 +36,14 @@ final readonly class UpdateContactsRequest
         }
     }
 
-    public function toRequestData(): array
+    /**
+     * @return array<string,mixed>
+     */
+    public function jsonSerialize(): array
     {
         return [
             'keyId' => $this->keyId,
-            'contacts' => array_map(
-                fn (ContactData $contact) => $contact->data,
-                $this->contacts
-            ),
+            'contacts' => $this->contacts,
         ];
     }
 }

@@ -52,21 +52,17 @@ final class ContactsClientTest extends TestCase
             errors: []
         );
 
-        $this->emarsysClient
-            ->expects($this->once())
-            ->method('post')
-            ->with('contact/getdata', [
-                'fields' => ['1', '2', '3'],
-                'keyId' => '1',
-                'keyValues' => ['john@example.com'],
-            ])
-            ->willReturn($response);
-
         $requestData = GetContactDataRequest::make(
             fields: ['1', '2', '3'],
             keyId: '1',
             keyValues: ['john@example.com']
         );
+
+        $this->emarsysClient
+            ->expects($this->once())
+            ->method('post')
+            ->with('contact/getdata', $requestData)
+            ->willReturn($response);
 
         // Act
         $result = $this->client->getContactData($requestData);
@@ -89,21 +85,17 @@ final class ContactsClientTest extends TestCase
             errors: []
         );
 
-        $this->emarsysClient
-            ->expects($this->once())
-            ->method('post')
-            ->with('contact/getdata', [
-                'fields' => ['1', '2', '3'],
-                'keyId' => '1',
-                'keyValues' => ['john@example.com'],
-            ])
-            ->willReturn($response);
-
         $requestData = GetContactDataRequest::make(
             fields: ['1', '2', '3'],
             keyId: '1',
             keyValues: ['john@example.com']
         );
+
+        $this->emarsysClient
+            ->expects($this->once())
+            ->method('post')
+            ->with('contact/getdata', $requestData)
+            ->willReturn($response);
 
         // Assert & Act
         $this->expectException(ApiException::class);

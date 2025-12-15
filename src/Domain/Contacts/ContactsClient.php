@@ -39,7 +39,7 @@ class ContactsClient
      */
     public function getContactData(GetContactDataRequest $request): GetContactDataResponse
     {
-        $response = $this->client->post(self::ENDPOINT.'/getdata', $request->toArray());
+        $response = $this->client->post(self::ENDPOINT.'/getdata', $request);
 
         return GetContactDataResponse::fromResponse($response);
     }
@@ -65,7 +65,7 @@ class ContactsClient
             $endpoint .= '?create_if_not_exists=1';
         }
 
-        $response = $this->client->put($endpoint, $request->toRequestData());
+        $response = $this->client->put($endpoint, $request);
 
         return UpdateContactsResponseData::fromResponse($response);
     }
