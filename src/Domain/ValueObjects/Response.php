@@ -59,23 +59,6 @@ readonly class Response
         throw new ApiException('Response data is not an array');
     }
 
-    public static function fromArray(array $arr): self
-    {
-        $errors = [];
-        if (isset($arr['errors']) && is_array($arr['errors'])) {
-            foreach ($arr['errors'] as $errorData) {
-                $errors[] = ErrorObject::fromArray($errorData);
-            }
-        }
-
-        return new self(
-            replyCode: $arr['replyCode'] ?? 0,
-            replyText: $arr['replyText'] ?? '',
-            data: $arr['data'] ?? null,
-            errors: $errors
-        );
-    }
-
     /**
      * @throws ApiException
      */
@@ -93,6 +76,17 @@ readonly class Response
             throw new ApiException('Invalid JSON response', previous: $e);
         }
 
-        return self::fromArray($data);
+        if (! is_array($errors = $data['errors'] ?? [])) {
+            throw new ApiException('"errors" must be an array in response');
+        }
+
+        $errors = array_map(ErrorObject::fromArray(...), $errors);
+
+        return new self(
+            replyCode: $data['replyCode'] ?? 0,
+            replyText: $data['replyText'] ?? '',
+            data: $data['data'] ?? null,
+            errors: $errors
+        );
     }
 }
