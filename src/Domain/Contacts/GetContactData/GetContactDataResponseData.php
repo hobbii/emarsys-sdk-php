@@ -70,8 +70,6 @@ final readonly class GetContactDataResponseData implements ResponseDataInterface
             $errors = array_map(ErrorObject::fromArray(...), $responseDataErrors);
         }
 
-        $reply = new Reply($response->replyCode, $response->replyText);
-
-        return new self($contactDataResult, $errors, $reply);
+        return new self($contactDataResult, $errors, $response->reply);
     }
 }

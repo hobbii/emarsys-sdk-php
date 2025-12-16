@@ -11,17 +11,9 @@ use Psr\Http\Message\ResponseInterface;
 readonly class Response
 {
     public function __construct(
-        public int $replyCode,
-        public string $replyText,
-        public int|string|array|null $data,
-        /** @var ErrorObject[] Errors returned by the Emarsys API. */
-        public array $errors,
+        public Reply $reply,
+        public int|string|array|null $data
     ) {}
-
-    public function hasErrors(): bool
-    {
-        return ! empty($this->errors);
-    }
 
     /**
      * @throws ApiException
@@ -76,17 +68,14 @@ readonly class Response
             throw new ApiException('Invalid JSON response', previous: $e);
         }
 
-        if (! is_array($errors = $data['errors'] ?? [])) {
-            throw new ApiException('"errors" must be an array in response');
-        }
-
-        $errors = array_map(ErrorObject::fromArray(...), $errors);
+        $reply = new Reply(
+            $data['replyCode'] ?? 0,
+            $data['replyText'] ?? '',
+        );
 
         return new self(
-            replyCode: $data['replyCode'] ?? 0,
-            replyText: $data['replyText'] ?? '',
+            reply: $reply,
             data: $data['data'] ?? null,
-            errors: $errors
         );
     }
 }

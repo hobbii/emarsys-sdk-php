@@ -9,6 +9,7 @@ use Hobbii\Emarsys\Domain\Contacts\ContactsClient;
 use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataRequest;
 use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataResponseData;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
+use Hobbii\Emarsys\Domain\ValueObjects\Reply;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -45,10 +46,8 @@ final class ContactsClientTest extends TestCase
         ];
 
         $response = new Response(
-            replyCode: 0,
-            replyText: 'OK',
-            data: $responseData,
-            errors: []
+            reply: new Reply(0, 'OK'),
+            data: $responseData
         );
 
         $requestData = GetContactDataRequest::make(
@@ -77,10 +76,8 @@ final class ContactsClientTest extends TestCase
     {
         // Arrange
         $response = new Response(
-            replyCode: 0,
-            replyText: 'OK',
-            data: ['errors' => []], // Missing 'result' field
-            errors: []
+            reply: new Reply(0, 'OK'),
+            data: ['errors' => []] // Missing 'result' field
         );
 
         $requestData = GetContactDataRequest::make(
