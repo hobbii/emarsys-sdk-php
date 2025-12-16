@@ -7,7 +7,7 @@ namespace Hobbii\Emarsys\Tests\Unit\Domain\Contacts;
 use Hobbii\Emarsys\Domain\BaseClient as EmarsysClient;
 use Hobbii\Emarsys\Domain\Contacts\ContactsClient;
 use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataRequest;
-use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataResponse;
+use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataResponseData;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
@@ -68,7 +68,7 @@ final class ContactsClientTest extends TestCase
         $result = $this->client->getContactData($requestData);
 
         // Assert
-        $this->assertInstanceOf(GetContactDataResponse::class, $result);
+        $this->assertInstanceOf(GetContactDataResponseData::class, $result);
         $this->assertEmpty($result->errors);
         $this->assertNotNull($result->result);
         $this->assertCount(1, $result->result);

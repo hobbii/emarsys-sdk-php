@@ -9,16 +9,36 @@ use Hobbii\Emarsys\Domain\ValueObjects\ErrorObject;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use InvalidArgumentException;
 
-final readonly class GetContactDataResponse
+/**
+ * Response object for getting contact data from Emarsys API.
+ *
+ * @see https://dev.emarsys.com/docs/core-api-reference/blzojxt3ga5be-get-contact-data
+ */
+final readonly class GetContactDataResponseData
 {
     /**
-     * @param  array<ContactData>|null  $result  The array of retrieved contact data objects
-     * @param  array<ErrorObject>|null  $errors  The details of any contacts not retrieved, expressed as an array that contains the error code and reason
+     * @param  array<ContactData>  $result  The array of retrieved contact data objects
+     * @param  array<ErrorObject>  $errors  The details of any contacts not retrieved, expressed as an array that contains the error code and reason
      */
     public function __construct(
-        public ?array $result,
-        public ?array $errors,
+        public array $result,
+        public array $errors,
     ) {}
+
+    public function hasResult(): bool
+    {
+        return ! empty($this->result);
+    }
+
+    public function getFirstContactData(): ?ContactData
+    {
+        return $this->result[0] ?? null;
+    }
+
+    public function hasErrors(): bool
+    {
+        return ! empty($this->errors);
+    }
 
     /**
      * Create a GetContactDataResponse instance from Response.
@@ -28,20 +48,20 @@ final readonly class GetContactDataResponse
     public static function fromResponse(Response $response): self
     {
         $responseData = $response->dataAsArray();
+        $dataResult = $responseData['result'] ?? null;
 
-        if (! isset($responseData['result'])) {
+        if ($dataResult === null) {
             throw new InvalidArgumentException('Missing "result" in contact data response');
         }
 
-        $dataResult = $responseData['result'];
-        $result = null;
+        $result = [];
 
         if (is_array($dataResult)) {
             $result = array_map(ContactData::fromResponseResultData(...), $dataResult);
         }
 
         $dataErrors = $responseData['errors'] ?? null;
-        $errors = null;
+        $errors = [];
 
         if (is_array($dataErrors)) {
             $errors = array_map(ErrorObject::fromArray(...), $dataErrors);
