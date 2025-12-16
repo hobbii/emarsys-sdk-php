@@ -140,7 +140,7 @@ class ContactsIntegrationTest
 
         $testEmails = array_column($this->testContacts, 'email');
 
-        $getContactData = GetContactDataRequest::make(
+        $request = GetContactDataRequest::make(
             fields: [
                 ContactSystemFieldId::INTERESTS,
                 ContactSystemFieldId::FIRST_NAME,
@@ -153,9 +153,8 @@ class ContactsIntegrationTest
             keyValues: $testEmails,
         );
 
-        $response = $this->client->contacts()->getContactData($getContactData);
-
-        echo '   📊 Retrieved '.count($response->result)." contacts:\n";
+        $response = $this->client->send($request);
+        echo '   📊 Retrieved '.count($response->result ?? [])." contacts:\n";
 
         foreach ($response->result as $contact) {
             echo "      Contact ID: {$contact['id']}\n";

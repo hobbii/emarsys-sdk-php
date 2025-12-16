@@ -6,14 +6,14 @@ namespace Hobbii\Emarsys\Domain\Contacts\GetContactData;
 
 use BackedEnum;
 use Hobbii\Emarsys\Domain\Contacts\Utils;
-use JsonSerializable;
+use Hobbii\Emarsys\Domain\Contracts\RequestInterface;
 
 /**
  * Request object for getting contact data from Emarsys API.
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/blzojxt3ga5be-get-contact-data
  */
-final readonly class GetContactDataRequest implements JsonSerializable
+final readonly class GetContactDataRequest implements RequestInterface
 {
     /**
      * @param  array<int>  $fields  The field IDs to retrieve for the contacts
@@ -23,6 +23,26 @@ final readonly class GetContactDataRequest implements JsonSerializable
         public string|int $keyId,
         public array $keyValues,
     ) {}
+
+    public function method(): string
+    {
+        return 'POST';
+    }
+
+    public function endpoint(): string
+    {
+        return 'contact/getdata';
+    }
+
+    public function query(): array
+    {
+        return [];
+    }
+
+    public function responseDataClass(): string
+    {
+        return GetContactDataResponseData::class;
+    }
 
     /**
      * @return array<string,mixed>

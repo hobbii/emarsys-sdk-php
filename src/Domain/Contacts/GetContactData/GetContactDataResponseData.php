@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Domain\Contacts\GetContactData;
 
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
+use Hobbii\Emarsys\Domain\Contracts\ResponseDataInterface;
 use Hobbii\Emarsys\Domain\ValueObjects\ErrorObject;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use InvalidArgumentException;
@@ -14,7 +15,7 @@ use InvalidArgumentException;
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/blzojxt3ga5be-get-contact-data
  */
-final readonly class GetContactDataResponseData
+final readonly class GetContactDataResponseData implements ResponseDataInterface
 {
     /**
      * @param  array<ContactData>  $result  The array of retrieved contact data objects
