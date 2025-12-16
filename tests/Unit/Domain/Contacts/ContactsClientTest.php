@@ -9,13 +9,12 @@ use Hobbii\Emarsys\Domain\Contacts\ContactsClient;
 use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataRequest;
 use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataResponseData;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
-use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Hobbii\Emarsys\Domain\Contact\ContactClient
+ * @covers \Hobbii\Emarsys\Domain\Contacts\ContactsClient
  */
 final class ContactsClientTest extends TestCase
 {
@@ -60,28 +59,27 @@ final class ContactsClientTest extends TestCase
 
         $this->emarsysClient
             ->expects($this->once())
-            ->method('post')
-            ->with('contact/getdata', $requestData)
+            ->method('send')
+            ->with($requestData)
             ->willReturn($response);
 
         // Act
-        $result = $this->client->getContactData($requestData);
+        $response = $this->client->getContactData($requestData);
 
         // Assert
-        $this->assertInstanceOf(GetContactDataResponseData::class, $result);
-        $this->assertEmpty($result->errors);
-        $this->assertNotNull($result->result);
-        $this->assertCount(1, $result->result);
-        $this->assertInstanceOf(ContactData::class, $result->result[0]);
+        $this->assertInstanceOf(GetContactDataResponseData::class, $response);
+        $this->assertEmpty($response->errors);
+        $this->assertCount(1, $response->contactDataResult);
+        $this->assertInstanceOf(ContactData::class, $response->getFirstContactData());
     }
 
-    public function test_get_data_throws_api_exception_when_data_field_missing(): void
+    public function test_get_data_throws_invalid_argument_exception_when_result_field_missing(): void
     {
         // Arrange
         $response = new Response(
             replyCode: 0,
             replyText: 'OK',
-            data: null,
+            data: ['errors' => []], // Missing 'result' field
             errors: []
         );
 
@@ -93,13 +91,13 @@ final class ContactsClientTest extends TestCase
 
         $this->emarsysClient
             ->expects($this->once())
-            ->method('post')
-            ->with('contact/getdata', $requestData)
+            ->method('send')
+            ->with($requestData)
             ->willReturn($response);
 
         // Assert & Act
-        $this->expectException(ApiException::class);
-        $this->expectExceptionMessage('Response data is not an array');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Missing "result" in contact data response');
 
         $this->client->getContactData($requestData);
     }

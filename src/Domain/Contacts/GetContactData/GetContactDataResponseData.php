@@ -6,7 +6,11 @@ namespace Hobbii\Emarsys\Domain\Contacts\GetContactData;
 
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
 use Hobbii\Emarsys\Domain\Contracts\ResponseDataInterface;
+use Hobbii\Emarsys\Domain\Contracts\WithErrorsInterface;
+use Hobbii\Emarsys\Domain\Traits\WithErrors;
+use Hobbii\Emarsys\Domain\Traits\WithReply;
 use Hobbii\Emarsys\Domain\ValueObjects\ErrorObject;
+use Hobbii\Emarsys\Domain\ValueObjects\Reply;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use InvalidArgumentException;
 
@@ -15,30 +19,28 @@ use InvalidArgumentException;
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/blzojxt3ga5be-get-contact-data
  */
-final readonly class GetContactDataResponseData implements ResponseDataInterface
+final readonly class GetContactDataResponseData implements ResponseDataInterface, WithErrorsInterface
 {
+    use WithErrors;
+    use WithReply;
+
     /**
-     * @param  array<ContactData>  $result  The array of retrieved contact data objects
-     * @param  array<ErrorObject>  $errors  The details of any contacts not retrieved, expressed as an array that contains the error code and reason
+     * @param  ContactData[]  $contactDataResult  The array of retrieved contact data objects
      */
-    public function __construct(
-        public array $result,
+    private function __construct(
+        public array $contactDataResult,
         public array $errors,
+        protected Reply $reply,
     ) {}
 
     public function hasResult(): bool
     {
-        return ! empty($this->result);
+        return ! empty($this->contactDataResult);
     }
 
     public function getFirstContactData(): ?ContactData
     {
-        return $this->result[0] ?? null;
-    }
-
-    public function hasErrors(): bool
-    {
-        return ! empty($this->errors);
+        return $this->contactDataResult[0] ?? null;
     }
 
     /**
@@ -49,25 +51,27 @@ final readonly class GetContactDataResponseData implements ResponseDataInterface
     public static function fromResponse(Response $response): self
     {
         $responseData = $response->dataAsArray();
-        $dataResult = $responseData['result'] ?? null;
+        $responseDataResult = $responseData['result'] ?? null;
 
-        if ($dataResult === null) {
+        if ($responseDataResult === null) {
             throw new InvalidArgumentException('Missing "result" in contact data response');
         }
 
-        $result = [];
+        $contactDataResult = [];
 
-        if (is_array($dataResult)) {
-            $result = array_map(ContactData::fromResponseResultData(...), $dataResult);
+        if (is_array($responseDataResult)) {
+            $contactDataResult = array_map(ContactData::fromResponseResultData(...), $responseDataResult);
         }
 
-        $dataErrors = $responseData['errors'] ?? null;
+        $responseDataErrors = $responseData['errors'] ?? null;
         $errors = [];
 
-        if (is_array($dataErrors)) {
-            $errors = array_map(ErrorObject::fromArray(...), $dataErrors);
+        if (is_array($responseDataErrors)) {
+            $errors = array_map(ErrorObject::fromArray(...), $responseDataErrors);
         }
 
-        return new self($result, $errors);
+        $reply = new Reply($response->replyCode, $response->replyText);
+
+        return new self($contactDataResult, $errors, $reply);
     }
 }

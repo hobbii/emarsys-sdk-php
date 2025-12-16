@@ -39,7 +39,7 @@ class ContactsClient
      */
     public function getContactData(GetContactDataRequest $request): GetContactDataResponseData
     {
-        $response = $this->client->post(self::ENDPOINT.'/getdata', $request);
+        $response = $this->client->send($request);
 
         return GetContactDataResponseData::fromResponse($response);
     }

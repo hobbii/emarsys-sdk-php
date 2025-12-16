@@ -8,6 +8,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
+use Hobbii\Emarsys\Domain\Contracts\RequestInterface;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 use Hobbii\Emarsys\Domain\Exceptions\RateLimitException;
@@ -101,6 +102,23 @@ class BaseClient
         return $this->request('DELETE', $endpoint, [
             'query' => $query,
         ]);
+    }
+
+    /**
+     * Send a request to the API based on the provided RequestInterface.
+     *
+     * @throws ApiException
+     * @throws AuthenticationException
+     */
+    public function send(RequestInterface $request): Response
+    {
+        return match ($request->method()) {
+            'GET' => $this->get($request->endpoint(), $request->query()),
+            'POST' => $this->post($request->endpoint(), $request),
+            'PUT' => $this->put($request->endpoint(), $request),
+            'DELETE' => $this->delete($request->endpoint(), $request->query()),
+            default => throw new \InvalidArgumentException('Unsupported HTTP method: '.$request->method()),
+        };
     }
 
     /**
