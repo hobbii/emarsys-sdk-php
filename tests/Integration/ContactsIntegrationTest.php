@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Tests\Integration;
 
-use Hobbii\Emarsys\Client;
 use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataRequest;
 use Hobbii\Emarsys\Domain\Contacts\UpdateContacts\UpdateContactsRequest;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
@@ -13,21 +12,16 @@ use Hobbii\Emarsys\Domain\Enums\OptInStatus;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 
-class ContactsIntegrationTest
+class ContactsIntegrationTest extends AbstractIntegrationTest
 {
     private string $baseEmail;
 
     private array $testContacts = [];
 
-    public function __construct(
-        private readonly Client $client,
-        private readonly array $args,
-    ) {
-        $this->baseEmail = $this->args['email'] ?? 'john.doe@example.com';
-    }
-
-    public function run(): void
+    public function run(array $args): void
     {
+        $this->baseEmail = $args['email'] ?? 'john.doe@example.com';
+
         echo "🚀 Starting comprehensive contacts integration test...\n\n";
 
         try {

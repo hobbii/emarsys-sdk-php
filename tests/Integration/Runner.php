@@ -60,11 +60,11 @@ final class Runner
 
             echo "✅ Client created successfully\n";
 
-            $tests = $this->createTests($testName, $client, $parsedArgs);
+            $tests = $this->createTests($testName, $client);
 
             foreach ($tests as $test) {
                 echo 'Running Test: '.get_class($test)."...\n\n";
-                $test->run();
+                $test->run($parsedArgs);
                 echo "\nDone.\n";
             }
 
@@ -92,38 +92,34 @@ final class Runner
      *
      * @param  string  $testName  Name of the test to run (predefined name or file path)
      * @param  Client  $client  Emarsys client instance
-     * @param  array  $args  Parsed command line arguments
      * @return array Array of test instances
      */
-    private function createTests(string $testName, Client $client, array $args): array
+    private function createTests(string $testName, Client $client): array
     {
-        if ($testName === 'all') {
-            $tests = array_values($this->availableTests);
-        } else {
-            $availableTestNames = array_keys($this->availableTests);
+        $tests = [];
+        $availableTestNames = array_keys($this->availableTests);
 
-            if (in_array($testName, $availableTestNames)) {
-                // Use predefined test
-                $tests = [$this->availableTests[$testName]];
-            } elseif ($this->isValidTestFilePath($testName)) {
-                // Use test file path - convert to class name
-                $className = $this->filePathToClassName($testName);
-                if ($className && class_exists($className)) {
-                    $tests = [$className];
-                } else {
-                    echo "❌ Could not load test class from file: {$testName}\n\n";
-                    $this->echoUsageInfo();
-                    exit(self::EXIT_FAILURE);
-                }
+        if (in_array($testName, $availableTestNames)) {
+            // Use predefined test
+            $tests = [$this->availableTests[$testName]];
+        } elseif ($this->isValidTestFilePath($testName)) {
+            // Use test file path - convert to class name
+            $className = $this->filePathToClassName($testName);
+            if ($className && class_exists($className)) {
+                $tests = [$className];
             } else {
-                echo "❌ Unknown test: {$testName}\n\n";
-                echo "💡 Use a predefined test name or a valid file path.\n";
+                echo "❌ Could not load test class from file: {$testName}\n\n";
                 $this->echoUsageInfo();
                 exit(self::EXIT_FAILURE);
             }
+        } else {
+            echo "❌ Unknown test: {$testName}\n\n";
+            echo "💡 Use a predefined test name or a valid file path.\n";
+            $this->echoUsageInfo();
+            exit(self::EXIT_FAILURE);
         }
 
-        return array_map(fn (string $testClass) => new $testClass($client, $args), $tests);
+        return array_map(fn (string $testClass) => new $testClass($client), $tests);
     }
 
     /**
