@@ -161,11 +161,12 @@ final class Runner
     {
         echo "Available tests:\n";
         echo "  - quick         : Quick connection test (read-only)\n";
-        echo "  - all           : Run all integration tests (default)\n\n";
+        echo "\n";
         echo "Usage:\n";
+        echo "  php run-integration-tests.php quick\n";
+        echo "  php run-integration-tests.php tests/Integration/QuickConnectionTest.php\n";
         echo "  php run-integration-tests.php [test-name] [email=user@example.com]\n";
-        echo "  php run-integration-tests.php all\n";
-        echo "  php run-integration-tests.php tests/Integration/QuickConnectionTest.php\n\n";
+        echo "\n";
         echo "Note: You can use predefined test names or file paths.\n\n";
     }
 
