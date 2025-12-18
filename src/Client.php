@@ -17,7 +17,7 @@ use Hobbii\Emarsys\Domain\OauthClient;
  */
 class Client
 {
-    private readonly BaseClient $client;
+    public readonly BaseClient $baseClient;
 
     private ?ContactsClient $contactsClient = null;
 
@@ -28,7 +28,7 @@ class Client
         string $clientSecret,
     ) {
         $oauthClient = new OauthClient($clientId, $clientSecret);
-        $this->client = new BaseClient($oauthClient);
+        $this->baseClient = new BaseClient($oauthClient);
     }
 
     /**
@@ -36,7 +36,7 @@ class Client
      */
     public function contacts(): ContactsClient
     {
-        return $this->contactsClient ??= new ContactsClient($this->client);
+        return $this->contactsClient ??= new ContactsClient($this->baseClient);
     }
 
     /**
@@ -44,6 +44,6 @@ class Client
      */
     public function contactLists(): ContactListsClient
     {
-        return $this->contactListsClient ??= new ContactListsClient($this->client);
+        return $this->contactListsClient ??= new ContactListsClient($this->baseClient);
     }
 }
