@@ -43,7 +43,15 @@ final readonly class ContactData implements IteratorAggregate, JsonSerializable
     {
         $optInValue = $this->get(ContactSystemField::optin);
 
-        return $optInValue !== null ? OptInStatus::from((int) $optInValue) : null;
+        if ($optInValue === null) {
+            return null;
+        }
+
+        if (! is_numeric($optInValue)) {
+            throw new InvalidArgumentException('Opt-in status value is not numeric');
+        }
+
+        return OptInStatus::from((int) $optInValue);
     }
 
     /**

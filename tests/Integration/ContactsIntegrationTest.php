@@ -92,7 +92,7 @@ class ContactsIntegrationTest
                 ContactSystemField::first_name->value => $contact['firstName'],
                 ContactSystemField::last_name->value => $contact['lastName'],
                 ContactSystemField::phone->value => $contact['phone'],
-                ContactSystemField::optin->value => OptInStatus::TRUE->value,
+                ContactSystemField::optin->value => OptInStatus::True->value,
             ]);
         }
 
@@ -156,7 +156,7 @@ class ContactsIntegrationTest
                 echo '         Email: '.$contact->get(ContactSystemField::email)."\n";
                 echo '         Name: '.$contact->get(ContactSystemField::first_name).' '.$contact->get(ContactSystemField::last_name)."\n";
                 echo '         Phone: '.$contact->get(ContactSystemField::phone)."\n";
-                echo '         Opt-in: '.$contact->getOptInStatus()->label()."\n";
+                echo '         Opt-in: '.$contact->getOptInStatus()->name."\n";
             }
 
             if (count($response->result) === count($this->testContacts)) {
@@ -251,12 +251,12 @@ class ContactsIntegrationTest
             echo '         Email: '.$contact->get(ContactSystemField::email)."\n";
             echo "         Updated Name: {$firstName} {$lastName}\n";
             echo "         Updated Phone: {$phone}\n";
-            echo '         Updated Opt-in: '.($optIn?->isFalse() ? 'No (Updated)' : 'Yes')."\n";
+            echo '         Updated Opt-in: '.($optIn?->toBool() ? 'Yes' : 'No (Updated)')."\n";
 
             // Verify updates
             $hasUpdatedSuffix = str_ends_with($firstName, ' Updated') && str_ends_with($lastName, ' Modified');
             $hasCorrectPhone = $phone === '+1111111111';
-            $hasCorrectOptIn = $optIn?->isFalse();
+            $hasCorrectOptIn = ! $optIn?->toBool();
 
             if ($hasUpdatedSuffix && $hasCorrectPhone && $hasCorrectOptIn) {
                 echo "         ✅ All updates verified for this contact\n";

@@ -6,21 +6,11 @@ namespace Hobbii\Emarsys\Domain\Enums;
 
 enum OptInStatus: int
 {
-    case TRUE = 1;
-    case FALSE = 2;
+    case True = 1;
+    case False = 2;
 
-    public function isTrue(): bool
+    public function toBool(): bool
     {
-        return $this === self::TRUE;
-    }
-
-    public function isFalse(): bool
-    {
-        return $this === self::FALSE;
-    }
-
-    public function label(): string
-    {
-        return $this->value === self::TRUE->value ? 'Yes' : 'No';
+        return $this === self::True;
     }
 }
