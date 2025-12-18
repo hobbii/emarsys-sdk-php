@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\Contacts\ValueObjects;
 
-use ArrayAccess;
 use ArrayIterator;
-use Hobbii\Emarsys\Domain\Enums\ContactSystemFieldId;
+use BackedEnum;
+use Hobbii\Emarsys\Domain\Enums\ContactSystemField;
 use Hobbii\Emarsys\Domain\Enums\OptInStatus;
 use InvalidArgumentException;
 use IteratorAggregate;
@@ -15,9 +15,8 @@ use Traversable;
 
 /**
  * @implements IteratorAggregate<int, string|null|array<string|null>>
- * @implements ArrayAccess<int, string|null|array<string|null>>
  */
-final readonly class ContactData implements ArrayAccess, IteratorAggregate, JsonSerializable
+final readonly class ContactData implements IteratorAggregate, JsonSerializable
 {
     /**
      * @param  array<int,string|null|array<string|null>>  $data
@@ -26,9 +25,23 @@ final readonly class ContactData implements ArrayAccess, IteratorAggregate, Json
         public array $data,
     ) {}
 
+    public function has(int|string|BackedEnum $key): bool
+    {
+        $keyId = $this->normalizeKey($key);
+
+        return array_key_exists($keyId, $this->data);
+    }
+
+    public function get(int|string|BackedEnum $key): string|array|null
+    {
+        $keyId = $this->normalizeKey($key);
+
+        return $this->data[$keyId] ?? null;
+    }
+
     public function getOptInStatus(): ?OptInStatus
     {
-        $optInValue = $this->data[ContactSystemFieldId::OPT_IN->value] ?? null;
+        $optInValue = $this->get(ContactSystemField::optin);
 
         return $optInValue !== null ? OptInStatus::from((int) $optInValue) : null;
     }
@@ -46,26 +59,9 @@ final readonly class ContactData implements ArrayAccess, IteratorAggregate, Json
         return new ArrayIterator($this->data);
     }
 
-    public function offsetExists(mixed $offset): bool
+    private function normalizeKey(int|string|BackedEnum $key): int|string
     {
-        return isset($this->data[$offset]);
-    }
-
-    public function offsetGet(mixed $offset): mixed
-    {
-        return $this->data[$offset] ?? null;
-    }
-
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-        // ContactData is immutable - modifications are not allowed
-        throw new \BadMethodCallException('ContactData is immutable and cannot be modified.');
-    }
-
-    public function offsetUnset(mixed $offset): void
-    {
-        // ContactData is immutable - modifications are not allowed
-        throw new \BadMethodCallException('ContactData is immutable and cannot be modified.');
+        return $key instanceof BackedEnum ? $key->value : $key;
     }
 
     public static function fromResponseResultData(array $data): self

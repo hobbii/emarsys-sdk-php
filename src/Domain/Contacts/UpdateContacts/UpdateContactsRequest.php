@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Domain\Contacts\UpdateContacts;
 
 use BackedEnum;
-use Hobbii\Emarsys\Domain\Contacts\Utils;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
+use Hobbii\Emarsys\Domain\Contacts\ValueObjects\KeyId;
 use InvalidArgumentException;
 use JsonSerializable;
 
@@ -20,7 +20,7 @@ final readonly class UpdateContactsRequest implements JsonSerializable
     private const MAX_CONTACTS_PER_REQUEST = 1000;
 
     private function __construct(
-        public string|int $keyId,
+        public KeyId $keyId,
         /** @var array<ContactData> */
         public array $contacts,
         public bool $createIfNotExists = false,
@@ -39,7 +39,7 @@ final readonly class UpdateContactsRequest implements JsonSerializable
         self::validateContacts($contacts);
 
         return new self(
-            keyId: Utils::normalizeKeyId($keyId),
+            keyId: KeyId::make($keyId),
             contacts: $contacts,
             createIfNotExists: $createIfNotExists,
         );

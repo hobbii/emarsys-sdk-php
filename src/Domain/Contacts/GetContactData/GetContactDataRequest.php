@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Domain\Contacts\GetContactData;
 
 use BackedEnum;
-use Hobbii\Emarsys\Domain\Contacts\Utils;
+use Hobbii\Emarsys\Domain\Contacts\ValueObjects\KeyId;
 use Hobbii\Emarsys\Domain\Contracts\RequestInterface;
 
 /**
@@ -16,11 +16,11 @@ use Hobbii\Emarsys\Domain\Contracts\RequestInterface;
 final readonly class GetContactDataRequest implements RequestInterface
 {
     /**
-     * @param  array<int>  $fields  The field IDs to retrieve for the contacts
+     * @param  KeyId[]  $fields  The field IDs to retrieve for the contacts
      */
     private function __construct(
         public array $fields,
-        public string|int $keyId,
+        public KeyId $keyId,
         public array $keyValues,
     ) {}
 
@@ -58,22 +58,21 @@ final readonly class GetContactDataRequest implements RequestInterface
 
     /**
      * @param  array<int|string|BackedEnum>  $fields  The field IDs to retrieve for the contacts
-     * @param  string|int|BackedEnum  $keyId  Identifies the contact by their id, uid, or custom field name/ID (e.g., 'email', '3')
+     * @param  int|string|BackedEnum  $keyId  Identifies the contact by their id, uid, or custom field name/ID (e.g., 'email', '3')
      * @param  array<string>  $keyValues  Array of contact identifiers (emails, ids, uid)
      *
      * @throws \InvalidArgumentException if any field ID enum does not have an integer backing value
      */
     public static function make(
         array $fields,
-        string|int|BackedEnum $keyId,
+        int|string|BackedEnum $keyId,
         array $keyValues,
     ): self {
-        /** @var array<int> $requestFields */
-        $requestFields = array_map(Utils::normalizeFieldId(...), $fields);
+        $requestFields = array_map(KeyId::make(...), $fields);
 
         return new self(
             fields: $requestFields,
-            keyId: Utils::normalizeKeyId($keyId),
+            keyId: KeyId::make($keyId),
             keyValues: $keyValues,
         );
     }
