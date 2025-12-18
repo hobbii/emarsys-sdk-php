@@ -150,7 +150,7 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
                 echo '         Email: '.$contact->get(ContactSystemField::email)."\n";
                 echo '         Name: '.$contact->get(ContactSystemField::first_name).' '.$contact->get(ContactSystemField::last_name)."\n";
                 echo '         Phone: '.$contact->get(ContactSystemField::phone)."\n";
-                echo '         Opt-in: '.$contact->getOptInStatus()->name."\n";
+                echo '         Opt-in: '.$contact->getOptInStatus()?->name ?? 'unknown'."\n";
             }
 
             if (count($response->result) === count($this->testContacts)) {
