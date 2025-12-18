@@ -112,13 +112,10 @@ class BaseClient
      */
     public function send(RequestInterface $request): Response
     {
-        return match ($request->method()) {
-            'GET' => $this->get($request->endpoint(), $request->query()),
-            'POST' => $this->post($request->endpoint(), $request),
-            'PUT' => $this->put($request->endpoint(), $request),
-            'DELETE' => $this->delete($request->endpoint(), $request->query()),
-            default => throw new \InvalidArgumentException('Unsupported HTTP method: '.$request->method()),
-        };
+        return $this->request($request->method(), $request->endpoint(), [
+            'query' => $request->query(),
+            'json' => $request,
+        ]);
     }
 
     /**

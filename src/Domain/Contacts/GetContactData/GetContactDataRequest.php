@@ -31,7 +31,7 @@ final readonly class GetContactDataRequest implements RequestInterface
 
     public function endpoint(): string
     {
-        return 'contact/getdata';
+        return 'contact/getdata/';
     }
 
     public function query(): array

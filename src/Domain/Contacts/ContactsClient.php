@@ -17,8 +17,6 @@ use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
  */
 class ContactsClient
 {
-    private const ENDPOINT = 'contact';
-
     public function __construct(
         private readonly BaseClient $client
     ) {}
@@ -29,8 +27,6 @@ class ContactsClient
      * Returns the field values of the contacts specified by either their internal
      * identifiers or by a custom property. It is recommended to use the `id` or `uid`
      * fields to identify contacts to avoid conflicts when using non-unique fields.
-     *
-     * Note: The maximum number of objects per request is 1000.
      *
      * @throws ApiException
      * @throws AuthenticationException
@@ -50,8 +46,6 @@ class ContactsClient
      * Updates existing contacts or creates new ones if they do not exist.
      * The contacts are identified by the specified key field (keyId).
      *
-     * Note: The maximum number of contacts per request is 1000.
-     *
      * @throws ApiException
      * @throws AuthenticationException
      *
@@ -59,13 +53,7 @@ class ContactsClient
      */
     public function updateContact(UpdateContactsRequest $request): UpdateContactsResponseData
     {
-        $endpoint = self::ENDPOINT.'/';
-
-        if ($request->createIfNotExists) {
-            $endpoint .= '?create_if_not_exists=1';
-        }
-
-        $response = $this->client->put($endpoint, $request);
+        $response = $this->client->send($request);
 
         return UpdateContactsResponseData::fromResponse($response);
     }

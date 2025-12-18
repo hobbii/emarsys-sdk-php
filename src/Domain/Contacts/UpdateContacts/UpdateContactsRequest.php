@@ -7,15 +7,15 @@ namespace Hobbii\Emarsys\Domain\Contacts\UpdateContacts;
 use BackedEnum;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\KeyId;
+use Hobbii\Emarsys\Domain\Contracts\RequestInterface;
 use InvalidArgumentException;
-use JsonSerializable;
 
 /**
  * Request object for updating contacts in Emarsys API.
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/f8ljhut3ac2i1-update-contacts
  */
-final readonly class UpdateContactsRequest implements JsonSerializable
+final readonly class UpdateContactsRequest implements RequestInterface
 {
     private const MAX_CONTACTS_PER_REQUEST = 1000;
 
@@ -25,6 +25,25 @@ final readonly class UpdateContactsRequest implements JsonSerializable
         public array $contacts,
         public bool $createIfNotExists = false,
     ) {}
+
+    public function method(): string
+    {
+        return 'PUT';
+    }
+
+    public function endpoint(): string
+    {
+        return 'contact/';
+    }
+
+    public function query(): array
+    {
+        if ($this->createIfNotExists) {
+            return ['create_if_not_exists' => '1'];
+        }
+
+        return [];
+    }
 
     /**
      * @param  array<ContactData>  $contacts  List of contacts to be updated.

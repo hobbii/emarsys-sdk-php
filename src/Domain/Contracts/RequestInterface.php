@@ -15,6 +15,8 @@ interface RequestInterface extends JsonSerializable
 
     /**
      * Get the API endpoint for the request.
+     *
+     * Guzzle follows RFC 3986 URI resolution rules - if the base_uri does not end with /, it’s considered a file.
      */
     public function endpoint(): string;
 
