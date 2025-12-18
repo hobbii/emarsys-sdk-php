@@ -64,16 +64,16 @@ final readonly class ContactData implements IteratorAggregate, JsonSerializable
         return $key instanceof BackedEnum ? $key->value : $key;
     }
 
-    public static function fromResponseResultData(array $data): self
+    public static function fromResponseResultItem(array $item): self
     {
-        if (! isset($data['id'])) {
+        if (! isset($item['id'])) {
             throw new InvalidArgumentException('Missing id in contact data result');
         }
 
-        if (! isset($data['uid'])) {
+        if (! isset($item['uid'])) {
             throw new InvalidArgumentException('Missing uid in contact data result');
         }
 
-        return new self(data: $data);
+        return new self(data: $item);
     }
 }

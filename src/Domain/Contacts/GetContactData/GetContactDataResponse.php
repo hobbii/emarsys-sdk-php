@@ -54,7 +54,7 @@ final readonly class GetContactDataResponse implements ResponseInterface, WithEr
         $result = $result === false ? null : $result;
 
         if (is_array($result)) {
-            $result = array_map(ContactData::fromResponseResultData(...), $result);
+            $result = array_map(ContactData::fromResponseResultItem(...), $result);
         }
 
         $errors = $response->dataGet('errors');
