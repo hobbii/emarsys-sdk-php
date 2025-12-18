@@ -39,11 +39,6 @@ final readonly class GetContactDataRequest implements RequestInterface
         return [];
     }
 
-    public function responseDataClass(): string
-    {
-        return GetContactDataResponseData::class;
-    }
-
     /**
      * @return array<string,mixed>
      */

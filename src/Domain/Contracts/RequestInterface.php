@@ -24,10 +24,4 @@ interface RequestInterface extends JsonSerializable
      * @return array<string,mixed>
      */
     public function query(): array;
-
-    /**
-     * Get the response class associated with the request.
-     * The class must implement ResponseDataInterface.
-     */
-    public function responseDataClass(): string;
 }
