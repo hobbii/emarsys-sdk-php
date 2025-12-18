@@ -8,7 +8,7 @@ use Hobbii\Emarsys\Domain\ValueObjects\ErrorObject;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use InvalidArgumentException;
 
-final readonly class UpdateContactsResponseData
+final readonly class UpdateContactsResponse
 {
     /**
      * @param  array<int,string>  $ids  The list of IDs of the contacts that were updated

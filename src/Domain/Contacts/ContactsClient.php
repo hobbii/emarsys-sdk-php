@@ -6,9 +6,9 @@ namespace Hobbii\Emarsys\Domain\Contacts;
 
 use Hobbii\Emarsys\Domain\BaseClient;
 use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataRequest;
-use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataResponseData;
+use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataResponse;
 use Hobbii\Emarsys\Domain\Contacts\UpdateContacts\UpdateContactsRequest;
-use Hobbii\Emarsys\Domain\Contacts\UpdateContacts\UpdateContactsResponseData;
+use Hobbii\Emarsys\Domain\Contacts\UpdateContacts\UpdateContactsResponse;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 
@@ -33,11 +33,11 @@ class ContactsClient
      *
      * @see https://dev.emarsys.com/docs/core-api-reference/blzojxt3ga5be-get-contact-data
      */
-    public function getContactData(GetContactDataRequest $request): GetContactDataResponseData
+    public function getContactData(GetContactDataRequest $request): GetContactDataResponse
     {
         $response = $this->client->send($request);
 
-        return GetContactDataResponseData::fromResponse($response);
+        return GetContactDataResponse::fromResponse($response);
     }
 
     /**
@@ -51,10 +51,10 @@ class ContactsClient
      *
      * @see https://dev.emarsys.com/docs/core-api-reference/f8ljhut3ac2i1-update-contacts
      */
-    public function updateContact(UpdateContactsRequest $request): UpdateContactsResponseData
+    public function updateContact(UpdateContactsRequest $request): UpdateContactsResponse
     {
         $response = $this->client->send($request);
 
-        return UpdateContactsResponseData::fromResponse($response);
+        return UpdateContactsResponse::fromResponse($response);
     }
 }

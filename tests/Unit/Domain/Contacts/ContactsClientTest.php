@@ -7,7 +7,7 @@ namespace Hobbii\Emarsys\Tests\Unit\Domain\Contacts;
 use Hobbii\Emarsys\Domain\BaseClient as EmarsysClient;
 use Hobbii\Emarsys\Domain\Contacts\ContactsClient;
 use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataRequest;
-use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataResponseData;
+use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataResponse;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
 use Hobbii\Emarsys\Domain\ValueObjects\Reply;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
@@ -63,7 +63,7 @@ final class ContactsClientTest extends TestCase
 
         $response = $this->client->getContactData($requestData);
 
-        $this->assertInstanceOf(GetContactDataResponseData::class, $response);
+        $this->assertInstanceOf(GetContactDataResponse::class, $response);
         $this->assertFalse($response->hasErrors());
         $this->assertEmpty($response->errors);
         $this->assertTrue($response->hasResult());
@@ -97,7 +97,7 @@ final class ContactsClientTest extends TestCase
 
         $responseData = $this->client->getContactData($requestData);
 
-        $this->assertInstanceOf(GetContactDataResponseData::class, $responseData);
+        $this->assertInstanceOf(GetContactDataResponse::class, $responseData);
         $this->assertFalse($responseData->hasResult());
         $this->assertNull($responseData->result);
         $this->assertNull($responseData->getFirstContactData());
@@ -136,7 +136,7 @@ final class ContactsClientTest extends TestCase
 
         $responseData = $this->client->getContactData($requestData);
 
-        $this->assertInstanceOf(GetContactDataResponseData::class, $responseData);
+        $this->assertInstanceOf(GetContactDataResponse::class, $responseData);
         $this->assertTrue($responseData->hasErrors());
         $this->assertNotEmpty($responseData->errors);
         $this->assertFalse($responseData->hasResult());

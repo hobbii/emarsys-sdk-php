@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hobbii\Emarsys\Domain\Contacts\GetContactData;
 
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
-use Hobbii\Emarsys\Domain\Contracts\ResponseDataInterface;
+use Hobbii\Emarsys\Domain\Contracts\ResponseInterface;
 use Hobbii\Emarsys\Domain\Contracts\WithErrorsInterface;
 use Hobbii\Emarsys\Domain\Traits\WithErrors;
 use Hobbii\Emarsys\Domain\Traits\WithReply;
@@ -19,7 +19,7 @@ use InvalidArgumentException;
  *
  * @see https://dev.emarsys.com/docs/core-api-reference/blzojxt3ga5be-get-contact-data
  */
-final readonly class GetContactDataResponseData implements ResponseDataInterface, WithErrorsInterface
+final readonly class GetContactDataResponse implements ResponseInterface, WithErrorsInterface
 {
     use WithErrors;
     use WithReply;

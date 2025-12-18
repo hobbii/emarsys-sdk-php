@@ -6,7 +6,7 @@ namespace Hobbii\Emarsys\Domain\Contracts;
 
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 
-interface ResponseDataInterface extends WithReplyInterface
+interface ResponseInterface extends WithReplyInterface
 {
     public static function fromResponse(Response $response): self;
 }
