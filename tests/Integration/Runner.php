@@ -216,18 +216,6 @@ final class Runner
     }
 
     /**
-     * Display credentials error message
-     */
-    private function echoCredentialsError(): void
-    {
-        echo "🚨 Emarsys credentials not found!\n\n";
-        echo "Please set your credentials first:\n";
-        echo "export EMARSYS_CLIENT_ID='your-client-id'\n";
-        echo "export EMARSYS_CLIENT_SECRET='your-client-secret'\n\n";
-        echo "Or create a .env file based on .env.example\n\n";
-    }
-
-    /**
      * Display exception details recursively
      *
      * @param  Throwable  $e  Exception to display
