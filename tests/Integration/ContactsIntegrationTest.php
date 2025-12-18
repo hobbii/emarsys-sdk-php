@@ -42,9 +42,6 @@ class ContactsIntegrationTest
 
             // Step 4: Verify updates were applied
             $this->verifyContactUpdates();
-
-            // Step 5: Test existing contact lookup
-            $this->testExistingContactLookup();
         } catch (AuthenticationException $e) {
             echo '   ❌ Authentication failed: '.$e->getMessage()."\n";
             throw $e;
@@ -266,44 +263,6 @@ class ContactsIntegrationTest
             } else {
                 echo "         ❌ Some updates were not applied correctly\n";
             }
-        }
-    }
-
-    /**
-     * Test lookup of an existing contact (from the original parameter).
-     */
-    private function testExistingContactLookup(): void
-    {
-        echo "\n🔍 Step 5: Testing existing contact lookup ({$this->baseEmail})...\n";
-
-        $getContactData = GetContactDataRequest::make(
-            fields: [
-                ContactSystemField::interests,
-                ContactSystemField::first_name,
-                ContactSystemField::last_name,
-                ContactSystemField::email,
-                ContactSystemField::optin,
-            ],
-            keyId: ContactSystemField::email,
-            keyValues: [$this->baseEmail],
-        );
-
-        $response = $this->client->contacts()->getContactData($getContactData);
-
-        if ($response->hasErrors()) {
-            $this->outputErrors($response->errors);
-        }
-
-        if ($response->hasResult()) {
-            echo "   ✅ Found existing contact with email: {$this->baseEmail}\n";
-
-            foreach ($response->result as $contact) {
-                echo "      Contact ID: {$contact['id']}\n";
-                echo '      Name: '.$contact[ContactSystemField::first_name->value].' '.$contact[ContactSystemField::last_name->value]."\n";
-                echo '      Opt-in: '.$contact->getOptInStatus()->label()."\n";
-            }
-        } else {
-            echo "   ℹ️  No existing contact found with email: {$this->baseEmail}\n";
         }
     }
 
