@@ -6,6 +6,9 @@ namespace Hobbii\Emarsys\Domain\Contracts;
 
 use JsonSerializable;
 
+/**
+ * Implement this interface to create request objects that can be sent to the Emarsys API.
+ */
 interface RequestInterface extends JsonSerializable
 {
     /**
