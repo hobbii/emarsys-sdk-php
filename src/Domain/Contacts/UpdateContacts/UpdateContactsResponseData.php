@@ -36,7 +36,7 @@ final readonly class UpdateContactsResponseData
 
         foreach ($responseData['errors'] ?? [] as $key => $errorData) {
             foreach ($errorData as $errorCode => $errorMessage) {
-                $errors[] = new ErrorObject($key, (int) $errorCode, $errorMessage);
+                $errors[] = new ErrorObject((string) $key, (int) $errorCode, $errorMessage);
             }
         }
 
