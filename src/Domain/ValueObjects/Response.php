@@ -51,6 +51,11 @@ readonly class Response
         throw new ApiException('Response data is not an array');
     }
 
+    public function dataGet(string $key): mixed
+    {
+        return $this->dataAsArray()[$key] ?? null;
+    }
+
     /**
      * @throws ApiException
      */

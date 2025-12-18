@@ -50,15 +50,14 @@ final readonly class GetContactDataResponse implements ResponseInterface, WithEr
      */
     public static function fromResponse(Response $response): self
     {
-        $responseData = $response->dataAsArray();
-        $result = $responseData['result'] ?? null;
+        $result = $response->dataGet('result');
         $result = $result === false ? null : $result;
 
         if (is_array($result)) {
             $result = array_map(ContactData::fromResponseResultData(...), $result);
         }
 
-        $errors = $responseData['errors'] ?? null;
+        $errors = $response->dataGet('errors');
 
         if (is_array($errors)) {
             $errors = array_map(ErrorObject::fromArray(...), $errors);
