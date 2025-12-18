@@ -25,22 +25,22 @@ final readonly class GetContactDataResponseData implements ResponseDataInterface
     use WithReply;
 
     /**
-     * @param  ContactData[]  $contactDataResult  The array of retrieved contact data objects
+     * @param  ContactData[]  $result  The array of retrieved contact data objects
      */
     private function __construct(
-        public array $contactDataResult,
-        public array $errors,
-        protected Reply $reply,
+        public Reply $reply,
+        public ?array $result,
+        public ?array $errors,
     ) {}
 
     public function hasResult(): bool
     {
-        return ! empty($this->contactDataResult);
+        return ! empty($this->result);
     }
 
     public function getFirstContactData(): ?ContactData
     {
-        return $this->contactDataResult[0] ?? null;
+        return $this->result[0] ?? null;
     }
 
     /**
@@ -51,25 +51,23 @@ final readonly class GetContactDataResponseData implements ResponseDataInterface
     public static function fromResponse(Response $response): self
     {
         $responseData = $response->dataAsArray();
-        $responseDataResult = $responseData['result'] ?? null;
+        $result = $responseData['result'] ?? null;
+        $result = $result === false ? null : $result;
 
-        if ($responseDataResult === null) {
-            throw new InvalidArgumentException('Missing "result" in contact data response');
+        if (is_array($result)) {
+            $result = array_map(ContactData::fromResponseResultData(...), $result);
         }
 
-        $contactDataResult = [];
+        $errors = $responseData['errors'] ?? null;
 
-        if (is_array($responseDataResult)) {
-            $contactDataResult = array_map(ContactData::fromResponseResultData(...), $responseDataResult);
+        if (is_array($errors)) {
+            $errors = array_map(ErrorObject::fromArray(...), $errors);
         }
 
-        $responseDataErrors = $responseData['errors'] ?? null;
-        $errors = [];
-
-        if (is_array($responseDataErrors)) {
-            $errors = array_map(ErrorObject::fromArray(...), $responseDataErrors);
-        }
-
-        return new self($contactDataResult, $errors, $response->reply);
+        return new self(
+            reply: $response->reply,
+            result: $result,
+            errors: $errors
+        );
     }
 }

@@ -8,7 +8,7 @@ use Hobbii\Emarsys\Domain\ValueObjects\Reply;
 
 trait WithReply
 {
-    protected readonly Reply $reply;
+    public readonly Reply $reply;
 
     public function replyCode(): int
     {

@@ -31,7 +31,6 @@ final class ContactsClientTest extends TestCase
 
     public function test_get_data_returns_contact_data_on_successful_response(): void
     {
-        // Arrange
         $responseData = [
             'errors' => [],
             'result' => [
@@ -62,19 +61,23 @@ final class ContactsClientTest extends TestCase
             ->with($requestData)
             ->willReturn($response);
 
-        // Act
         $response = $this->client->getContactData($requestData);
 
-        // Assert
         $this->assertInstanceOf(GetContactDataResponseData::class, $response);
+        $this->assertFalse($response->hasErrors());
         $this->assertEmpty($response->errors);
-        $this->assertCount(1, $response->contactDataResult);
+        $this->assertTrue($response->hasResult());
+        $this->assertNotNull($response->result);
+        $this->assertCount(1, $response->result);
         $this->assertInstanceOf(ContactData::class, $response->getFirstContactData());
+
+        // Test WithReply trait methods
+        $this->assertSame(0, $response->replyCode());
+        $this->assertSame('OK', $response->replyMessage());
     }
 
-    public function test_get_data_throws_invalid_argument_exception_when_result_field_missing(): void
+    public function test_get_data_returns_empty_result_when_result_field_missing(): void
     {
-        // Arrange
         $response = new Response(
             reply: new Reply(0, 'OK'),
             data: ['errors' => []] // Missing 'result' field
@@ -92,10 +95,55 @@ final class ContactsClientTest extends TestCase
             ->with($requestData)
             ->willReturn($response);
 
-        // Assert & Act
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Missing "result" in contact data response');
+        $responseData = $this->client->getContactData($requestData);
 
-        $this->client->getContactData($requestData);
+        $this->assertInstanceOf(GetContactDataResponseData::class, $responseData);
+        $this->assertFalse($responseData->hasResult());
+        $this->assertNull($responseData->result);
+        $this->assertNull($responseData->getFirstContactData());
+        $this->assertFalse($responseData->hasErrors());
+    }
+
+    public function test_get_data_handles_errors_correctly(): void
+    {
+        $responseData = [
+            'errors' => [
+                [
+                    'key' => 'invalid_field',
+                    'errorCode' => 2008,
+                    'errorMsg' => 'No field specified',
+                ],
+            ],
+            'result' => [],
+        ];
+
+        $response = new Response(
+            reply: new Reply(2008, 'No field specified'),
+            data: $responseData
+        );
+
+        $requestData = GetContactDataRequest::make(
+            fields: ['1', '2', '3'],
+            keyId: '1',
+            keyValues: ['john@example.com']
+        );
+
+        $this->emarsysClient
+            ->expects($this->once())
+            ->method('send')
+            ->with($requestData)
+            ->willReturn($response);
+
+        $responseData = $this->client->getContactData($requestData);
+
+        $this->assertInstanceOf(GetContactDataResponseData::class, $responseData);
+        $this->assertTrue($responseData->hasErrors());
+        $this->assertNotEmpty($responseData->errors);
+        $this->assertFalse($responseData->hasResult());
+        $this->assertNull($responseData->getFirstContactData());
+
+        // Test WithReply trait methods with error response
+        $this->assertSame(2008, $responseData->replyCode());
+        $this->assertSame('No field specified', $responseData->replyMessage());
     }
 }
