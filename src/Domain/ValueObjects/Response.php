@@ -80,17 +80,8 @@ readonly class Response
             throw new ApiException('Invalid JSON response', previous: $e);
         }
 
-        if (! isset($data['replyCode']) || ! is_int($data['replyCode'])) {
-            throw new ApiException('Invalid response structure: missing replyCode');
-        }
-
-        $reply = new Reply(
-            $data['replyCode'] ?? 0,
-            $data['replyText'] ?? '',
-        );
-
         return new self(
-            reply: $reply,
+            reply: Reply::fromArray($data),
             data: $data['data'] ?? null,
         );
     }
