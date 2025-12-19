@@ -59,6 +59,8 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
         echo "📝 Step 1: Creating test contacts...\n";
 
         // Generate unique test emails to avoid conflicts
+        // Format YdmH is used to ensure uniqueness per hour (until contact deletion endpoint is implemented).
+        // This helps to reduce manual cleanup frequency.
         $timestamp = date_format(new \DateTime, 'YmdH');
         $testEmail1 = str_replace('@', "+test1_{$timestamp}@", $this->baseEmail);
         $testEmail2 = str_replace('@', "+test2_{$timestamp}@", $this->baseEmail);
@@ -150,7 +152,7 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
                 echo '         Email: '.$contact->get(ContactSystemField::email)."\n";
                 echo '         Name: '.$contact->get(ContactSystemField::first_name).' '.$contact->get(ContactSystemField::last_name)."\n";
                 echo '         Phone: '.$contact->get(ContactSystemField::phone)."\n";
-                echo '         Opt-in: '.$contact->getOptInStatus()?->name ?? 'unknown'."\n";
+                echo '         Opt-in: '.($contact->getOptInStatus()?->name ?? 'unknown')."\n";
             }
 
             if (count($response->result) === count($this->testContacts)) {
@@ -238,19 +240,19 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
         foreach ($response->result as $contact) {
             $firstName = $contact->get(ContactSystemField::first_name);
             $lastName = $contact->get(ContactSystemField::last_name);
-            $optIn = $contact->getOptInStatus();
+            $optInStatus = $contact->getOptInStatus()?->toBool() ?? false;
             $phone = $contact->get(ContactSystemField::phone);
 
             echo "      Contact ID: {$contact->get('id')}\n";
             echo '         Email: '.$contact->get(ContactSystemField::email)."\n";
             echo "         Updated Name: {$firstName} {$lastName}\n";
             echo "         Updated Phone: {$phone}\n";
-            echo '         Updated Opt-in: '.($optIn?->toBool() ? 'Yes' : 'No (Updated)')."\n";
+            echo '         Updated Opt-in: '.($optInStatus ? 'Yes' : 'No (Updated)')."\n";
 
             // Verify updates
             $hasUpdatedSuffix = str_ends_with($firstName, ' Updated') && str_ends_with($lastName, ' Modified');
             $hasCorrectPhone = $phone === '+1111111111';
-            $hasCorrectOptIn = ! $optIn?->toBool();
+            $hasCorrectOptIn = ! $optInStatus;
 
             if ($hasUpdatedSuffix && $hasCorrectPhone && $hasCorrectOptIn) {
                 echo "         ✅ All updates verified for this contact\n";
