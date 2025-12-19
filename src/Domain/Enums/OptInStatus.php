@@ -22,4 +22,9 @@ enum OptInStatus: int
     {
         return $this === self::True;
     }
+
+    public static function fromBool(bool $value): self
+    {
+        return $value ? self::True : self::False;
+    }
 }
