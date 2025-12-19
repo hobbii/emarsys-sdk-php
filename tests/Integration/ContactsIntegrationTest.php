@@ -230,7 +230,7 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
         foreach ($response->result as $contact) {
             $firstName = $contact->getFirstName();
             $lastName = $contact->getLastName();
-            $optInStatus = $contact->getOptInStatus()?->toBool() ?? false;
+            $optInStatus = $contact->getOptInStatus()?->asBool() ?? false;
 
             echo "      Contact ID: {$contact->getId()}\n";
             echo "         Email: {$contact->getEmail()}\n";

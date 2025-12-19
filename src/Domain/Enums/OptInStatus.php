@@ -11,14 +11,14 @@ namespace Hobbii\Emarsys\Domain\Enums;
  * Usage:
  *     $status = OptInStatus::True; // OptInStatus enum instance
  *     $optionId = OptInStatus::True->value; // 1
- *     $bool = OptInStatus::True->toBool(); // true
+ *     $bool = OptInStatus::True->asBool(); // true
  */
 enum OptInStatus: int
 {
     case True = 1;
     case False = 2;
 
-    public function toBool(): bool
+    public function asBool(): bool
     {
         return $this === self::True;
     }
