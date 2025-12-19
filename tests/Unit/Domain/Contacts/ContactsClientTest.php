@@ -11,12 +11,11 @@ use Hobbii\Emarsys\Domain\Contacts\GetContactData\GetContactDataResponse;
 use Hobbii\Emarsys\Domain\Contacts\ValueObjects\ContactData;
 use Hobbii\Emarsys\Domain\ValueObjects\Reply;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Hobbii\Emarsys\Domain\Contacts\ContactsClient
- */
+#[CoversClass(ContactsClient::class)]
 final class ContactsClientTest extends TestCase
 {
     private ContactsClient $client;
@@ -67,7 +66,6 @@ final class ContactsClientTest extends TestCase
         $this->assertFalse($response->hasErrors());
         $this->assertEmpty($response->errors);
         $this->assertTrue($response->hasResult());
-        $this->assertNotNull($response->result);
         $this->assertCount(1, $response->result);
         $this->assertInstanceOf(ContactData::class, $response->getFirstContactData());
 
@@ -99,7 +97,7 @@ final class ContactsClientTest extends TestCase
 
         $this->assertInstanceOf(GetContactDataResponse::class, $responseData);
         $this->assertFalse($responseData->hasResult());
-        $this->assertNull($responseData->result);
+        $this->assertSame([], $responseData->result);
         $this->assertNull($responseData->getFirstContactData());
         $this->assertFalse($responseData->hasErrors());
     }
