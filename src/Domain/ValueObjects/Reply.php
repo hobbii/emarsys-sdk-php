@@ -16,7 +16,7 @@ final readonly class Reply
     /**
      * @throws InvalidArgumentException If required fields are missing or invalid
      */
-    public static function fromArray(array $data): self
+    public static function fromResponseData(array $data): self
     {
         if (! isset($data['replyCode']) || ! is_int($data['replyCode'])) {
             throw new InvalidArgumentException('Invalid response structure: missing replyCode');

@@ -14,12 +14,12 @@ use PHPUnit\Framework\TestCase;
 final class ReplyTest extends TestCase
 {
     #[DataProvider('validReplyDataProvider')]
-    public function test_from_array_creates_reply_with_valid_data(
+    public function test_from_response_data_creates_reply_with_valid_data(
         array $data,
         int $expectedCode,
         string $expectedMessage
     ): void {
-        $reply = Reply::fromArray($data);
+        $reply = Reply::fromResponseData($data);
 
         $this->assertInstanceOf(Reply::class, $reply);
         $this->assertSame($expectedCode, $reply->code);
@@ -27,14 +27,14 @@ final class ReplyTest extends TestCase
     }
 
     #[DataProvider('invalidReplyDataProvider')]
-    public function test_from_array_throws_exception_with_invalid_data(
+    public function test_from_response_data_throws_exception_with_invalid_data(
         array $data,
         string $expectedMessage
     ): void {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($expectedMessage);
 
-        Reply::fromArray($data);
+        Reply::fromResponseData($data);
     }
 
     public function test_constructor_creates_reply_with_given_properties(): void

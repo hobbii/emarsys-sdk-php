@@ -81,7 +81,7 @@ readonly class Response
         }
 
         return new self(
-            reply: Reply::fromArray($data),
+            reply: Reply::fromResponseData($data),
             data: $data['data'] ?? null,
         );
     }
