@@ -61,16 +61,6 @@ final class ReplyTest extends TestCase
                 1,
                 'Invalid request',
             ],
-            'missing reply text defaults to empty' => [
-                ['replyCode' => 0],
-                0,
-                '',
-            ],
-            'empty reply text' => [
-                ['replyCode' => 2, 'replyText' => ''],
-                2,
-                '',
-            ],
             'response with extra fields' => [
                 ['replyCode' => 0, 'replyText' => 'OK', 'extraField' => 'ignored'],
                 0,
@@ -104,6 +94,14 @@ final class ReplyTest extends TestCase
             'empty array' => [
                 [],
                 'Invalid response structure: missing replyCode',
+            ],
+            'missing reply text' => [
+                ['replyCode' => 0],
+                'Invalid response structure: missing replyText',
+            ],
+            'empty reply text' => [
+                ['replyCode' => 2, 'replyText' => ''],
+                'Invalid response structure: missing replyText',
             ],
         ];
     }

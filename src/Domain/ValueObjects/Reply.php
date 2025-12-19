@@ -22,9 +22,13 @@ final readonly class Reply
             throw new InvalidArgumentException('Invalid response structure: missing replyCode');
         }
 
+        if (! isset($data['replyText']) || ! is_string($data['replyText']) || empty($data['replyText'])) {
+            throw new InvalidArgumentException('Invalid response structure: missing replyText');
+        }
+
         return new self(
-            code: $data['replyCode'] ?? 0,
-            message: $data['replyText'] ?? ''
+            code: $data['replyCode'],
+            message: $data['replyText']
         );
     }
 }
