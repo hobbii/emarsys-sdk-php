@@ -32,6 +32,10 @@ final readonly class KeyId implements JsonSerializable
             throw new InvalidArgumentException('Key ID cannot be a negative integer.');
         }
 
+        if (is_string($value) && $value === '') {
+            throw new InvalidArgumentException('Key ID cannot be an empty string.');
+        }
+
         return new self($value);
     }
 }
