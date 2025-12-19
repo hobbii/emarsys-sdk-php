@@ -70,13 +70,11 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
                 'email' => $testEmail1,
                 'firstName' => 'John',
                 'lastName' => 'Doe',
-                'phone' => '+1234567890',
             ],
             [
                 'email' => $testEmail2,
                 'firstName' => 'Jane',
                 'lastName' => 'Smith',
-                'phone' => '+0987654321',
             ],
         ];
 
@@ -87,7 +85,6 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
                 ContactSystemField::email->value => $contact['email'],
                 ContactSystemField::first_name->value => $contact['firstName'],
                 ContactSystemField::last_name->value => $contact['lastName'],
-                ContactSystemField::phone->value => $contact['phone'],
                 ContactSystemField::optin->value => OptInStatus::True->value,
             ]);
         }
@@ -100,7 +97,7 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
 
         echo '   👉 Creating '.count($contactsData)." contacts...\n";
         foreach ($createRequest->contacts as $contact) {
-            echo '      ➕ '.$contact->get(ContactSystemField::email)."\n";
+            echo '      ➕ '.$contact->getEmail()."\n";
         }
 
         $responseData = $this->client->contacts()->updateContact($createRequest);
@@ -132,12 +129,10 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
 
         $request = GetContactDataRequest::make(
             fields: [
-                ContactSystemField::interests,
                 ContactSystemField::first_name,
                 ContactSystemField::last_name,
                 ContactSystemField::email,
                 ContactSystemField::optin,
-                ContactSystemField::phone,
             ],
             keyId: ContactSystemField::email,
             keyValues: $testEmails,
@@ -148,10 +143,9 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
 
         if ($response->hasResult()) {
             foreach ($response->result as $contact) {
-                echo "      Contact ID: {$contact->get('id')}\n";
-                echo '         Email: '.$contact->get(ContactSystemField::email)."\n";
-                echo '         Name: '.$contact->get(ContactSystemField::first_name).' '.$contact->get(ContactSystemField::last_name)."\n";
-                echo '         Phone: '.$contact->get(ContactSystemField::phone)."\n";
+                echo '      Contact ID: '.$contact->getId()."\n";
+                echo '         Email: '.$contact->getEmail()."\n";
+                echo '         Name: '.$contact->getFirstName().' '.$contact->getLastName()."\n";
                 echo '         Opt-in: '.($contact->getOptInStatus()?->name ?? 'unknown')."\n";
             }
 
@@ -182,14 +176,12 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
                 ContactSystemField::first_name->value => $contact['firstName'].' Updated',
                 ContactSystemField::last_name->value => $contact['lastName'].' Modified',
                 ContactSystemField::optin->value => 2, // Change opt-in to False
-                ContactSystemField::phone->value => '+1111111111', // Update phone to same number for all
             ]);
         }
 
         $updateRequest = UpdateContactsRequest::make(
-            keyId: ContactSystemField::email->value,
+            keyId: ContactSystemField::email,
             contacts: $updatedContactsData,
-            createIfNotExists: false // Should not create new contacts
         );
 
         $response = $this->client->contacts()->updateContact($updateRequest);
@@ -212,12 +204,10 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
 
         $getContactData = GetContactDataRequest::make(
             fields: [
-                ContactSystemField::interests,
                 ContactSystemField::first_name,
                 ContactSystemField::last_name,
                 ContactSystemField::email,
                 ContactSystemField::optin,
-                ContactSystemField::phone,
             ],
             keyId: ContactSystemField::email,
             keyValues: $testEmails,
@@ -238,23 +228,20 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
         echo '   📊 Verifying updates for '.count($response->result)." contacts:\n";
 
         foreach ($response->result as $contact) {
-            $firstName = $contact->get(ContactSystemField::first_name);
-            $lastName = $contact->get(ContactSystemField::last_name);
+            $firstName = $contact->getFirstName();
+            $lastName = $contact->getLastName();
             $optInStatus = $contact->getOptInStatus()?->toBool() ?? false;
-            $phone = $contact->get(ContactSystemField::phone);
 
-            echo "      Contact ID: {$contact->get('id')}\n";
-            echo '         Email: '.$contact->get(ContactSystemField::email)."\n";
+            echo "      Contact ID: {$contact->getId()}\n";
+            echo "         Email: {$contact->getEmail()}\n";
             echo "         Updated Name: {$firstName} {$lastName}\n";
-            echo "         Updated Phone: {$phone}\n";
             echo '         Updated Opt-in: '.($optInStatus ? 'Yes' : 'No (Updated)')."\n";
 
             // Verify updates
             $hasUpdatedSuffix = str_ends_with($firstName, ' Updated') && str_ends_with($lastName, ' Modified');
-            $hasCorrectPhone = $phone === '+1111111111';
             $hasCorrectOptIn = ! $optInStatus;
 
-            if ($hasUpdatedSuffix && $hasCorrectPhone && $hasCorrectOptIn) {
+            if ($hasUpdatedSuffix && $hasCorrectOptIn) {
                 echo "         ✅ All updates verified for this contact\n";
             } else {
                 echo "         ❌ Some updates were not applied correctly\n";

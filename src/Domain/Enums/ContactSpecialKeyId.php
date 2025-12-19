@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Domain\Enums;
 
-enum ContactSpecialKeyId: string
+enum ContactSpecialKeyId
 {
-    case ID = 'id';
-    case UID = 'uid';
+    case id;
+    case uid;
 }

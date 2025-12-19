@@ -10,23 +10,26 @@ use JsonSerializable;
 
 final readonly class KeyId implements JsonSerializable
 {
-    public function __construct(
+    private function __construct(
         public int|string $value,
-    ) {
-        if (is_int($value) && $value < 0) {
-            throw new InvalidArgumentException('Key ID cannot be a negative integer.');
-        }
-    }
+    ) {}
 
     public function jsonSerialize(): int|string
     {
         return $this->value;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public static function make(int|string|BackedEnum $value): self
     {
         if ($value instanceof BackedEnum) {
             return self::make($value->value);
+        }
+
+        if (is_int($value) && $value < 0) {
+            throw new InvalidArgumentException('Key ID cannot be a negative integer.');
         }
 
         return new self($value);
