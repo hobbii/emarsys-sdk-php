@@ -21,12 +21,12 @@ use ValueError;
  * Supports both generic field access and type-safe getters for common fields.
  * Can be used with ContactSystemField enums or raw field IDs.
  *
- * @implements IteratorAggregate<int, string|null|array<string|null>>
+ * @implements IteratorAggregate<int|string, string|null|array<string|null>>
  */
 final readonly class ContactData implements IteratorAggregate, JsonSerializable
 {
     /**
-     * @param  array<int,string|null|array<string|null>>  $data  Raw contact field data
+     * @param  array<int|string,string|null|array<string|null>>  $data  Raw contact field data
      */
     public function __construct(
         public array $data,
@@ -121,7 +121,7 @@ final readonly class ContactData implements IteratorAggregate, JsonSerializable
     }
 
     /**
-     * @return array<int,string|null|array<string|null>>
+     * @return array<int|string,string|null|array<string|null>>
      */
     public function jsonSerialize(): array
     {
