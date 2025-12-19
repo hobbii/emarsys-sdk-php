@@ -9,9 +9,9 @@ use Hobbii\Emarsys\Domain\ValueObjects\ErrorObject;
 trait WithErrors
 {
     /**
-     * @var ErrorObject[]|null Array of error objects
+     * @var ErrorObject[] Array of error objects
      **/
-    public readonly ?array $errors;
+    public readonly array $errors;
 
     public function hasErrors(): bool
     {

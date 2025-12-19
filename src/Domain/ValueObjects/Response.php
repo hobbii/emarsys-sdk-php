@@ -58,9 +58,9 @@ readonly class Response
      *
      * @throws ApiException If data is not an array
      */
-    public function dataGet(string $key): mixed
+    public function dataGet(string $key, mixed $default = null): mixed
     {
-        return $this->dataAsArray()[$key] ?? null;
+        return $this->dataAsArray()[$key] ?? $default;
     }
 
     /**

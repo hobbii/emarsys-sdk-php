@@ -29,8 +29,8 @@ final readonly class GetContactDataResponse implements ResponseInterface, WithEr
      */
     private function __construct(
         public Reply $reply,
-        public ?array $result,
-        public ?array $errors,
+        public array $result,
+        public array $errors,
     ) {}
 
     public function hasResult(): bool
@@ -50,21 +50,24 @@ final readonly class GetContactDataResponse implements ResponseInterface, WithEr
      */
     public static function fromResponse(Response $response): self
     {
-        $result = $response->dataGet('result');
+        $result = $response->dataGet('result', []);
 
-        if (is_array($result)) {
-            $result = array_map(ContactData::fromResponseResultItem(...), $result);
-        } else {
-            $result = null;
+        if (is_bool($result) && $result === false) {
+            $result = [];
         }
 
-        $errors = $response->dataGet('errors');
-
-        if (is_array($errors)) {
-            $errors = array_map(ErrorObject::fromArray(...), $errors);
-        } else {
-            $errors = null;
+        if (! is_array($result)) {
+            throw new InvalidArgumentException('Invalid "result" in data response');
         }
+
+        $errors = $response->dataGet('errors', []);
+
+        if (! is_array($errors)) {
+            throw new InvalidArgumentException('Invalid "errors" in data response');
+        }
+
+        $result = array_map(ContactData::fromResponseResultItem(...), $result);
+        $errors = array_map(ErrorObject::fromArray(...), $errors);
 
         return new self(
             reply: $response->reply,

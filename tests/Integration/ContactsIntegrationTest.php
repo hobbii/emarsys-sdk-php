@@ -101,10 +101,9 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
         }
 
         $responseData = $this->client->contacts()->updateContact($createRequest);
+        $this->outputErrors($responseData->errors);
 
-        if ($responseData->hasErrors()) {
-            $this->outputErrors($responseData->errors);
-        } else {
+        if (! $responseData->hasErrors()) {
             echo '   ✅ Successfully created '.count($this->testContacts)." test contacts\n";
         }
 
@@ -139,7 +138,7 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
         );
 
         $response = $this->client->contacts()->getContactData($request);
-        echo '   📊 Retrieved '.count($response->result ?? [])." contacts:\n";
+        echo '   📊 Retrieved '.count($response->result)." contacts:\n";
 
         if ($response->hasResult()) {
             foreach ($response->result as $contact) {
@@ -152,13 +151,11 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
             if (count($response->result) === count($this->testContacts)) {
                 echo "   ✅ All test contacts found and verified\n";
             } else {
-                echo '   ⚠️  Expected '.count($this->testContacts).' contacts, found '.count($response->result ?? [])."\n";
+                echo '   ⚠️  Expected '.count($this->testContacts).' contacts, found '.count($response->result)."\n";
             }
         }
 
-        if ($response->hasErrors()) {
-            $this->outputErrors($response->errors);
-        }
+        $this->outputErrors($response->errors);
     }
 
     /**
@@ -185,10 +182,9 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
         );
 
         $response = $this->client->contacts()->updateContact($updateRequest);
+        $this->outputErrors($response->errors);
 
-        if ($response->hasErrors()) {
-            $this->outputErrors($response->errors);
-        } else {
+        if (! $response->hasErrors()) {
             echo '   ✅ Successfully updated '.count($this->testContacts)." test contacts\n";
         }
     }
@@ -251,6 +247,10 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
 
     private function outputErrors(array $errors): void
     {
+        if (empty($errors)) {
+            return;
+        }
+
         echo "   ❌  Errors:\n";
         foreach ($errors as $error) {
             echo '      - '.(string) $error."\n";
