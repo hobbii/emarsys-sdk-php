@@ -37,9 +37,9 @@ final readonly class ContactData implements IteratorAggregate, JsonSerializable
      */
     public function has(int|string|BackedEnum $key): bool
     {
-        $keyId = $this->normalizeKey($key);
+        $keyId = KeyId::make($key);
 
-        return array_key_exists($keyId, $this->data);
+        return array_key_exists($keyId->value, $this->data);
     }
 
     /**
@@ -47,9 +47,9 @@ final readonly class ContactData implements IteratorAggregate, JsonSerializable
      */
     public function get(int|string|BackedEnum $key): string|array|null
     {
-        $keyId = $this->normalizeKey($key);
+        $keyId = KeyId::make($key);
 
-        return $this->data[$keyId] ?? null;
+        return $this->data[$keyId->value] ?? null;
     }
 
     /**
@@ -133,15 +133,13 @@ final readonly class ContactData implements IteratorAggregate, JsonSerializable
         return new ArrayIterator($this->data);
     }
 
-    private function normalizeKey(int|string|BackedEnum $key): int|string
-    {
-        return $key instanceof BackedEnum ? $key->value : $key;
-    }
-
     /**
      * Create ContactData from API response result item.
+     * According to the API docs, 'id' and 'uid' are always present in the response.
      *
      * @throws InvalidArgumentException If required fields are missing or invalid
+     *
+     * @see https://dev.emarsys.com/docs/core-api-reference/blzojxt3ga5be-get-contact-data#response-body Get Contact Data - Response Body
      */
     public static function fromResponseResultItem(array $item): self
     {
