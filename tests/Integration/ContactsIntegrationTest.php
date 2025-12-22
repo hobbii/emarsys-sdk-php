@@ -100,7 +100,7 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
             echo '      ➕ '.$contact->getEmail()."\n";
         }
 
-        $responseData = $this->client->contacts()->updateContact($createRequest);
+        $responseData = $this->client->contacts()->updateContacts($createRequest);
         $this->outputErrors($responseData->errors);
 
         if (! $responseData->hasErrors()) {
@@ -181,7 +181,7 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
             contacts: $updatedContactsData,
         );
 
-        $response = $this->client->contacts()->updateContact($updateRequest);
+        $response = $this->client->contacts()->updateContacts($updateRequest);
         $this->outputErrors($response->errors);
 
         if (! $response->hasErrors()) {

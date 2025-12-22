@@ -51,7 +51,7 @@ class ContactsClient
      *
      * @see https://dev.emarsys.com/docs/core-api-reference/f8ljhut3ac2i1-update-contacts
      */
-    public function updateContact(UpdateContactsRequest $request): UpdateContactsResponse
+    public function updateContacts(UpdateContactsRequest $request): UpdateContactsResponse
     {
         $response = $this->client->send($request);
 
