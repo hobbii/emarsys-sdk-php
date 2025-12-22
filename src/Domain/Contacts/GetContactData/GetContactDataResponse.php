@@ -44,16 +44,16 @@ final readonly class GetContactDataResponse implements ResponseInterface, WithEr
     }
 
     /**
-     * Create a GetContactDataResponse instance from Response.
-     *
      * @throws InvalidArgumentException
      */
     public static function fromResponse(Response $response): self
     {
         $result = $response->data('result', []);
 
+        // According to the documentation
+        // >> If all contact identifiers given in a call fail to parse, the result will be `false` and not an `array`
         if (is_bool($result) && $result === false) {
-            $result = [];
+            throw new InvalidArgumentException('No contact found. Possible reasons: Incorrect contact `id` or `key` format; Typo; Contact `id` does not exist.');
         }
 
         if (! is_array($result)) {

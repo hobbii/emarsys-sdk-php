@@ -126,20 +126,26 @@ final class GetContactDataResponseTest extends TestCase
         ];
     }
 
-    public function test_from_response_throws_exception_for_invalid_contact_data(): void
+    public static function invalidContactDataProvider(): array
     {
-        $invalidContactData = [
-            [
-                // Missing 'id' field - should cause ContactData::fromResponseResultItem to throw
-                'uid' => 'contact-uid-123',
-                '3' => 'test@example.com',
-            ],
+        return [
+            'Result data is "false"' => [false, [], 'No contact found. Possible reasons:'],
+            'Result data is invalid type "true"' => [true, [], 'Invalid "result" in data response'],
+            'Result data is invalid type "string"' => ['invalid', [], 'Invalid "result" in data response'],
+            'Result data is invalid type "int"' => [123, [], 'Invalid "result" in data response'],
+            'Errors data is invalid type "string"' => [[['id' => '123']], 'invalid', 'Invalid "errors" in data response'],
+            'Errors data is invalid type "int"' => [[['id' => '123']], 123, 'Invalid "errors" in data response'],
+            'Errors data is invalid type "bool"' => [[['id' => '123']], true, 'Invalid "errors" in data response'],
         ];
+    }
 
-        $response = $this->createResponse(['result' => $invalidContactData, 'errors' => []]);
+    #[DataProvider('invalidContactDataProvider')]
+    public function test_from_response_throws_exception(mixed $resonseData, mixed $errorsData, string $expectedExceptionMessage): void
+    {
+        $response = $this->createResponse(['result' => $resonseData, 'errors' => $errorsData]);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Contact data must have a valid numeric id');
+        $this->expectExceptionMessage($expectedExceptionMessage);
 
         GetContactDataResponse::fromResponse($response);
     }
