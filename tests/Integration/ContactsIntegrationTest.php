@@ -90,7 +90,7 @@ class ContactsIntegrationTest extends AbstractIntegrationTest
         }
 
         $createRequest = UpdateContactsRequest::make(
-            keyId: ContactSystemField::email->value, // Use email as key for identifying contacts
+            keyId: ContactSystemField::email,
             contacts: $contactsData,
             createIfNotExists: true
         );
