@@ -57,7 +57,7 @@ final class ResponseTest extends TestCase
             $this->expectExceptionMessage($expectedExceptionMessage);
         }
 
-        $result = $response->dataGet($key, $default);
+        $result = $response->data($key, $default);
 
         if (! $expectedExceptionMessage) {
             $this->assertSame($expected, $result);

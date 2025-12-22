@@ -50,7 +50,7 @@ final readonly class GetContactDataResponse implements ResponseInterface, WithEr
      */
     public static function fromResponse(Response $response): self
     {
-        $result = $response->dataGet('result', []);
+        $result = $response->data('result', []);
 
         if (is_bool($result) && $result === false) {
             $result = [];
@@ -60,7 +60,7 @@ final readonly class GetContactDataResponse implements ResponseInterface, WithEr
             throw new InvalidArgumentException('Invalid "result" in data response');
         }
 
-        $errors = $response->dataGet('errors', []);
+        $errors = $response->data('errors', []);
 
         if (! is_array($errors)) {
             throw new InvalidArgumentException('Invalid "errors" in data response');

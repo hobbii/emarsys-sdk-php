@@ -29,13 +29,13 @@ final readonly class UpdateContactsResponse implements ResponseInterface, WithEr
 
     public static function fromResponse(Response $response): self
     {
-        $ids = $response->dataGet('ids');
+        $ids = $response->data('ids');
 
         if (! isset($ids) || ! is_array($ids)) {
             throw new InvalidArgumentException('Missing "ids" in data response');
         }
 
-        $errors = $response->dataGet('errors', []);
+        $errors = $response->data('errors', []);
 
         if (! is_array($errors)) {
             throw new InvalidArgumentException('Invalid "errors" in data response');
