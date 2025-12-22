@@ -18,10 +18,10 @@ use JsonSerializable;
 final readonly class KeyId implements JsonSerializable
 {
     private function __construct(
-        public int|string $value,
+        public string $value,
     ) {}
 
-    public function jsonSerialize(): int|string
+    public function jsonSerialize(): string
     {
         return $this->value;
     }
@@ -35,7 +35,7 @@ final readonly class KeyId implements JsonSerializable
             throw new InvalidArgumentException('Key ID cannot be a negative integer.');
         }
 
-        return new self($value);
+        return new self((string) $value);
     }
 
     /**

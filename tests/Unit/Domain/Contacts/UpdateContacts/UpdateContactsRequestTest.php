@@ -72,7 +72,7 @@ final class UpdateContactsRequestTest extends TestCase
         $this->assertArrayHasKey('keyId', $serialized);
         $this->assertArrayHasKey('contacts', $serialized);
         $this->assertInstanceOf(KeyId::class, $serialized['keyId']);
-        $this->assertSame(ContactSystemField::email->value, $serialized['keyId']->value);
+        $this->assertSame((string) ContactSystemField::email->value, $serialized['keyId']->value);
         $this->assertCount(1, $serialized['contacts']);
         $this->assertContainsOnlyInstancesOf(ContactData::class, $serialized['contacts']);
     }
@@ -147,7 +147,7 @@ final class UpdateContactsRequestTest extends TestCase
 
         $this->assertCount(2, $request->contacts);
         $this->assertTrue($request->createIfNotExists);
-        $this->assertSame(ContactSystemField::email->value, $request->keyId->value);
+        $this->assertSame((string) ContactSystemField::email->value, $request->keyId->value);
 
         // Verify contacts maintain their data
         $firstContact = $request->contacts[0];

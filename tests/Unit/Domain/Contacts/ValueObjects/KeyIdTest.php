@@ -35,7 +35,7 @@ final class KeyIdTest extends TestCase
         $keyId = KeyId::make($value);
 
         $this->assertInstanceOf(KeyId::class, $keyId);
-        $this->assertSame($value instanceof \BackedEnum ? $value->value : $value, $keyId->value);
+        $this->assertSame((string) ($value instanceof \BackedEnum ? $value->value : $value), $keyId->value);
         $this->assertSame($keyId->value, $keyId->jsonSerialize());
     }
 

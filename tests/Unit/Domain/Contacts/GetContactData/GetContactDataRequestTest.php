@@ -32,7 +32,7 @@ final class GetContactDataRequestTest extends TestCase
         $this->assertCount($expectedFieldCount, $request->fields);
         $this->assertContainsOnlyInstancesOf(KeyId::class, $request->fields);
         $this->assertInstanceOf(KeyId::class, $request->keyId);
-        $this->assertSame($expectedKeyIdValue, $request->keyId->value);
+        $this->assertSame((string) $expectedKeyIdValue, $request->keyId->value);
         $this->assertSame($expectedKeyValues, $request->keyValues);
     }
 
