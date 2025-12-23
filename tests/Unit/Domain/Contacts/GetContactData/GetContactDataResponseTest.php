@@ -140,9 +140,9 @@ final class GetContactDataResponseTest extends TestCase
     }
 
     #[DataProvider('invalidContactDataProvider')]
-    public function test_from_response_throws_exception(mixed $resonseData, mixed $errorsData, string $expectedExceptionMessage): void
+    public function test_from_response_throws_exception(mixed $responseData, mixed $errorsData, string $expectedExceptionMessage): void
     {
-        $response = $this->createResponse(['result' => $resonseData, 'errors' => $errorsData]);
+        $response = $this->createResponse(['result' => $responseData, 'errors' => $errorsData]);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
