@@ -64,8 +64,8 @@ class ClientTest extends TestCase
         $response = $client->get('test-endpoint');
 
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertSame(0, $response->replyCode);
-        $this->assertSame('OK', $response->replyText);
+        $this->assertSame(0, $response->reply->code);
+        $this->assertSame('OK', $response->reply->message);
         $this->assertSame(['test' => 'data'], $response->data);
 
         // Should make 2 requests: OAuth + API
@@ -117,7 +117,7 @@ class ClientTest extends TestCase
         $response = $client->post('test-endpoint', ['test' => 'data']);
 
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertSame(0, $response->replyCode);
+        $this->assertSame(0, $response->reply->code);
         $this->assertSame(['success' => true], $response->data);
 
         // Verify authorization header is present in API request
@@ -400,7 +400,7 @@ class ClientTest extends TestCase
 
         // Should succeed after retry
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertSame(0, $response->replyCode);
+        $this->assertSame(0, $response->reply->code);
         $this->assertSame(['success' => true], $response->data);
 
         // Should make 4 requests: OAuth + failed API + retry OAuth + successful API

@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Tests\Integration;
 
-use Hobbii\Emarsys\Client;
-
-class QuickConnectionTest
+class QuickConnectionTest extends AbstractIntegrationTest
 {
-    public function __construct(private readonly Client $client) {}
-
-    public function run(): void
+    public function run(array $args): void
     {
         echo "🔍 Testing API connection by listing contact lists...\n\n";
 

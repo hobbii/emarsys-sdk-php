@@ -278,15 +278,23 @@ The Docker setup automatically passes through `EMARSYS_*` environment variables 
 ```bash
 # Run all tests
 composer test
+# OR
+make test
 
 # Run code formatting
 composer format
+# OR
+make format
 
 # Run static analysis with PHPStan
 composer analyse
+# OR
+make analyse
 
 # Run everything (format, analyse, test)
 composer check
+# OR
+make check
 ```
 
 ### Integration Testing with Real Credentials
@@ -314,21 +322,22 @@ cp .env.example .env
 
 ```bash
 # Run quick connection test
+make integration-test test=quick
+# OR
 composer test-integration quick
 # OR
-php tests/Integration/QuickConnectionTest.php
+php run-integration-tests.php quick
 ```
 
-#### Full Integration Test
+#### Specific Integration Test
 
 ```bash
 # Run comprehensive test (creates and deletes a test contact list)
-composer test-integration contact-lists
+make integration-test test=tests/Integration/ContactListsIntegrationTest.php
 # OR
-php tests/Integration/ContactListsIntegrationTest.php
-
-# Run all integration tests
-composer test-integration
+composer test-integration tests/Integration/ContactListsIntegrationTest.php
+# OR
+php run-integration-tests.php tests/Integration/ContactListsIntegrationTest.php
 ```
 
 The integration test performs these operations:

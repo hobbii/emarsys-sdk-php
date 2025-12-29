@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Hobbii\Emarsys\Tests\Integration;
 
-use Hobbii\Emarsys\Client;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 
-class ContactListsIntegrationTest
+class ContactListsIntegrationTest extends AbstractIntegrationTest
 {
-    public function __construct(private readonly Client $client) {}
-
-    public function run(): void
+    public function run(array $args): void
     {
         echo "⚒️  Testing: List existing contact lists...\n";
         $existingLists = $this->client->contactLists()->list();
