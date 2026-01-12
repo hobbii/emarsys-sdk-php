@@ -2,6 +2,16 @@
 
 All notable changes to `emarsys-sdk-php` will be documented in this file.
 
+## 0.2.0 - 2026-01-12
+
+### What's Changed
+
+* [TX-277] Emarsys Contacts Client by @Serhii-DV in https://github.com/hobbii/emarsys-sdk-php/pull/10
+* build(deps): bump actions/checkout from 5 to 6 by @dependabot[bot] in https://github.com/hobbii/emarsys-sdk-php/pull/9
+* build(deps): bump dependabot/fetch-metadata from 2.4.0 to 2.5.0 by @dependabot[bot] in https://github.com/hobbii/emarsys-sdk-php/pull/12
+
+**Full Changelog**: https://github.com/hobbii/emarsys-sdk-php/compare/0.1.2...0.2.0
+
 ## Version 0.1.2 - 2025-10-27
 
 ### What's Changed
