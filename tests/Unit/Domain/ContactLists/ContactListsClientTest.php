@@ -9,6 +9,7 @@ use Hobbii\Emarsys\Domain\ContactLists\ContactListsClient;
 use Hobbii\Emarsys\Domain\ContactLists\DTOs\CreateContactList;
 use Hobbii\Emarsys\Domain\ContactLists\ValueObjects\ContactList;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
+use Hobbii\Emarsys\Domain\ValueObjects\Reply;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -40,10 +41,8 @@ class ContactListsClientTest extends TestCase
         ];
 
         $response = new Response(
-            replyCode: 0,
-            replyText: 'OK',
-            data: $responseData,
-            errors: []
+            reply: new Reply(0, 'OK'),
+            data: $responseData
         );
 
         $this->emarsysClient
@@ -65,10 +64,8 @@ class ContactListsClientTest extends TestCase
         );
 
         $response = new Response(
-            replyCode: 0,
-            replyText: 'OK',
-            data: null,
-            errors: []
+            reply: new Reply(0, 'OK'),
+            data: null
         );
 
         $this->emarsysClient
@@ -90,10 +87,8 @@ class ContactListsClientTest extends TestCase
         ];
 
         $response = new Response(
-            replyCode: 0,
-            replyText: 'OK',
-            data: $responseData,
-            errors: []
+            reply: new Reply(0, 'OK'),
+            data: $responseData
         );
 
         $this->emarsysClient
@@ -118,10 +113,8 @@ class ContactListsClientTest extends TestCase
     public function test_delete_contact_list(): void
     {
         $response = new Response(
-            replyCode: 0,
-            replyText: 'OK',
-            data: null,
-            errors: []
+            reply: new Reply(0, 'OK'),
+            data: null
         );
 
         $this->emarsysClient

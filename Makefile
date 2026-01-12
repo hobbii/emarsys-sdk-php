@@ -1,64 +1,77 @@
-.PHONY: help build up down shell test format analyse check install clean integration-test
+# ==========================================================
+# Emarsys PHP SDK Makefile
+# ==========================================================
+
+# --- Config ---
+DOCKER_EXEC_CMD = docker-compose exec php
 
 # Default target
 .DEFAULT_GOAL := help
 
-## help: Display this help message
-help:
-	@echo "Available commands:"
-	@echo ""
-	@grep -E '^## ' $(MAKEFILE_LIST) | sed 's/## /  /' | column -t -s ':'
+.PHONY: help
+help: ## Display this help message
+	@printf "\033[33mUsage:\033[0m\n  make [target] [arg=\"val\"...]\n\n\033[33mTargets:\033[0m\n"
+	@grep -hE '^[a-zA-Z0-9_-]+:.*## .*$$' $(MAKEFILE_LIST) | sort | \
+	  awk 'BEGIN {FS = ": ## "}; {printf "  \033[32m%-15s\033[0m %s\n", $$1, $$2}'
 
-## build: Build the Docker image
-build:
+.PHONY: build
+build: ## Build the Docker image
 	docker-compose build
 
-## up: Start the Docker container
-up:
+.PHONY: up
+up: ## Start the Docker container
 	docker-compose up -d
 
-## down: Stop and remove the Docker container
-down:
+.PHONY: down
+down: ## Stop and remove the Docker container
 	docker-compose down
 
-## shell: Open an interactive shell in the container
-shell: up
-	docker-compose exec php sh
+.PHONY: shell
+shell: ## Open an interactive shell in the container
+	$(MAKE) up
+	$(DOCKER_EXEC_CMD) sh
 
-## sh: Alias for shell command
-sh: shell
+.PHONY: sh
+sh: ## Alias for shell command
+	$(MAKE) shell
 
-## install: Install Composer dependencies
-install: up
-	docker-compose exec php git config --global --add safe.directory /app || true
-	docker-compose exec php composer install
+.PHONY: install
+install: ## Install Composer dependencies
+	$(MAKE) up
+	$(DOCKER_EXEC_CMD) git config --global --add safe.directory /app || true
+	$(DOCKER_EXEC_CMD) composer install
 
-## test: Run PHPUnit tests
-test: up
-	docker-compose exec php composer test
+.PHONY: test
+test: ## Run PHPUnit tests
+	$(MAKE) up
+	$(DOCKER_EXEC_CMD) composer test
 
-## format: Format code with Laravel Pint
-format: up
-	docker-compose exec php composer format
+.PHONY: format
+format: ## Format code with Laravel Pint
+	$(MAKE) up
+	$(DOCKER_EXEC_CMD) composer format
 
-## analyse: Run PHPStan static analysis
-analyse: up
-	docker-compose exec php composer analyse
+.PHONY: analyse
+analyse: ## Run PHPStan static analysis
+	$(MAKE) up
+	$(DOCKER_EXEC_CMD) composer analyse
 
-## check: Run all checks (format, analyse, test)
-check: up
-	docker-compose exec php git config --global --add safe.directory /app || true
-	docker-compose exec php composer check
+.PHONY: check
+check: ## Run all checks (format, analyse, test)
+	$(MAKE) up
+	$(DOCKER_EXEC_CMD) git config --global --add safe.directory /app || true
+	$(DOCKER_EXEC_CMD) composer check
 
-## integration-test: Run integration tests (requires .env)
-## Usage: make integration-test [test=test-name]
-integration-test: up
-	docker-compose exec php composer test-integration $(test)
+.PHONY: integration-test
+integration-test: ## Run integration tests (requires .env). Usage: make integration-test [test=test-name] [email=user@example.com]
+	$(MAKE) up
+	$(DOCKER_EXEC_CMD) php run-integration-tests.php $(test) $(if $(email),email=$(email),)
 
-## clean: Remove containers, volumes, and vendor directory
-clean:
+.PHONY: clean
+clean: ## Remove containers, volumes, and vendor directory
 	docker-compose down -v
 	rm -rf vendor
 
-## rebuild: Clean and rebuild everything
-rebuild: clean build install
+.PHONY: rebuild
+rebuild: ## Clean and rebuild everything
+	$(MAKE) clean build install

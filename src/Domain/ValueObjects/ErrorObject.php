@@ -10,7 +10,7 @@ readonly class ErrorObject implements Stringable
 {
     public function __construct(
         public string $key,
-        public string $errorCode,
+        public int $errorCode,
         public string $errorMsg,
     ) {}
 
@@ -26,7 +26,7 @@ readonly class ErrorObject implements Stringable
     {
         return new self(
             key: $data['key'] ?? '',
-            errorCode: $data['errorCode'] ?? '',
+            errorCode: (int) ($data['errorCode'] ?? 0),
             errorMsg: $data['errorMsg'] ?? ''
         );
     }

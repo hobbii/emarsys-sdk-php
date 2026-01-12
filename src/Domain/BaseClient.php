@@ -8,10 +8,12 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
+use Hobbii\Emarsys\Domain\Contracts\RequestInterface;
 use Hobbii\Emarsys\Domain\Exceptions\ApiException;
 use Hobbii\Emarsys\Domain\Exceptions\AuthenticationException;
 use Hobbii\Emarsys\Domain\Exceptions\RateLimitException;
 use Hobbii\Emarsys\Domain\ValueObjects\Response;
+use JsonSerializable;
 
 /**
  * Base HTTP client for Emarsys API communication.
@@ -65,7 +67,7 @@ class BaseClient
      * @throws ApiException
      * @throws AuthenticationException
      */
-    public function post(string $endpoint, array $data = []): Response
+    public function post(string $endpoint, array|JsonSerializable $data = []): Response
     {
         return $this->request('POST', $endpoint, [
             'json' => $data,
@@ -80,7 +82,7 @@ class BaseClient
      * @throws ApiException
      * @throws AuthenticationException
      */
-    public function put(string $endpoint, array $data = []): Response
+    public function put(string $endpoint, array|JsonSerializable $data = []): Response
     {
         return $this->request('PUT', $endpoint, [
             'json' => $data,
@@ -99,6 +101,20 @@ class BaseClient
     {
         return $this->request('DELETE', $endpoint, [
             'query' => $query,
+        ]);
+    }
+
+    /**
+     * Send a request to the API based on the provided RequestInterface.
+     *
+     * @throws ApiException
+     * @throws AuthenticationException
+     */
+    public function send(RequestInterface $request): Response
+    {
+        return $this->request($request->method(), $request->endpoint(), [
+            'query' => $request->query(),
+            'json' => $request,
         ]);
     }
 

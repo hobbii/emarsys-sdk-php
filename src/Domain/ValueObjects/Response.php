@@ -10,18 +10,12 @@ use Psr\Http\Message\ResponseInterface;
 
 readonly class Response
 {
-    public function __construct(
-        public int $replyCode,
-        public string $replyText,
-        public int|string|array|null $data,
-        /** @var ErrorObject[] Errors returned by the Emarsys API. */
-        public array $errors,
-    ) {}
+    private const JSON_DECODE_DEPTH = 512;
 
-    public function hasErrors(): bool
-    {
-        return ! empty($this->errors);
-    }
+    public function __construct(
+        public Reply $reply,
+        public int|string|array|null $data
+    ) {}
 
     /**
      * @throws ApiException
@@ -59,21 +53,14 @@ readonly class Response
         throw new ApiException('Response data is not an array');
     }
 
-    public static function fromArray(array $arr): self
+    /**
+     * Get a value from the response data by key. Expects data to be an array.
+     *
+     * @throws ApiException If data is not an array
+     */
+    public function data(string $key, mixed $default = null): mixed
     {
-        $errors = [];
-        if (isset($arr['errors']) && is_array($arr['errors'])) {
-            foreach ($arr['errors'] as $errorData) {
-                $errors[] = ErrorObject::fromArray($errorData);
-            }
-        }
-
-        return new self(
-            replyCode: $arr['replyCode'] ?? 0,
-            replyText: $arr['replyText'] ?? '',
-            data: $arr['data'] ?? null,
-            errors: $errors
-        );
+        return $this->dataAsArray()[$key] ?? $default;
     }
 
     /**
@@ -84,7 +71,7 @@ readonly class Response
         $body = $response->getBody()->getContents();
 
         try {
-            $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+            $data = json_decode($body, true, self::JSON_DECODE_DEPTH, JSON_THROW_ON_ERROR);
 
             if (! is_array($data)) {
                 throw new JsonException('Expected an array. Got: '.gettype($data));
@@ -93,6 +80,9 @@ readonly class Response
             throw new ApiException('Invalid JSON response', previous: $e);
         }
 
-        return self::fromArray($data);
+        return new self(
+            reply: Reply::fromResponseData($data),
+            data: $data['data'] ?? null,
+        );
     }
 }
